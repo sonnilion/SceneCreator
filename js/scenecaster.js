@@ -789,19 +789,6 @@ function createWall(posStart, posEnd)
   numwalls++;
 }
 
-function deleteScene()
-{
-  for (i = 0; i < numobjects; i++)
-  scn.removeObjectFromScene(objects[i]);
-  for (i = 0; i < numwalls; i++)
-  scn.removeObjectFromScene(walls[i]);
-  for (i = 0; i < numlights; i++)
-  lights[i].setOn(false);
-  numlights = 0;
-  numwalls = 0;
-  numobjects = 0;
-}
-
 function deleteWall(wallnum)
 {
   scn.removeObjectFromScene(walls[wallnum]);
@@ -861,6 +848,20 @@ function moveWall(wallnum, posStart, posEnd)
   scn.addObjectToScene(walls[wallnum]);
 }
 
+function deleteScene()
+{
+  for (i = 0; i < numobjects; i++)
+  scn.removeObjectFromScene(objects[i]);
+  for (i = 0; i < numwalls; i++)
+  scn.removeObjectFromScene(walls[i]);
+  for (i = 0; i < numlights; i++)
+  lights[i].setOn(false);
+  numlights = 0;
+  numwalls = 0;
+  numobjects = 0;
+  //empty hidden feild of objects
+  document.getElementById('objects').value = "";
+}
 function forwardCam()
 {
   if (currentcam == 4) currentcam = 0;
