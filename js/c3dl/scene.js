@@ -859,11 +859,11 @@ c3dl.Scene = function ()
 
   /**
    Remove a light from the scene. The first light found matching the name 
-   lightName will be removed.
+   light or object light will be removed.
    
-   @param {String} lightName the name of the light
+   @param {String || c3dl.Light } light the name of the light or the c3dl object light
    */
-  this.removeLight = function (lightName)
+  this.removeLight = function (light)
   {
     // There are 2 copies of the light, one in our js code and one in the opengl
     // state variable.  We need to remove the light object from our list and set
@@ -872,7 +872,7 @@ c3dl.Scene = function ()
     var lightID = -1;
     for (var i = 0; i < lightList.length && lightID == -1; i++)
     {
-      if (lightList[i] && lightList[i].getName() == lightName)
+      if (lightList[i] && (lightList[i].getName() == light || lightList[i] === light))
       {
         lightID = i;
       }

@@ -518,12 +518,14 @@
           selected = "";
         }
         void mouseClicked() {
-          if (insertlight) {
+          if (insertlight && numberlights<8) {
              createLight((snapX-23)/2.5-100,(snapY-23)/2.5-100);
              lights[numberlights*2] = snapX;
              lights[numberlights*2+1] = snapY;
              numberlights++;
           }   
+          else if (numberlights==8)
+            alert("You have reached the limit of lights for a design layout");
         }
         
         void mouseReleased() {
@@ -601,7 +603,15 @@
       </script><canvas id="SceneCaster2d" style="" width="550" height="550"></canvas>
     </div>
     <div id="maingoogle">
-      <iframe id="google3d" width="800" height="600" src="http://sketchup.google.com/3dwarehouse/">
+      <div>
+      <input type="button" value="Back" onclick="google3d.history.back()">
+      <input type="button" value="Forward" onclick="google3d.history.forward()"> 
+      </div>
+      <iframe id="google3d" name="google3d" width="800" height="600" src="http://sketchup.google.com/3dwarehouse/">
+      <script>
+      if (document.google3d.download.onclick)
+        alert("holy shit");
+      </script>
     </div>
   </body>
 </html>

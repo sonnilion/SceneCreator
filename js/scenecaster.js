@@ -726,7 +726,7 @@ function createLight(posX, posZ)
 
 function deleteLight(lightnum)
 {
-  lights[lightnum].setOn(false);
+  scn.removeLight(lights[lightnum]);
   for (var k = lightnum; k < numlights - 1; k++)
   {
     lights[k] = lights[k + 1];
@@ -851,11 +851,11 @@ function moveWall(wallnum, posStart, posEnd)
 function deleteScene()
 {
   for (i = 0; i < numobjects; i++)
-  scn.removeObjectFromScene(objects[i]);
+    scn.removeObjectFromScene(objects[i]);
   for (i = 0; i < numwalls; i++)
-  scn.removeObjectFromScene(walls[i]);
+    scn.removeObjectFromScene(walls[i]);
   for (i = 0; i < numlights; i++)
-  lights[i].setOn(false);
+    scn.removeLight(lights[i]);
   numlights = 0;
   numwalls = 0;
   numobjects = 0;
@@ -1020,3 +1020,4 @@ $(function ()
     }
   });
 });
+
