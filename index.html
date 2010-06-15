@@ -241,16 +241,16 @@
             if (drawwall || insertlight) {
               cursor( "crosshair");  
               for(int i=23; i<=height-50; i+=25) {
-               if (mouseX > i && mouseX < i+8)
+               if (mouseX >= i && mouseX <= i+8)
                   snapX = i;
-               else if (mouseX > i+8 && mouseX < i+16)
+               else if (mouseX > i+8 && mouseX <= i+16)
                   snapX = i+12.5;
                else if (mouseX > i+16 && mouseX < i+25)
                   snapX = i+25;
                
-               if (mouseY > i && mouseY < i+8)
+               if (mouseY >= i && mouseY <= i+8)
                   snapY = i;
-               else if (mouseY > i+8 && mouseY < i+16)
+               else if (mouseY > i+8 && mouseY <= i+16)
                   snapY = i+12.5;
                else if (mouseY > i+16 && mouseY < i+25)
                   snapY = i+25;
@@ -426,25 +426,40 @@
               else if (difX2 < 10 && difX2 > -10 && difY2 < 10 && difY2 > -10) { 
                 selectednum =j;
                 selected = "wall";
-                oldmX = mouseX;
-                oldmY = mouseY;
+                for(int i=23; i<=height-50; i+=25) {
+                  if (mouseX >= i && mouseX <= i+8)
+                      snapX = i;
+                  else if (mouseX > i+8 && mouseX <= i+16)
+                      snapX = i+12.5;
+                  else if (mouseX > i+16 && mouseX < i+25)
+                      snapX = i+25;
+                  if (mouseY >= i && mouseY <= i+8)
+                      snapY = i;
+                  else if (mouseY > i+8 && mouseY <= i+16)
+                      snapY = i+12.5;
+                  else if (mouseY > i+16 && mouseY < i+25)
+                      snapY = i+25;
+                } 
+                oldmX = snapX;
+                oldmY = snapY;
               }
             }
           } 
         }
          	
         void mouseDragged() {
+        //moving a light
           if (selected == "light" || moving == "light") {
             for(int i=23; i<=height-50; i+=25) {
-              if (mouseX > i && mouseX < i+8)
+              if (mouseX >= i && mouseX <= i+8)
                   snapX = i;
-              else if (mouseX > i+8 && mouseX < i+16)
+              else if (mouseX > i+8 && mouseX <= i+16)
                   snapX = i+12.5;
               else if (mouseX > i+16 && mouseX < i+25)
                   snapX = i+25;
-              if (mouseY > i && mouseY < i+8)
+              if (mouseY >= i && mouseY <= i+8)
                   snapY = i;
-              else if (mouseY > i+8 && mouseY < i+16)
+              else if (mouseY > i+8 && mouseY <= i+16)
                   snapY = i+12.5;
               else if (mouseY > i+16 && mouseY < i+25)
                   snapY = i+25;
@@ -454,10 +469,25 @@
             moveLight(selectednum, (snapX-23)/2.5-100,(snapY-23)/2.5-100);
             moving = "light";
           }
+          //moving a wall
           if (selected == "wall" || moving == "wall") {
            //snape wall 
-            mdifX = mdifX + mouseX - oldmX;
-            mdifY = mdifY + mouseY - oldmY;
+             for(int i=23; i<=height-50; i+=25) {
+              if (mouseX >= i && mouseX <= i+8)
+                  snapX = i;
+              else if (mouseX > i+8 && mouseX <= i+16)
+                  snapX = i+12.5;
+              else if (mouseX > i+16 && mouseX < i+25)
+                  snapX = i+25;
+              if (mouseY >= i && mouseY <= i+8)
+                  snapY = i;
+              else if (mouseY > i+8 && mouseY <= i+16)
+                  snapY = i+12.5;
+              else if (mouseY > i+16 && mouseY < i+25)
+                  snapY = i+25;
+            } 
+            mdifX = mdifX + snapX - oldmX;
+            mdifY = mdifY + snapY - oldmY;
             
             var checkX1= walls[selectednum*4]+mdifX;
             var checkY1= walls[selectednum*4+1]+mdifY;
@@ -465,12 +495,12 @@
             var checkY2= walls[selectednum*4+3]+mdifY;
             
             for(int i=23; i<=height-50; i+=25) {
-              if (checkX1 > i && checkX1 < i+8) {
+              if (checkX1 >= i && checkX1 <= i+8) {
                if (walls[selectednum*4] != i)
                 mdifX = 0;
                walls[selectednum*4] = i;
               }
-              else if (checkX1 > i+8 && checkX1 < i+16){
+              else if (checkX1 > i+8 && checkX1 <= i+16){
                 if (walls[selectednum*4] != i+12.5)
                   mdifX = 0;
                 walls[selectednum*4] = i+12.5;
@@ -480,12 +510,12 @@
                   mdifX = 0;
                 walls[selectednum*4] = i+25;
               }
-              if (checkY1 > i && checkY1 < i+8){
+              if (checkY1 >= i && checkY1 <= i+8){
                 if (walls[selectednum*4+1] != i)
                   mdifY = 0;
                 walls[selectednum*4+1] = i;
               }
-              else if (checkY1 > i+8 && checkY1 < i+16){
+              else if (checkY1 > i+8 && checkY1 <= i+16){
                 if (walls[selectednum*4+1] != i+12.5)
                   mdifY = 0;
                 walls[selectednum*4+1] = i+12.5;
@@ -497,21 +527,35 @@
               }
             } 
             for(int i=23; i<=height-50; i+=25) {
-              if (checkX2 > i && checkX2 < i+8)
+              if (checkX2 >= i && checkX2 <= i+8)
                   walls[selectednum*4+2] = i;
-              else if (checkX2 > i+8 && checkX2 < i+16)
+              else if (checkX2 > i+8 && checkX2 <= i+16)
                   walls[selectednum*4+2] = i+12.5;
               else if (checkX2 > i+16 && checkX2 < i+25)
                   walls[selectednum*4+2] = i+25;
-              if (checkY2 > i && checkY2 < i+8)
+              if (checkY2 >= i && checkY2 <= i+8)
                   walls[selectednum*4+3] = i;
-              else if (checkY2 > i+8 && checkY2 < i+16)
+              else if (checkY2 > i+8 && checkY2 <= i+16)
                   walls[selectednum*4+3] = i+12.5;
               else if (checkY2 > i+16 && checkY2 < i+25)
                   walls[selectednum*4+3] = i+25;
             } 
-            oldmX = mouseX;
-            oldmY = mouseY;
+            for(int i=23; i<=height-50; i+=25) {
+              if (mouseX >= i && mouseX <= i+8)
+                  snapX = i;
+              else if (mouseX > i+8 && mouseX <= i+16)
+                  snapX = i+12.5;
+              else if (mouseX > i+16 && mouseX < i+25)
+                  snapX = i+25;
+              if (mouseY >= i && mouseY <= i+8)
+                  snapY = i;
+              else if (mouseY > i+8 && mouseY <= i+16)
+                  snapY = i+12.5;
+              else if (mouseY > i+16 && mouseY < i+25)
+                  snapY = i+25;
+            } 
+            oldmX = snapX;
+            oldmY = snapY;
             moveWall(selectednum,[(walls[selectednum*4]-23)/2.5-100,0,(walls[selectednum*4+1]-23)/2.5-100], [(walls[selectednum*4+2]-23)/2.5-100, 0, (walls[selectednum*4+3]-23)/2.5-100]);
             moving =  "wall";
           }
