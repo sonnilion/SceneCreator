@@ -1,0 +1,78 @@
+﻿float x=50;
+float y=50;
+float targetX, targetY;
+float circleSize = 10;
+bool moving=false;
+void setup() 
+{
+  size(100, 100); 
+  smooth();
+  noStroke();  
+}
+
+void draw() 
+{ 
+  
+  background( 255 );
+  if (inCircle(x, y, circleSize+5))
+      cursor("pointer"); 
+  else 
+      cursor( "default");  
+  if (document.getElementById("topview").value == "false") {
+    if (mousePressed == true && inCircle(x, y, circleSize+5) || moving) {
+      if (bigCircle(90)) {
+        cursor("pointer"); 
+        moving = true;
+        targetX = mouseX;
+        float dx = mouseX - x;
+        if(abs(dx) > 1) {
+          x += dx;
+        }
+        targetY = mouseY;
+        float dy = mouseY - y;
+        if(abs(dy) > 1) {
+          y += dy;
+        }
+      }
+    }
+  }
+  noFill();
+  stroke(0);
+  strokeWeight(5);
+  ellipse(50, 50, 95, 95);
+  fill(0,0,255);
+  stroke(0,0,255);
+  ellipse(x, y, circleSize, circleSize);
+  camLeftRight = (x -50) /100;
+  camUpDown = (50 - y) /100;
+  if (document.getElementById("topview").value == "true") {
+    stroke(255,0,0);
+    line(0,0,200,200);
+    line(0,100,100,0);
+  }
+}
+void mouseReleased() {
+  moving =false;
+  x= 50;
+  y=50;
+}
+boolean inCircle(int x, int y, int diameter) 
+{
+  float disX = x - mouseX;
+  float disY = y - mouseY;
+  if(sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+boolean bigCircle(int diameter) 
+{
+  float disX = 50 - mouseX;
+  float disY = 50 - mouseY;
+  if(sqrt(sq(disX) + sq(disY)) < diameter/2- circleSize/2) {
+    return true;
+  } else {
+    return false;
+  }
+}

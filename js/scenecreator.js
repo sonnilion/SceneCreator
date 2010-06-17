@@ -1,5 +1,4 @@
 c3dl.addMainCallBack(canvasMain, "SceneCaster3d");
-
 //Paths
 const WALL_PATH = ("./models/wall/cube.dae");
 const CHAIR_PATH = ("./models/chair.dae");
@@ -11,23 +10,23 @@ c3dl.addModel(CHAIR_PATH);
 c3dl.addModel(TABLE_PATH);
 c3dl.addModel("./models/sky/skysphere.dae");
 
-var objectselected = null;
+var objectSelected = null;
 var widget = [];
-var selectedeffect = null;
+var selectedEffect = null;
 var buttons = [];
-var moveobject;
-var worldcoords
+var moveObject;
+var worldCoords
 var zoom = 0;
-var camheight = 50;
-var newcamheight;
-var numlights = 0;
+var camHeight = 50;
+var newCamHeight;
+var numLights = 0;
 var lights = [];
-var numwalls = 0;
+var numWalls = 0;
 var walls = [];
 var objects = [];
-var numobjects = 0;
-camleftright = null;
-camupdown = null;
+var numObjects = 0;
+camLeftRight = null;
+camUpDown = null;
 
 // Create a cameras
 var cam = [];
@@ -44,7 +43,7 @@ zcam[2] = new c3dl.FreeCamera();
 zcam[3] = new c3dl.FreeCamera();
 zcam[4] = new c3dl.FreeCamera();
 zcam[5] = new c3dl.FreeCamera();
-var currentcam = 1;
+var currentCam = 1;
 const CAM_MOVE_SPEED = 5;
 const SIDEWAYS = 0;
 const FORWARD = 1;
@@ -64,88 +63,85 @@ const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 
 // mouse screen coords and button states
-var mousex = 0;
-var mousey = 0;
-
-
-var selendworldcoords = [0, 0];
-var mousebuttonsdown = (
-
-function mouseButtonsDown()
-{
-  var BTN1 = false,
-    BTN2 = false,
-    BTN3 = false;
-  return {
-    "BTN1": BTN1,
-    "BTN2": BTN2,
-    "BTN3": BTN3
-  };
-})();
-
-var keysdown = (
-
+var mouseX = 0;
+var mouseY = 0;
+var selEndWorldCoords = [0, 0];
+var mouseButtonsDown = (
+  function mouseButtonsDown()
+  {
+    var BTN1 = false,
+      BTN2 = false,
+      BTN3 = false;
+    return {
+      "BTN1": BTN1,
+      "BTN2": BTN2,
+      "BTN3": BTN3
+    };
+  }
+)();
+// keyboard button states
+var keysDown = (
 function keysDown()
-{
-  var key_up = false,
-    key_down = false,
-    key_left = false,
-    key_right = false,
-    key_m = false;
-  return {
-    "KEY_UP": key_up,
-    "KEY_DOWN": key_down,
-    "KEY_LEFT": key_left,
-    "KEY_RIGHT": key_right,
-    "KEY_M": key_m
-  };
-})();
+  {
+    var key_up = false,
+      key_down = false,
+      key_left = false,
+      key_right = false,
+      key_m = false;
+    return {
+      "KEY_UP": key_up,
+      "KEY_DOWN": key_down,
+      "KEY_LEFT": key_left,
+      "KEY_RIGHT": key_right,
+      "KEY_M": key_m
+    };
+  }
+)();
 
-//key events
 
-
+//When a key is pressed down
 function onKeyDown(event)
 {
   switch (event.keyCode)
   {
   case KEY_UP:
-    keysdown.KEY_UP = true;
+    keysDown.KEY_UP = true;
     break;
   case KEY_DOWN:
-    keysdown.KEY_DOWN = true;
+    keysDown.KEY_DOWN = true;
     break;
   case KEY_RIGHT:
-    keysdown.KEY_RIGHT = true;
+    keysDown.KEY_RIGHT = true;
     break;
   case KEY_LEFT:
-    keysdown.KEY_LEFT = true;
+    keysDown.KEY_LEFT = true;
     break;
   default:
     break;
   }
 }
-
+//When a key is released down
 function onKeyUp(event)
 {
   switch (event.keyCode)
   {
   case KEY_UP:
-    keysdown.KEY_UP = false;
+    keysDown.KEY_UP = false;
     break;
   case KEY_DOWN:
-    keysdown.KEY_DOWN = false;
+    keysDown.KEY_DOWN = false;
     break;
   case KEY_RIGHT:
-    keysdown.KEY_RIGHT = false;
+    keysDown.KEY_RIGHT = false;
     break;
   case KEY_LEFT:
-    keysdown.KEY_LEFT = false;
+    keysDown.KEY_LEFT = false;
     break;
   default:
     break;
   }
 }
-
+//When a button is pressed from html
 function buttonOn(buttonID)
 {
   switch (buttonID)
@@ -196,7 +192,7 @@ function buttonOn(buttonID)
     break;
   }
 }
-
+//When a button is released from html
 function buttonOff(buttonID)
 {
   switch (buttonID)
@@ -249,10 +245,8 @@ function buttonOff(buttonID)
 }
 
 // The program main
-
 function canvasMain(canvasName)
 {
-
   // Create new c3dl.Scene object
   scn = new c3dl.Scene();
   scn.setCanvasTag(canvasName);
@@ -271,9 +265,9 @@ function canvasMain(canvasName)
     sm.init("./models/sky/skysphere.dae");
     sm.setTexture("./models/sky/sky.jpg");
     // Effect used when game objects are selected
-    selectedeffect = new c3dl.Effect();
-    selectedeffect.init(c3dl.effects.SEPIA);
-    selectedeffect.setParameter("color", [0.3, 0.6, 0.9]);
+    selectedEffect = new c3dl.Effect();
+    selectedEffect.init(c3dl.effects.SEPIA);
+    selectedEffect.setParameter("color", [0.3, 0.6, 0.9]);
 
     scn.setAmbientLight([0, 0, 0, 0]);
     createLight(0, 0);
@@ -298,34 +292,33 @@ function canvasMain(canvasName)
     createWall([-25, 0, 25], [-25, 0, -25]);
 
 
-    cam[0].setPosition([0, camheight, 1]);
+    cam[0].setPosition([0, camHeight, 1]);
     zcam[0].setPosition(cam[0].getPosition());
     zcam[0].setLookAtPoint([0.0, 0.0, 0.0]);
 
     // Place the camera at the origin.
     // Canvas3d uses a right handed co-ordinate system.
-    cam[1].setPosition(new Array(0, camheight, 15));
-    newcamheight = camheight;
+    cam[1].setPosition(new Array(0, camHeight, 15));
+    newCamHeight = camHeight;
     // Point the camera.
     // Here it is pointed directly along the z-axis
     zcam[1].setPosition(cam[1].getPosition());
     zcam[1].setLookAtPoint([0.0, 0.0, 0.0]);
-
-
-
-    cam[2].setPosition(new Array(15, camheight, 0));
+    
+    cam[2].setPosition(new Array(15, camHeight, 0));
     zcam[2].setPosition(cam[2].getPosition());
     zcam[2].setLookAtPoint([0.0, 0.0, 0.0]);
 
-    cam[3].setPosition(new Array(0, camheight, -15));
+    cam[3].setPosition(new Array(0, camHeight, -15));
     zcam[3].setPosition(cam[3].getPosition());
     zcam[3].setLookAtPoint([0.0, 0.0, 0.0]);
 
-    cam[4].setPosition(new Array(-15, camheight, 0));
+    cam[4].setPosition(new Array(-15, camHeight, 0));
     zcam[4].setPosition(cam[4].getPosition());
     zcam[4].setLookAtPoint([0.0, 0.0, 0.0]);
+    
     // Add the camera to the scene
-    scn.setCamera(zcam[currentcam]);
+    scn.setCamera(zcam[currentCam]);
     scn.setSkyModel(sm);
     // Start the scene
     scn.startScene();
@@ -335,7 +328,7 @@ function canvasMain(canvasName)
     scn.setUpdateCallback(update);
     scn.setKeyboardCallback(onKeyUp, onKeyDown);
     scn.setMouseCallback(mouseUp, mouseDown, mouseMove, mouseWheel);
-    scn.setPickingCallback(handler);
+    scn.setPickingCallback(pickingHandler);
   }
 }
 
@@ -343,97 +336,95 @@ function canvasMain(canvasName)
 // When a mouse down event is detected this function is called.
 // The handler is given an object that knows what button was
 // pressed and has a list of objects picked.
-
-
-function handler(result)
+function pickingHandler(result)
 {
   var objectsPicked = result.getObjects();
   if (objectsPicked.length > 0)
   {
-    if (objectselected)
+    if (objectSelected)
     {
-      objectselected.setEffect(c3dl.effects.STANDARD);
-      objectselected = null;
+      objectSelected.setEffect(c3dl.effects.STANDARD);
+      objectSelected = null;
     }
     // get the object that was picked
-    objectselected = objectsPicked[0];
-    objectselected.setEffect(selectedeffect);
+    objectSelected = objectsPicked[0];
+    objectSelected.setEffect(selectedEffect);
   }
   else
   {
-    objectselected.setEffect(c3dl.effects.STANDARD);
-    objectselected = null;
+    objectSelected.setEffect(c3dl.effects.STANDARD);
+    objectSelected = null;
   }
 }
 
 function update(deltaTime)
 {
   //update slider position
-  $("#updownslider").slider("value", camheight);
+  $("#updownslider").slider("value", camHeight);
   $("#zoomslider").slider("value", zoom);
 
   //empty hidden feild of objects
   document.getElementById('objects').value = "";
 
   //check topview to disable rotation 
-  if (currentcam == 0) document.getElementById('topview').value = "true";
+  if (currentCam == 0) document.getElementById('topview').value = "true";
   else document.getElementById('topview').value = "false";
 
   //set scene to current camera
-  scn.setCamera(zcam[currentcam]);
+  scn.setCamera(zcam[currentCam]);
 
   var moveAmount = CAM_MOVE_SPEED * deltaTime / 100;
 
   //move selected object up 
-  if (buttons[0] && objectselected != null)
+  if (buttons[0] && objectSelected != null)
   {
-    var curpos = objectselected.getPosition();
-    objectselected.setPosition([curpos[0], curpos[1] + 1, curpos[2]]);
+    var curpos = objectSelected.getPosition();
+    objectSelected.setPosition([curpos[0], curpos[1] + 1, curpos[2]]);
   }
   //move selected object down 
-  else if (buttons[1] && objectselected != null)
+  else if (buttons[1] && objectSelected != null)
   {
-    var curpos = objectselected.getPosition();
-    objectselected.setPosition([curpos[0], curpos[1] - 1, curpos[2]]);
+    var curpos = objectSelected.getPosition();
+    objectSelected.setPosition([curpos[0], curpos[1] - 1, curpos[2]]);
   }
   //rotate selected object left
-  else if (buttons[2] && objectselected != null)
+  else if (buttons[2] && objectSelected != null)
   {
-    objectselected.yaw(-0.1)
+    objectSelected.yaw(-0.1)
   }
   //rotate selected object right
-  else if (buttons[3] && objectselected != null)
+  else if (buttons[3] && objectSelected != null)
   {
-    objectselected.yaw(0.1)
+    objectSelected.yaw(0.1)
   }
   //light up
   else if (buttons[4])
   {
     var aLight = lights[0].getDiffuse();
-    for (i = 0; i < numlights; i++)
+    for (i = 0; i < numLights; i++)
     if (aLight[1] < 2) lights[i].setDiffuse([aLight[0] + 0.1, aLight[1] + 0.1, aLight[2] + 0.1, aLight[3] + 0.1]);
   }
   //light down
   else if (buttons[5])
   {
     var aLight = lights[0].getDiffuse();
-    for (i = 0; i < numlights; i++)
+    for (i = 0; i < numLights; i++)
     if (aLight[1] > 0) lights[i].setDiffuse([aLight[0] - 0.1, aLight[1] - 0.1, aLight[2] - 0.1, aLight[3] - 0.1]);
   }
   //ud Up 
   else if (buttons[6])
   {
-    if (camheight < 100) camheight += 5;
+    if (camHeight < 100) camHeight += 5;
   }
   //ud Down 
   else if (buttons[7])
   {
-    if (camheight > 5) camheight -= 5;
+    if (camHeight > 5) camHeight -= 5;
   }
   //zoom in 
   else if (buttons[8])
   {
-    if (zoom < 100) zoom += 5;;
+    if (zoom < 100) zoom += 5;
   }
   //zoom out 
   else if (buttons[9])
@@ -462,55 +453,55 @@ function update(deltaTime)
   }
 
   //use arrow key to move camera
-  if (keysdown.KEY_LEFT)
+  if (keysDown.KEY_LEFT)
   {
     moveCamera(SIDEWAYS, moveAmount);
   }
-  else if (keysdown.KEY_RIGHT)
+  else if (keysDown.KEY_RIGHT)
   {
     moveCamera(SIDEWAYS, -moveAmount);
   }
-  if (keysdown.KEY_UP)
+  if (keysDown.KEY_UP)
   {
     moveCamera(FORWARD, moveAmount);
   }
-  else if (keysdown.KEY_DOWN)
+  else if (keysDown.KEY_DOWN)
   {
     moveCamera(FORWARD, -moveAmount);
   }
 
   //move selected object to mouse postion
-  if (moveobject)
+  if (moveObject)
   {
-    var curpos = objectselected.getPosition();
-    worldcoords = getworldcoords(mousex, mousey);
-    objectselected.setPosition([worldcoords[0], curpos[1], worldcoords[2]]);
+    var curpos = objectSelected.getPosition();
+    worldCoords = getworldCoords(mouseX, mouseY);
+    objectSelected.setPosition([worldCoords[0], curpos[1], worldCoords[2]]);
   }
 
   //Camera stuff
   //setting height
-  if (newcamheight - camheight)
+  if (newCamHeight - camHeight)
   {
-    var chdif = (newcamheight - camheight);
-    newcamheight = camheight;
-    cam[currentcam].setPosition([cam[currentcam].getPosition()[0], cam[currentcam].getPosition()[1] - chdif, cam[currentcam].getPosition()[2]]);
+    var chdif = (newCamHeight - camHeight);
+    newCamHeight = camHeight;
+    cam[currentCam].setPosition([cam[currentCam].getPosition()[0], cam[currentCam].getPosition()[1] - chdif, cam[currentCam].getPosition()[2]]);
   }
   //zooming
-  var zoomInDir = c3dl.multiplyVector(zcam[currentcam].getDir(), zoom);
-  zcam[currentcam].setPosition(c3dl.addVectors(cam[currentcam].getPosition(), zoomInDir));
+  var zoomInDir = c3dl.multiplyVector(zcam[currentCam].getDir(), zoom);
+  zcam[currentCam].setPosition(c3dl.addVectors(cam[currentCam].getPosition(), zoomInDir));
 
   //rotating at the point of zoom
-  if (currentcam)
+  if (currentCam)
   {
-    zcam[currentcam].rotateOnAxis([0, 1, 0], -camleftright / 10);
-    zcam[currentcam].pitch(-camupdown / 10);
+    zcam[currentCam].rotateOnAxis([0, 1, 0], -camLeftRight / 10);
+    zcam[currentCam].pitch(-camUpDown / 10);
 
   }
   //repositioning the camera after rotating it
-  zoomInDir = c3dl.multiplyVector(zcam[currentcam].getDir(), zoom);
-  cam[currentcam].setPosition(c3dl.subtractVectors(zcam[currentcam].getPosition(), zoomInDir))
+  zoomInDir = c3dl.multiplyVector(zcam[currentCam].getDir(), zoom);
+  cam[currentCam].setPosition(c3dl.subtractVectors(zcam[currentCam].getPosition(), zoomInDir))
 
-  for (i = 0; i < numobjects; i++)
+  for (i = 0; i < numObjects; i++)
   {
     var objPos = [];
     objPos[0] = (objects[i].getPosition()[0] - objects[i].getLength() / 2).toFixed(2);
@@ -522,41 +513,38 @@ function update(deltaTime)
 }
 
 //fuction to move the camera
-
-
 function moveCamera(direction, amount)
 {
   if (direction === SIDEWAYS)
   {
-    var temp = zcam[currentcam].getLeft();
+    var temp = zcam[currentCam].getLeft();
     var dir = c3dl.multiplyVector([temp[0], 0, temp[2]], amount);
-    cam[currentcam].setPosition(c3dl.addVectors(cam[currentcam].getPosition(), dir));
+    cam[currentCam].setPosition(c3dl.addVectors(cam[currentCam].getPosition(), dir));
   }
   else if (direction === FORWARD)
   {
-    var temp = zcam[currentcam].getLeft();
+    var temp = zcam[currentCam].getLeft();
     var dir = c3dl.multiplyVector([temp[0], 0, temp[2]], amount);
     var rotmat = c3dl.makeMatrix(Math.cos(90*Math.PI/180), 0, Math.sin(90*Math.PI/180), 0, 
-							      0, 1, 0, 0, 
-							      -Math.sin(90*Math.PI/180), 0, Math.cos(90*Math.PI/180), 0, 
-							      0, 0, 0, 1);
-	c3dl.transposeMatrix(rotmat);					      
-	dir = c3dl.multiplyMatrixByVector(rotmat, dir) ;
-    cam[currentcam].setPosition(c3dl.addVectors(cam[currentcam].getPosition(), dir));
+						       0, 1, 0, 0, 
+						       -Math.sin(90*Math.PI/180), 0, Math.cos(90*Math.PI/180), 0, 
+						       0, 0, 0, 1);
+  c3dl.transposeMatrix(rotmat);					      
+  dir = c3dl.multiplyMatrixByVector(rotmat, dir) ;
+    cam[currentCam].setPosition(c3dl.addVectors(cam[currentCam].getPosition(), dir));
   }
 }
 
 function mouseUp(event)
 {
-  moveobject = false;
-
+  moveObject = false;
 }
 
 function mouseDown(event)
 {
-  if (objectselected)
+  if (objectSelected)
   {
-    moveobject = true;
+    moveObject = true;
   }
 }
 
@@ -564,21 +552,36 @@ function mouseMove(event)
 {
   // get mouse coords relative to window
   var viewportCoords = getClickedCoords(event);
-  mousex = viewportCoords[0];
-  mousey = viewportCoords[1];
-
+  mouseX = viewportCoords[0];
+  mouseY = viewportCoords[1];
 }
 
 function mouseWheel(event)
 {
+ var delta = 0;
 
+  // Chromium
+  if (event.wheelDelta) {
+    delta = -event.wheelDelta / 20;
+  }
+  // Minefield
+  else if (event.detail) {
+    delta = event.detail * 4;
+  }
+  // towards user
+  if (-delta < 0) {
+    if (zoom > 5) zoom -= 5;
+  }
+  // towards screen
+  else {
+    if (zoom < 100) zoom += 5;
+  }
 }
 
 function getClickedCoords(event)
 {
   var canvas = scn.getCanvas();
   var canvasPosition = c3dl.getObjectPosition(scn.getCanvas());
-
   // event.clientX and event.clientY contain where the user clicked 
   // on the client area of the browser
   // canvasPosition holds the coordinate of the top left corner where the canvas resides
@@ -586,13 +589,11 @@ function getClickedCoords(event)
   // window.pageXOffset, window.pageYOffset hold how much the user has scrolled.
   var X = event.clientX - canvasPosition[0] + window.pageXOffset - 1;
   var Y = event.clientY - canvasPosition[1] + window.pageYOffset - 1;
-
   return [X, Y];
 }
 
-function getworldcoords(mmx, mmy)
+function getworldCoords(mmx, mmy)
 {
-
   if (mmx != null && mmy != null)
   {
     // NDC
@@ -617,14 +618,14 @@ function getworldcoords(mmx, mmy)
       clipCoords[2] /= clipCoords[3];
       clipCoords[2] = -clipCoords[2];
 
-      var rayInitialPoint = zcam[currentcam].getPosition();
+      var rayInitialPoint = zcam[currentCam].getPosition();
 
       var x = clipCoords[0];
       var y = clipCoords[1];
       var z = clipCoords[2];
 
-      var kludge = c3dl.multiplyVector(zcam[currentcam].getLeft(), -1);
-      var viewMatrix = c3dl.makePoseMatrix(kludge, zcam[currentcam].getUp(), zcam[currentcam].getDir(), zcam[currentcam].getPosition());
+      var kludge = c3dl.multiplyVector(zcam[currentCam].getLeft(), -1);
+      var viewMatrix = c3dl.makePoseMatrix(kludge, zcam[currentCam].getUp(), zcam[currentCam].getDir(), zcam[currentCam].getPosition());
 
       var rayTerminalPoint = c3dl.multiplyMatrixByVector(viewMatrix, [x, y, z, 0]);
       var rayDir = c3dl.normalizeVector(rayTerminalPoint);
@@ -635,25 +636,26 @@ function getworldcoords(mmx, mmy)
 
       var hyp = camHeight / Math.cos(angle);
 
-      selendworldcoords[0] = hyp * rayDir[0] + rayInitialPoint[0];
-      selendworldcoords[1] = hyp * rayDir[2] + rayInitialPoint[2];
-      return [selendworldcoords[0], hyp * rayDir[1], selendworldcoords[1]];
+      selEndWorldCoords[0] = hyp * rayDir[0] + rayInitialPoint[0];
+      selEndWorldCoords[1] = hyp * rayDir[2] + rayInitialPoint[2];
+      return [selEndWorldCoords[0], hyp * rayDir[1], selEndWorldCoords[1]];
     }
   }
 }
 
+//create objects using a factory pattern
 function createObject(objID)
 {
-  objects[numobjects] = new c3dl.Collada();
+  objects[numObjects] = new c3dl.Collada();
   var isValid = true;
 
   switch (objID)
   {
   case 0:
-    objects[numobjects].init(CHAIR_PATH);
+    objects[numObjects].init(CHAIR_PATH);
     break;
   case 1:
-    objects[numobjects].init(TABLE_PATH);
+    objects[numObjects].init(TABLE_PATH);
     break;
   default:
     isValid = false;
@@ -662,88 +664,93 @@ function createObject(objID)
 
   if (isValid)
   {
-    objects[numobjects].scale([0.2, 0.2, 0.2]);
-    scn.addObjectToScene(objects[numobjects]);
-    if (objectselected) objectselected.setEffect(c3dl.effects.STANDARD);
-    objectselected = objects[numobjects];
-    objectselected.setEffect(selectedeffect);
+    objects[numObjects].scale([0.2, 0.2, 0.2]);
+    scn.addObjectToScene(objects[numObjects]);
+    if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
+    objectSelected = objects[numObjects];
+    objectSelected.setEffect(selectedEffect);
   }
-  numobjects++;
+  numObjects++;
 }
 
+//remove selected object from scene
 function deleteSelected()
 {
-  if (objectselected)
+  if (objectSelected)
   {
     var delNum;
-    for (i = 0; i < numobjects; i++)
+    for (i = 0; i < numObjects; i++)
     {
-      if (objects[i] === objectselected)
+      if (objects[i] === objectSelected)
       {
         delNum = i;
       }
     }
-    for (i = delNum; i < numobjects - 1; i++)
+    for (i = delNum; i < numObjects - 1; i++)
     {
       objects[i] = objects[i + 1];
     }
 
-    scn.removeObjectFromScene(objectselected);
-    objectselected = null;
-    numobjects--;
+    scn.removeObjectFromScene(objectSelected);
+    objectSelected = null;
+    numObjects--;
   }
 }
 
+//copys selected object stats and creates a new one
 function copySelected()
 {
-  if (objectselected)
+  if (objectSelected)
   {
     var temp = [];
-    objects[numobjects] = new c3dl.Collada();
-    objects[numobjects].init(objectselected.getPath());
-    objects[numobjects].setPosition([objectselected.getPosition()[0], objectselected.getPosition()[1], objectselected.getPosition()[2] - objectselected.getWidth()-1]);
-    scn.addObjectToScene(objects[numobjects]);
-    objectselected.setEffect(c3dl.effects.STANDARD);
-    temp[0] = objectselected.getLength();
-    temp[1] = objectselected.getHeight();
-    temp[2] = objectselected.getWidth();
-    objectselected = objects[numobjects];
-    objectselected.setEffect(selectedeffect);
-    objectselected.setSize(temp[0], temp[2], temp[1]);
-    numobjects++;
+    objects[numObjects] = new c3dl.Collada();
+    objects[numObjects].init(objectSelected.getPath());
+    objects[numObjects].setPosition([objectSelected.getPosition()[0], objectSelected.getPosition()[1], objectSelected.getPosition()[2] - objectSelected.getWidth()-1]);
+    scn.addObjectToScene(objects[numObjects]);
+    objectSelected.setEffect(c3dl.effects.STANDARD);
+    temp[0] = objectSelected.getLength();
+    temp[1] = objectSelected.getHeight();
+    temp[2] = objectSelected.getWidth();
+    objectSelected = objects[numObjects];
+    objectSelected.setEffect(selectedEffect);
+    objectSelected.setSize(temp[0], temp[2], temp[1]);
+    numObjects++;
   }
 }
 
+//creates a positional light at specified position 
 function createLight(posX, posZ)
 {
-  lights[numlights] = new c3dl.PositionalLight();
-  lights[numlights].setPosition([posX, 10, posZ]);
-  lights[numlights].setDiffuse([2, 2, 2, 2]);
-  lights[numlights].setOn(true);
-  scn.addLight(lights[numlights]);
-  numlights++;
+  lights[numLights] = new c3dl.PositionalLight();
+  lights[numLights].setPosition([posX, 10, posZ]);
+  lights[numLights].setDiffuse([2, 2, 2, 2]);
+  lights[numLights].setOn(true);
+  scn.addLight(lights[numLights]);
+  numLights++;
 }
 
+//deletes seleted positional light
 function deleteLight(lightnum)
 {
   scn.removeLight(lights[lightnum]);
-  for (var k = lightnum; k < numlights - 1; k++)
+  for (var k = lightnum; k < numLights - 1; k++)
   {
     lights[k] = lights[k + 1];
   }
-  numlights--;
+  numLights--;
 }
 
+//moves seleted positional light
 function moveLight(lightnum, posX, posZ)
 {
   lights[lightnum].setPosition([posX, 10, posZ])
 }
-
+//creates a wall from one specified position to another 
 function createWall(posStart, posEnd)
 {
-  walls[numwalls] = new c3dl.Collada();
-  walls[numwalls].init(WALL_PATH);
-  walls[numwalls].setTexture("./models/wall/wall-texture.jpg");
+  walls[numWalls] = new c3dl.Collada();
+  walls[numWalls].init(WALL_PATH);
+  walls[numWalls].setTexture("./models/wall/wall-texture.jpg");
   //calc length
   var triA = (posStart[0] + 100) - (posEnd[0] + 100);
   var triB = (posStart[2] + 100) - (posEnd[2] + 100);
@@ -763,8 +770,7 @@ function createWall(posStart, posEnd)
   else if (posStart[2] < 0 && posStart[2] < posEnd[2]) wallpos[2] = posStart[2] + averageZ;
   else if (posEnd[2] < 0 && posStart[2] > posEnd[2]) wallpos[2] = posEnd[2] + averageZ;
   else wallpos[2] = averageZ;
-  walls[numwalls].setPosition(wallpos);
-
+  walls[numWalls].setPosition(wallpos);
 
   //calc walllength pythagorean theorem
   var walllength = Math.sqrt(sq(triA) + sq(triB));
@@ -772,33 +778,35 @@ function createWall(posStart, posEnd)
   //no rotation
   if (posStart[0] === posEnd[0] || posStart[2] === posEnd[2])
   {
-    walls[numwalls].scale([(posStart[0] === posEnd[0]) ? 1 : walllength / 2 + 1, 5, (posStart[2] === posEnd[2]) ? 1 : walllength / 2 + 1]);
+    walls[numWalls].scale([(posStart[0] === posEnd[0]) ? 1 : walllength / 2 + 1, 5, (posStart[2] === posEnd[2]) ? 1 : walllength / 2 + 1]);
   }
 
   //calc angle to rotate cos law
   else
   {
-    walls[numwalls].scale([walllength / 2 + 1, 5, 1]);
+    walls[numWalls].scale([walllength / 2 + 1, 5, 1]);
     theta = 180 * Math.acos((sq(walllength) + sq(triA) - sq(triB)) / (2 * walllength * triA)) / Math.PI;
     if (posEnd[2] < posStart[2]) theta = 360 - theta;
-    walls[numwalls].yaw((theta * Math.PI) / 180);
+    walls[numWalls].yaw((theta * Math.PI) / 180);
   }
   //add object to scene
-  walls[numwalls].setPickable(false);
-  scn.addObjectToScene(walls[numwalls]);
-  numwalls++;
+  walls[numWalls].setPickable(false);
+  scn.addObjectToScene(walls[numWalls]);
+  numWalls++;
 }
 
+//deletes seleted wall
 function deleteWall(wallnum)
 {
   scn.removeObjectFromScene(walls[wallnum]);
-  for (var k = wallnum; k < numwalls - 1; k++)
+  for (var k = wallnum; k < numWalls - 1; k++)
   {
     walls[k] = walls[k + 1];
   }
-  numwalls--;
+  numWalls--;
 }
 
+//moves seleted wall
 function moveWall(wallnum, posStart, posEnd)
 {
   scn.removeObjectFromScene(walls[wallnum]);
@@ -825,7 +833,6 @@ function moveWall(wallnum, posStart, posEnd)
   else wallpos[2] = averageZ;
   walls[wallnum].setPosition(wallpos);
 
-
   //calc walllength pythagorean theorem
   var walllength = Math.sqrt(sq(triA) + sq(triB));
 
@@ -848,50 +855,50 @@ function moveWall(wallnum, posStart, posEnd)
   scn.addObjectToScene(walls[wallnum]);
 }
 
+//removes everything in the scene
 function deleteScene()
 {
-  for (i = 0; i < numobjects; i++)
+  for (i = 0; i < numObjects; i++)
     scn.removeObjectFromScene(objects[i]);
-  for (i = 0; i < numwalls; i++)
+  for (i = 0; i < numWalls; i++)
     scn.removeObjectFromScene(walls[i]);
-  for (i = 0; i < numlights; i++)
+  for (i = 0; i < numLights; i++)
     scn.removeLight(lights[i]);
-  numlights = 0;
-  numwalls = 0;
-  numobjects = 0;
+  numLights = 0;
+  numWalls = 0;
+  numObjects = 0;
   //empty hidden feild of objects
   document.getElementById('objects').value = "";
 }
+
 function forwardCam()
 {
-  if (currentcam == 4) currentcam = 0;
-  else currentcam++;
-  camheight = cam[currentcam].getPosition()[1];
-  newcamheight = camheight;
-  zoom = c3dl.vectorLength(cam[currentcam].getPosition()) - c3dl.vectorLength(zcam[currentcam].getPosition());
+  if (currentCam == 4) currentCam = 0;
+  else currentCam++;
+  camHeight = cam[currentCam].getPosition()[1];
+  newCamHeight = camHeight;
+  zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
 }
 
 function backCam()
 {
-  if (currentcam == 0) currentcam = 4;
-  else currentcam--;
-  camheight = cam[currentcam].getPosition()[1];
-  newcamheight = camheight;
-  zoom = c3dl.vectorLength(cam[currentcam].getPosition()) - c3dl.vectorLength(zcam[currentcam].getPosition());
+  if (currentCam == 0) currentCam = 4;
+  else currentCam--;
+  camHeight = cam[currentCam].getPosition()[1];
+  newCamHeight = camHeight;
+  zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
 }
 
 function topView()
 {
-  currentcam = 0;
-  camheight = cam[currentcam].getPosition()[1];
-  newcamheight = camheight;
-  zoom = c3dl.vectorLength(cam[currentcam].getPosition()) - c3dl.vectorLength(zcam[currentcam].getPosition());
+  currentCam = 0;
+  camHeight = cam[currentCam].getPosition()[1];
+  newCamHeight = camHeight;
+  zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
 }
 
 
 //square function
-
-
 function sq(x)
 {
   return x * x
@@ -932,7 +939,7 @@ function Pressed(bvalue)
 
 function scale()
 {
-  if (objectselected)
+  if (objectSelected)
   {
     pause3d();
     var tester = window.open("scale.html", "Window2", "width=300,height=250");
@@ -941,59 +948,52 @@ function scale()
 
 function getSize()
 {
-
   var size = [];
-  size[0] = objectselected.getLength();
-  size[1] = objectselected.getHeight();
-  size[2] = objectselected.getWidth();
+  size[0] = objectSelected.getLength();
+  size[1] = objectSelected.getHeight();
+  size[2] = objectSelected.getWidth();
   return size;
 }
 
 function setSize(length, width, height)
 {
-  objectselected.setSize(length, width, height);
+  objectSelected.setSize(length, width, height);
 }
 
 function getPic(length, width, height)
 {
   var path = "images/sidebar/";
-  if (objectselected.getPath() === CHAIR_PATH) path = path + "chair.jpg";
-  else if (objectselected.getPath() === TABLE_PATH) path = path + "table.jpg";
+  if (objectSelected.getPath() === CHAIR_PATH) path = path + "chair.jpg";
+  else if (objectSelected.getPath() === TABLE_PATH) path = path + "table.jpg";
   return path;
 }
 
 //pausing and unpausing the 2d and 3d to increase speed
-
 function pause3d()
 {
   scn.pauseScene();
-  //pro[0].noLoop();
+  Processing.getInstanceById("CameraWidget").loop();  
 }
 
 function unpause3d()
 {
   scn.unpauseScene();
-  //pro[0].loop();
+  Processing.getInstanceById("CameraWidget").loop();  
 }
 
 function pause2d()
 {
-  document.getElementById("run2d").value = "false";
-  //pro[1].noLoop();
+  Processing.getInstanceById("SceneCaster2d").noLoop();
 }
 
 function unpause2d()
 {
-  document.getElementById("run2d").value = "true";
-  //pro[1].loop();
+  Processing.getInstanceById("SceneCaster2d").loop();
 }
-
-
 
 //Camera widget sliders
 $(function ()
 {
- 
   // zoom slider
   $('#zoomslider').slider(
   {
@@ -1012,12 +1012,11 @@ $(function ()
   {
     min: 5,
     max: 100,
-    values: camheight,
+    values: camHeight,
     orientation: 'vertical',
     slide: function (event, ui)
     {
-      camheight = ui.value - 1;
+      camHeight = ui.value - 1;
     }
   });
 });
-
