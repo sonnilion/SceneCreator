@@ -344,15 +344,18 @@ function pickingHandler(result)
     if (objectSelected)
     {
       objectSelected.setEffect(c3dl.effects.STANDARD);
+      objectSelected.setDrawBoundingBox(false);
       objectSelected = null;
     }
     // get the object that was picked
     objectSelected = objectsPicked[0];
     objectSelected.setEffect(selectedEffect);
+    objectSelected.setDrawBoundingBox(true);
   }
   else
   {
     objectSelected.setEffect(c3dl.effects.STANDARD);
+    objectSelected.setDrawBoundingBox(false);
     objectSelected = null;
   }
 }
@@ -667,8 +670,10 @@ function createObject(objID)
     objects[numObjects].scale([0.2, 0.2, 0.2]);
     scn.addObjectToScene(objects[numObjects]);
     if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
+    objectSelected.setDrawBoundingBox(false);
     objectSelected = objects[numObjects];
     objectSelected.setEffect(selectedEffect);
+    objectSelected.setDrawBoundingBox(true);
   }
   numObjects++;
 }
@@ -708,11 +713,13 @@ function copySelected()
     objects[numObjects].setPosition([objectSelected.getPosition()[0], objectSelected.getPosition()[1], objectSelected.getPosition()[2] - objectSelected.getWidth()-1]);
     scn.addObjectToScene(objects[numObjects]);
     objectSelected.setEffect(c3dl.effects.STANDARD);
+    objectSelected.setDrawBoundingBox(false);
     temp[0] = objectSelected.getLength();
     temp[1] = objectSelected.getHeight();
     temp[2] = objectSelected.getWidth();
     objectSelected = objects[numObjects];
     objectSelected.setEffect(selectedEffect);
+    objectSelected.setDrawBoundingBox(true);
     objectSelected.setSize(temp[0], temp[2], temp[1]);
     numObjects++;
   }

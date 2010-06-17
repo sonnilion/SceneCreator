@@ -21,6 +21,7 @@ c3dl.Collada = c3dl.inherit(c3dl.Primitive, function ()
   c3dl._superc(this);
   this.path = null;
   this.boundingbox = new c3dl.BoundingBox();
+  this.drawboundingbox = false;
   this.sceneGraph = null;
 });
 
@@ -266,6 +267,8 @@ c3dl.Collada.prototype.render = function (glCanvas3D, scene)
     // tell the root to render. The render() calls
     // will propogate down the graph.
     this.sceneGraph.render(glCanvas3D, scene);
+    if (this.drawboundingbox)
+      this.boundingbox.render(scene);
   }
 }
 
@@ -307,6 +310,7 @@ c3dl.Collada.prototype.setPosition = function (pos)
   if (this.isReady())
   {
     this.sceneGraph.setPosition(pos);
+    this.boundingbox.setPosition(pos);
   }
 }
 
@@ -375,6 +379,7 @@ c3dl.Collada.prototype.yaw = function (angle)
   if (this.isReady())
   {
     this.sceneGraph.yaw(angle);
+    this.boundingbox.rotateOnAxis(this.sceneGraph.up,angle);
   }
 }
 
@@ -585,11 +590,15 @@ c3dl.Collada.prototype.setSize = function (length,width,height)
     this.scale(scaleVec); 
 }
 
+c3dl.Collada.prototype.setDrawBoundingBox = function (drawboundingbox)
+{
+    this.drawboundingbox= drawboundingbox;
+}
 
-
-
-
-
+c3dl.Collada.prototype.getBoundingBox = function ()
+{
+    this.boundingbox;
+}
 
 
 
