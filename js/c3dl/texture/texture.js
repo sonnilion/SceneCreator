@@ -161,7 +161,6 @@ c3dl.Texture = function ()
         // add a property to the image, so the onload function can access the canvas created here.
         this.canvas = canvas;
       }
-
       /**
        @private
        Set the function to run when the image is loaded
@@ -173,9 +172,15 @@ c3dl.Texture = function ()
 
         try
         {
-          // place the texture into video memory
-          this.glCanvas3D.texImage2D(glCanvas3D.TEXTURE_2D, 0, this);
+          if (c3dl.BrowserDetect.browser !== "Mozilla") {
+            this.resizeImage();
+            // place the texture into video memory
+            this.glCanvas3D.texImage2D(glCanvas3D.TEXTURE_2D, 0, this.canvas);
+          }
+          else
+            this.glCanvas3D.texImage2D(glCanvas3D.TEXTURE_2D, 0, this);
           this.glCanvas3D.generateMipmap(glCanvas3D.TEXTURE_2D);
+          
           this.isSetup = true;
         }
         catch (err)

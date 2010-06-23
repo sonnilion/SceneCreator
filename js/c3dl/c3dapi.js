@@ -101,6 +101,7 @@ c3dl_require('scenegraph/scenenode.js');
 
 //misc utilities
 c3dl_require('utilities/utilities.js');
+c3dl_require('utilities/browserdetect.js');
 
 //shaders
 c3dl_require('shaders/model/light/light_vs.js');

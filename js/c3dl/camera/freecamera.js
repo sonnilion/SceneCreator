@@ -283,3 +283,25 @@ c3dl.FreeCamera.prototype.yaw = function (angle)
 {
   this.rotateOnAxis(this.up, angle);
 }
+
+c3dl.FreeCamera.prototype.setDir = function (dir)
+{
+  if (c3dl.isValidVector(dir))
+  {
+    // if the position hasn't yet been changed and they want the
+    // camera to look at [0,0,0], that will create a problem.
+      // Figure out the direction of the point we are looking at.
+      this.dir = dir;
+      c3dl.normalizeVector(this.dir);
+
+      // Adjust the Up and Left vectors accordingly
+      c3dl.vectorCrossProduct([0, 1, 0], this.dir, this.left);
+      c3dl.normalizeVector(this.left);
+      c3dl.vectorCrossProduct(this.dir, this.left, this.up);
+      c3dl.normalizeVector(this.up);
+  }
+  else
+  {
+    c3dl.debug.logWarning("FreeCamera::setLookAtPoint() called with a parameter that's not a vector");
+  }
+}

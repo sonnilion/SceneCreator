@@ -27,6 +27,8 @@
         </div>
         <div id="scenecaster">
           <div id="buttons">
+            <img src="images/icons/undo.jpg" title="Undo" onclick="undo()" />
+            <img src="images/icons/redo.jpg" title="Redo" onclick="redo()" />
             <img src="images/icons/copy.jpg" title="Copy" onclick="copySelected()" />
             <img src="images/icons/moveup.jpg" title="Move up" onmousedown="buttonOn(0)" onmouseup="buttonOff(0)" />
             <img src="images/icons/movedown.jpg" title="Move down" onmousedown="buttonOn(1)" onmouseup="buttonOff(1)" />
@@ -87,16 +89,18 @@
       </div>
     <div id="main2d">
       <div> 
-      <input type="hidden" id="pressed" value="0">
-      <input type="hidden" id="objects" value="">
-      <img src="images/icons/newpage.jpg" title="New" onclick="Pressed(1)" />
-      <img src="images/icons/copy.jpg" title="Copy" onclick="Pressed(2)" />
-      <img src="images/icons/delete.jpg" title="Delete" onclick="Pressed(3)" />
-      <img src="images/icons/drawwall.jpg" title="Draw walls" onclick="Pressed(4)" />
-      <img src="images/icons/addlight.jpg" title="Insert lights" onclick="Pressed(5)" />
-      <img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
-      <img src="images/icons/zoomout.jpg" title="Zoom out" onclick="Pressed(7)" />
-      <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />
+        <input type="hidden" id="pressed" value="0">
+        <input type="hidden" id="objects" value="">
+        <img src="images/icons/undo.jpg" title="Undo" onclick="Pressed(9)" />
+        <img src="images/icons/redo.jpg" title="Redo" onclick="Pressed(10)" />
+        <img src="images/icons/newpage.jpg" title="New" onclick="Pressed(1)" />
+        <img src="images/icons/copy.jpg" title="Copy" onclick="Pressed(2)" />
+        <img src="images/icons/delete.jpg" title="Delete" onclick="Pressed(3)" />
+        <img src="images/icons/drawwall.jpg" title="Draw walls" onclick="Pressed(4)" />
+        <img src="images/icons/addlight.jpg" title="Insert lights" onclick="Pressed(5)" />
+        <img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
+        <img src="images/icons/zoomout.jpg" title="Zoom out" onclick="Pressed(7)" />
+        <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />
       </div>
       <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
     </div>

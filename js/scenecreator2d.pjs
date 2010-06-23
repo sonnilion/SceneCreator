@@ -1,463 +1,752 @@
 ﻿int startx, starty, endx, endy,snapX,snapY;
-        int[] walls= {((-25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((-25+100)*2.5)+23,
-        ((25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((25+100)*2.5)+23,((25+100)*2.5)+23,
-        ((25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((-25+100)*2.5)+23,
-        ((25+100)*2.5)+23,((-25+100)*2.5)+23,((-25+100)*2.5)+23};
-        int numberwalls = 4;
-        int[] lights= {(0+100)*2.5+23,(0+100)*2.5+23};
-        int numberlights=1;
-        int selectednum;
-        int mdifX, mdifY;
-        string selected;
-        bool drawwall = false;
-        string moving;
-        bool insertlight = false;
-        size(550, 550);
-        int oldmX, oldmY;
-        void draw() 
-        {
-            var pressed = document.getElementById("pressed");
-            if (pressed.value == "1")
-              newPage();
-            else if (pressed.value == "2")
-              copy2d();
-            else if (pressed.value == "3")
-              deleteseletected();
-            else if (pressed.value == "4")
-              drawWallPress();
-            else if (pressed.value == "5")
-              insertLightPress();
-            else if (pressed.value == "6")
-              zoomIn();
-            else if (pressed.value == "7")
-              zoomOut();
-            else if (pressed.value == "8")
-              viewAll();
+int[] walls= {((-25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((-25+100)*2.5)+23,
+((25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((25+100)*2.5)+23,((25+100)*2.5)+23,
+((25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((-25+100)*2.5)+23,
+((25+100)*2.5)+23,((-25+100)*2.5)+23,((-25+100)*2.5)+23};
+int numberwalls = 4;
+int[] lights= {(0+100)*2.5+23,(0+100)*2.5+23};
+int numberlights=1;
+int selectednum;
+int mdifX, mdifY;
+string selected;
+bool drawwall = false;
+string moving;
+bool insertlight = false;
+size(550, 550);
+int oldmX, oldmY;
+var commands = [];
+var curcmd = -1;
 
-            strokeWeight(1);
-            int axis = -100;
-            int axis2 = -90;
-            background(255);
-            for(int i=0; i<=height-50; i+=25) {
-              fill(0);
-              if (axis2 <= 100) {
-              if (i == 225)
-                text(axis2,i+43,20);
-              else
-                text(axis2,i+38,20);
+void draw() 
+{
+    var pressed = document.getElementById("pressed");
+    if (pressed.value == "1")
+      newPage();
+    else if (pressed.value == "2")
+      copy2d();
+    else if (pressed.value == "3")
+      deleteseletected();
+    else if (pressed.value == "4")
+      drawWallPress();
+    else if (pressed.value == "5")
+      insertLightPress();
+    else if (pressed.value == "6")
+      zoomIn();
+    else if (pressed.value == "7")
+      zoomOut();
+    else if (pressed.value == "8")
+      viewAll();
+    else if (pressed.value == "9")
+      undo();
+    else if (pressed.value == "10")
+      redo();
+    strokeWeight(1);
+    int axis = -100;
+    int axis2 = -90;
+    background(255);
+    for(int i=0; i<=height-50; i+=25) {
+      fill(0);
+      if (axis2 <= 100) {
+      if (i == 225)
+        text(axis2,i+43,20);
+      else
+        text(axis2,i+38,20);
+      }
+      text(axis,0,i+25);
+      axis += 10;
+      axis2 += 10;
+      if (i == 250)
+        stroke(0);
+      line(23, i+23, width-27, i+23);
+      line(i+23, 23, i+23, height-27);
+      stroke(150);
+    }
+    if (drawwall || insertlight) {
+      cursor( "crosshair");  
+      for(int i=23; i<=height-50; i+=25) {
+       if (mouseX >= i && mouseX <= i+8)
+          snapX = i;
+       else if (mouseX > i+8 && mouseX <= i+16)
+          snapX = i+12.5;
+       else if (mouseX > i+16 && mouseX < i+25)
+          snapX = i+25;
+       
+       if (mouseY >= i && mouseY <= i+8)
+          snapY = i;
+       else if (mouseY > i+8 && mouseY <= i+16)
+          snapY = i+12.5;
+       else if (mouseY > i+16 && mouseY < i+25)
+          snapY = i+25;
+      } 
+      if (drawwall)
+        fill(0);
+      else 
+        fill(255,255,0);
+      ellipse(snapX, snapY, 5, 5);
+    }
+    else 
+      cursor( "default"); 
+              
+    var objs= [];
+    objs = document.getElementById("objects").value;
+    objs = objs.split(",");
+    strokeWeight(1); 
+    stroke(0); 
+    fill(255,0,0);
+    for (i = 0; i <= objs.length()-1; i+=4) {
+      rect(((parseFloat(objs[i])+100)*2.5)+23,((parseFloat(objs[i+1])+100)*2.5)+23,parseFloat(objs[i+2])*2.5,parseFloat(objs[i+3])*-2.5); 
+    }  
+    
+    for (int j = 0;j < numberwalls;j++) {
+      strokeWeight(3);  
+      stroke(0);            
+      line(walls[j*4], walls[j*4+1], walls[j*4+2], walls[j*4+3]); 
+    }
+    for (int k = 0;k < numberlights;k++) {
+      strokeWeight(1);  
+      fill(255,255,0);
+      ellipse(lights[k*2], lights[k*2+1], 10, 10);
+    }
+    //change mouse for seletion 
+    if  (!drawwall && !insertlight) {
+      for (int k = 0;k < numberlights;k++) {
+          int difX = mouseX - lights[k*2];
+          int difY= mouseY - lights[k*2+1];
+          if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
+          cursor("pointer");
+          }
+       }
+        for (int j = 0;j < numberwalls;j++) {    
+          if (walls[j*4+2] == walls[j*4]) {
+            if (walls[j*4+3]-walls[j*4+1] > 0) {
+              for (i = 0; i < walls[j*4+3] - walls[j*4+1]; i++) {
+                int sdifX = mouseX - (walls[j*4]);
+                int sdifY= mouseY - (walls[j*4+1]+i);
+                if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
+                  cursor("pointer");
               }
-              text(axis,0,i+25);
-              axis += 10;
-              axis2 += 10;
-              if (i == 250)
-                stroke(0);
-              line(23, i+23, width-27, i+23);
-              line(i+23, 23, i+23, height-27);
-              stroke(150);
             }
-            if (drawwall || insertlight) {
-              cursor( "crosshair");  
-              for(int i=23; i<=height-50; i+=25) {
-               if (mouseX >= i && mouseX <= i+8)
-                  snapX = i;
-               else if (mouseX > i+8 && mouseX <= i+16)
-                  snapX = i+12.5;
-               else if (mouseX > i+16 && mouseX < i+25)
-                  snapX = i+25;
-               
-               if (mouseY >= i && mouseY <= i+8)
-                  snapY = i;
-               else if (mouseY > i+8 && mouseY <= i+16)
-                  snapY = i+12.5;
-               else if (mouseY > i+16 && mouseY < i+25)
-                  snapY = i+25;
-              } 
-              if (drawwall)
-                fill(0);
-              else 
-                fill(255,255,0);
-              ellipse(snapX, snapY, 5, 5);
-            }
-            else 
-              cursor( "default"); 
-                      
-            var objs= [];
-            objs = document.getElementById("objects").value;
-            objs = objs.split(",");
-            strokeWeight(1); 
-            stroke(0); 
-            fill(255,0,0);
-            for (i = 0; i <= objs.length()-1; i+=4) {
-              rect(((parseFloat(objs[i])+100)*2.5)+23,((parseFloat(objs[i+1])+100)*2.5)+23,parseFloat(objs[i+2])*2.5,parseFloat(objs[i+3])*-2.5); 
-            }  
-            
-            for (int j = 0;j < numberwalls;j++) {
-              strokeWeight(3);  
-              stroke(0);            
-              line(walls[j*4], walls[j*4+1], walls[j*4+2], walls[j*4+3]); 
-            }
-            for (int k = 0;k < numberlights;k++) {
-              strokeWeight(1);  
-              fill(255,255,0);
-              ellipse(lights[k*2], lights[k*2+1], 10, 10);
-            }
-            //change mouse for seletion 
-            if  (!drawwall && !insertlight) {
-              for (int k = 0;k < numberlights;k++) {
-                  int difX = mouseX - lights[k*2];
-                  int difY= mouseY - lights[k*2+1];
-                  if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
+            else if (walls[j*4+3]-walls[j*4+1] < 0) {
+              for (i = 0; i < walls[j*4+1]- walls[j*4+3]; i++) {
+                int sdifX = mouseX - (walls[j*4+2]);
+                int sdifY= mouseY - (walls[j*4+3]+i);
+                if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
                   cursor("pointer");
-                  }
-               }
-                for (int j = 0;j < numberwalls;j++) {    
-                  if (walls[j*4+2] == walls[j*4]) {
-                    if (walls[j*4+3]-walls[j*4+1] > 0) {
-                      for (i = 0; i < walls[j*4+3] - walls[j*4+1]; i++) {
-                        int sdifX = mouseX - (walls[j*4]);
-                        int sdifY= mouseY - (walls[j*4+1]+i);
-                        if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
-                          cursor("pointer");
-                      }
-                    }
-                    else if (walls[j*4+3]-walls[j*4+1] < 0) {
-                      for (i = 0; i < walls[j*4+1]- walls[j*4+3]; i++) {
-                        int sdifX = mouseX - (walls[j*4+2]);
-                        int sdifY= mouseY - (walls[j*4+3]+i);
-                        if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
-                          cursor("pointer");
-                      }
-                    }
-                  }
-                  else if (walls[j*4+2] - walls[j*4] > 0) {
-                    var slope =(walls[j*4+3] - walls[j*4+1])/(walls[j*4+2] - walls[j*4]);  
-                    for (i = 0; i < walls[j*4+2]-walls[j*4]; i++) {
-                      int sdifX = mouseX - (walls[j*4]+ i);
-                      int sdifY= mouseY - (walls[j*4+1]+ (slope*i));
-                      if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
-                        cursor("pointer");
-                    }
-                  }
-                  else if (walls[j*4+2] - walls[j*4] < 0) {
-                    var slope =(walls[j*4+1]-walls[j*4+3])/(walls[j*4]- walls[j*4+2]);
-                    for (i = 0; i < walls[j*4] - walls[j*4+2]; i++) {
-                      int sdifX = mouseX - (walls[j*4+2]+ i);
-                      int sdifY= mouseY - (walls[j*4+3]+ (slope*i));
-                      if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
-                        cursor("pointer");
-                    }
-                  }
-                  int difX = mouseX - walls[j*4];
-                  int difY= mouseY - walls[j*4+1];
-                  int difX2 = mouseX - walls[j*4+2];
-                  int difY2= mouseY - walls[j*4+3];
-                  if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
-                  cursor("pointer");
-                  }
-                  else if (difX2 < 10 && difX2 > -10 && difY2 < 10 && difY2 > -10) { 
-                  cursor("pointer");
-                  }
-                }
-            } 
-          
+              }
+            }
+          }
+          else if (walls[j*4+2] - walls[j*4] > 0) {
+            var slope =(walls[j*4+3] - walls[j*4+1])/(walls[j*4+2] - walls[j*4]);  
+            for (i = 0; i < walls[j*4+2]-walls[j*4]; i++) {
+              int sdifX = mouseX - (walls[j*4]+ i);
+              int sdifY= mouseY - (walls[j*4+1]+ (slope*i));
+              if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
+                cursor("pointer");
+            }
+          }
+          else if (walls[j*4+2] - walls[j*4] < 0) {
+            var slope =(walls[j*4+1]-walls[j*4+3])/(walls[j*4]- walls[j*4+2]);
+            for (i = 0; i < walls[j*4] - walls[j*4+2]; i++) {
+              int sdifX = mouseX - (walls[j*4+2]+ i);
+              int sdifY= mouseY - (walls[j*4+3]+ (slope*i));
+              if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3)
+                cursor("pointer");
+            }
+          }
+          int difX = mouseX - walls[j*4];
+          int difY= mouseY - walls[j*4+1];
+          int difX2 = mouseX - walls[j*4+2];
+          int difY2= mouseY - walls[j*4+3];
+          if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
+          cursor("pointer");
+          }
+          else if (difX2 < 10 && difX2 > -10 && difY2 < 10 && difY2 > -10) { 
+          cursor("pointer");
+          }
         }
-        void mousePressed() {
-          if (drawwall== true) {
-            startx = snapX;
-            starty = snapY;
-          }    
-          else if (!drawwall && !insertlight) {
-            for (int k = 0;k < numberlights;k++) {
-              int difX = mouseX - lights[k*2];
-              int difY= mouseY - lights[k*2+1];
-              if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
-              selectednum =k;
-              selected = "light";
-              }
-            }
-            for (int j = 0;j < numberwalls;j++) { 
-                //select wall line 
-                if (walls[j*4+2] == walls[j*4]) {
-                  if (walls[j*4+3]-walls[j*4+1] > 0) {
-                    for (i = 0; i < walls[j*4+3] - walls[j*4+1]; i++) {
-                      int sdifX = mouseX - (walls[j*4]);
-                      int sdifY= mouseY - (walls[j*4+1]+i);
-                      if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
-                        selectednum =j;
-                        selected = "wall";
-                        oldmX = mouseX;
-                        oldmY = mouseY;
-                      }
-                    }
-                  }
-                  else if (walls[j*4+3]-walls[j*4+1] < 0) {
-                    for (i = 0; i < walls[j*4+1]- walls[j*4+3]; i++) {
-                      int sdifX = mouseX - (walls[j*4+2]);
-                      int sdifY= mouseY - (walls[j*4+3]+i);
-                      if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
-                        selectednum =j;
-                        selected = "wall";
-                        oldmX = mouseX;
-                        oldmY = mouseY;
-                      }
-                    }
-                  }
-                }
-                else if (walls[j*4+2] - walls[j*4] > 0) {
-                  var slope =(walls[j*4+3] - walls[j*4+1])/(walls[j*4+2] - walls[j*4]);  
-                  for (i = 0; i < walls[j*4+2]-walls[j*4]; i++) {
-                    int sdifX = mouseX - (walls[j*4]+ i);
-                    int sdifY= mouseY - (walls[j*4+1]+ (slope*i));
-                    if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
-                      selectednum =j;
-                      selected = "wall";
-                      oldmX = mouseX;
-                      oldmY = mouseY;
-                    }
-                  }
-                }
-                else if (walls[j*4+2] - walls[j*4] < 0) {
-                  var slope =(walls[j*4+1]-walls[j*4+3])/(walls[j*4]- walls[j*4+2]); 
-                  for (i = 0; i < walls[j*4] - walls[j*4+2]; i++) {
-                    int sdifX = mouseX - (walls[j*4+2]+ i);
-                    int sdifY= mouseY - (walls[j*4+3]+ (slope*i));
-                    if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
-                      selectednum =j;
-                      selected = "wall";
-                      oldmX = mouseX;
-                      oldmY = mouseY;
-                    }
-                  }
-                }  
-                //select wall corners     
-                int difX = mouseX - walls[j*4];
-                int difY= mouseY - walls[j*4+1];
-                int difX2 = mouseX - walls[j*4+2];
-                int difY2= mouseY - walls[j*4+3];
-                if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
+    } 
+  
+}
+void mousePressed() {
+  if (drawwall== true) {
+    startx = snapX;
+    starty = snapY;
+  }    
+  else if (!drawwall && !insertlight) {
+    for (int k = 0;k < numberlights;k++) {
+      int difX = mouseX - lights[k*2];
+      int difY= mouseY - lights[k*2+1];
+      if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
+      selectednum =k;
+      selected = "light";
+      }
+    }
+    for (int j = 0;j < numberwalls;j++) { 
+        //select wall line 
+        if (walls[j*4+2] == walls[j*4]) {
+          if (walls[j*4+3]-walls[j*4+1] > 0) {
+            for (i = 0; i < walls[j*4+3] - walls[j*4+1]; i++) {
+              int sdifX = mouseX - (walls[j*4]);
+              int sdifY= mouseY - (walls[j*4+1]+i);
+              if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
                 selectednum =j;
                 selected = "wall";
                 oldmX = mouseX;
                 oldmY = mouseY;
               }
-              else if (difX2 < 10 && difX2 > -10 && difY2 < 10 && difY2 > -10) { 
+            }
+          }
+          else if (walls[j*4+3]-walls[j*4+1] < 0) {
+            for (i = 0; i < walls[j*4+1]- walls[j*4+3]; i++) {
+              int sdifX = mouseX - (walls[j*4+2]);
+              int sdifY= mouseY - (walls[j*4+3]+i);
+              if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
                 selectednum =j;
                 selected = "wall";
-                for(int i=23; i<=height-50; i+=25) {
-                  if (mouseX >= i && mouseX <= i+8)
-                      snapX = i;
-                  else if (mouseX > i+8 && mouseX <= i+16)
-                      snapX = i+12.5;
-                  else if (mouseX > i+16 && mouseX < i+25)
-                      snapX = i+25;
-                  if (mouseY >= i && mouseY <= i+8)
-                      snapY = i;
-                  else if (mouseY > i+8 && mouseY <= i+16)
-                      snapY = i+12.5;
-                  else if (mouseY > i+16 && mouseY < i+25)
-                      snapY = i+25;
-                } 
-                oldmX = snapX;
-                oldmY = snapY;
+                oldmX = mouseX;
+                oldmY = mouseY;
               }
             }
-          } 
-        }
-         	
-        void mouseDragged() {
-        //moving a light
-          if (selected == "light" || moving == "light") {
-            for(int i=23; i<=height-50; i+=25) {
-              if (mouseX >= i && mouseX <= i+8)
-                  snapX = i;
-              else if (mouseX > i+8 && mouseX <= i+16)
-                  snapX = i+12.5;
-              else if (mouseX > i+16 && mouseX < i+25)
-                  snapX = i+25;
-              if (mouseY >= i && mouseY <= i+8)
-                  snapY = i;
-              else if (mouseY > i+8 && mouseY <= i+16)
-                  snapY = i+12.5;
-              else if (mouseY > i+16 && mouseY < i+25)
-                  snapY = i+25;
-            } 
-            lights[selectednum*2] = snapX;
-            lights[selectednum*2+1] = snapY; 
-            moveLight(selectednum, (snapX-23)/2.5-100,(snapY-23)/2.5-100);
-            moving = "light";
           }
-          //moving a wall
-          if (selected == "wall" || moving == "wall") {
-           //snape wall 
-             for(int i=23; i<=height-50; i+=25) {
-              if (mouseX >= i && mouseX <= i+8)
-                  snapX = i;
-              else if (mouseX > i+8 && mouseX <= i+16)
-                  snapX = i+12.5;
-              else if (mouseX > i+16 && mouseX < i+25)
-                  snapX = i+25;
-              if (mouseY >= i && mouseY <= i+8)
-                  snapY = i;
-              else if (mouseY > i+8 && mouseY <= i+16)
-                  snapY = i+12.5;
-              else if (mouseY > i+16 && mouseY < i+25)
-                  snapY = i+25;
-            } 
-            mdifX = mdifX + snapX - oldmX;
-            mdifY = mdifY + snapY - oldmY;
-            
-            var checkX1= walls[selectednum*4]+mdifX;
-            var checkY1= walls[selectednum*4+1]+mdifY;
-            var checkX2= walls[selectednum*4+2]+mdifX;
-            var checkY2= walls[selectednum*4+3]+mdifY;
-            
-            for(int i=23; i<=height-50; i+=25) {
-              if (checkX1 >= i && checkX1 <= i+8) {
-               if (walls[selectednum*4] != i)
-                mdifX = 0;
-               walls[selectednum*4] = i;
-              }
-              else if (checkX1 > i+8 && checkX1 <= i+16){
-                if (walls[selectednum*4] != i+12.5)
-                  mdifX = 0;
-                walls[selectednum*4] = i+12.5;
-              }
-              else if (checkX1 > i+16 && checkX1 < i+25){
-                if (walls[selectednum*4] != i+25)
-                  mdifX = 0;
-                walls[selectednum*4] = i+25;
-              }
-              if (checkY1 >= i && checkY1 <= i+8){
-                if (walls[selectednum*4+1] != i)
-                  mdifY = 0;
-                walls[selectednum*4+1] = i;
-              }
-              else if (checkY1 > i+8 && checkY1 <= i+16){
-                if (walls[selectednum*4+1] != i+12.5)
-                  mdifY = 0;
-                walls[selectednum*4+1] = i+12.5;
-              }
-              else if (checkY1 > i+16 && checkY1 < i+25){
-                if (walls[selectednum*4+1] != i+25)
-                  mdifY = 0;
-                walls[selectednum*4+1] = i+25;
-              }
-            } 
-            for(int i=23; i<=height-50; i+=25) {
-              if (checkX2 >= i && checkX2 <= i+8)
-                  walls[selectednum*4+2] = i;
-              else if (checkX2 > i+8 && checkX2 <= i+16)
-                  walls[selectednum*4+2] = i+12.5;
-              else if (checkX2 > i+16 && checkX2 < i+25)
-                  walls[selectednum*4+2] = i+25;
-              if (checkY2 >= i && checkY2 <= i+8)
-                  walls[selectednum*4+3] = i;
-              else if (checkY2 > i+8 && checkY2 <= i+16)
-                  walls[selectednum*4+3] = i+12.5;
-              else if (checkY2 > i+16 && checkY2 < i+25)
-                  walls[selectednum*4+3] = i+25;
-            } 
-            for(int i=23; i<=height-50; i+=25) {
-              if (mouseX >= i && mouseX <= i+8)
-                  snapX = i;
-              else if (mouseX > i+8 && mouseX <= i+16)
-                  snapX = i+12.5;
-              else if (mouseX > i+16 && mouseX < i+25)
-                  snapX = i+25;
-              if (mouseY >= i && mouseY <= i+8)
-                  snapY = i;
-              else if (mouseY > i+8 && mouseY <= i+16)
-                  snapY = i+12.5;
-              else if (mouseY > i+16 && mouseY < i+25)
-                  snapY = i+25;
-            } 
-            oldmX = snapX;
-            oldmY = snapY;
-            moveWall(selectednum,[(walls[selectednum*4]-23)/2.5-100,0,(walls[selectednum*4+1]-23)/2.5-100], [(walls[selectednum*4+2]-23)/2.5-100, 0, (walls[selectednum*4+3]-23)/2.5-100]);
-            moving =  "wall";
-          }
-          selected = "";
         }
-        void mouseClicked() {
-          if (insertlight && numberlights<8) {
-             createLight((snapX-23)/2.5-100,(snapY-23)/2.5-100);
-             lights[numberlights*2] = snapX;
-             lights[numberlights*2+1] = snapY;
-             numberlights++;
-          }   
-          else if (numberlights==8)
-            alert("You have reached the limit of lights for a design layout");
-        }
-        
-        void mouseReleased() {
-          if (drawwall) {
-            endx = snapX;
-            endy = snapY;
-            createWall([(startx-23)/2.5-100,0,(starty-23)/2.5-100], [(endx-23)/2.5-100, 0, (endy-23)/2.5-100]); 
-            walls[numberwalls*4]=startx;  
-            walls[numberwalls*4+1]=starty; 
-            walls[numberwalls*4+2]=endx; 
-            walls[numberwalls*4+3]=endy;
-            numberwalls++;
-          }  
-          moving =  ""
-        }
-        void newPage() {
-          numberwalls=0;
-          numberlights=0;
-          deleteScene();
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
-        void copy2d() {
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
-        void deleteseletected() {
-          if (selected == "light") {
-            for (int k = selectednum;k < numberlights-1;k++) {
-              lights[k*2] = lights[k*2+2];
-              lights[k*2+1] = lights[k*2+3];
+        else if (walls[j*4+2] - walls[j*4] > 0) {
+          var slope =(walls[j*4+3] - walls[j*4+1])/(walls[j*4+2] - walls[j*4]);  
+          for (i = 0; i < walls[j*4+2]-walls[j*4]; i++) {
+            int sdifX = mouseX - (walls[j*4]+ i);
+            int sdifY= mouseY - (walls[j*4+1]+ (slope*i));
+            if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
+              selectednum =j;
+              selected = "wall";
+              oldmX = mouseX;
+              oldmY = mouseY;
             }
-            deleteLight(selectednum);
-            numberlights--;
           }
-          if (selected == "wall") {
-            for (int j = selectednum;j < numberwalls-1;j++) {
-              walls[j*4]= walls[j*4+4];
-              walls[j*4+1]= walls[j*4+5];
-              walls[j*4+2]= walls[j*4+6];
-              walls[j*4+3]= walls[j*4+7];
+        }
+        else if (walls[j*4+2] - walls[j*4] < 0) {
+          var slope =(walls[j*4+1]-walls[j*4+3])/(walls[j*4]- walls[j*4+2]); 
+          for (i = 0; i < walls[j*4] - walls[j*4+2]; i++) {
+            int sdifX = mouseX - (walls[j*4+2]+ i);
+            int sdifY= mouseY - (walls[j*4+3]+ (slope*i));
+            if (sdifX < 3 && sdifX > -3 && sdifY < 3 && sdifY > -3) {
+              selectednum =j;
+              selected = "wall";
+              oldmX = mouseX;
+              oldmY = mouseY;
             }
-            deleteWall(selectednum);
-            numberwalls--;
           }
-          selectednum=null;
-          selected = "";
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
-        void drawWallPress() {     
-          drawwall =  (drawwall)? false : true;;
-          insertlight = false;
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
-        void insertLightPress() {
-          insertlight = (insertlight)? false : true;
-          drawwall = false;
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
-        void zoomIn() {
-          var pressed = document.getElementById("pressed"); 
-          pressed.value = "0";
-        }
-        void zoomOut() {
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
-        void viewall() {
-          var pressed = document.getElementById("pressed");
-          pressed.value = "0";
-        }
+        }  
+        //select wall corners     
+        int difX = mouseX - walls[j*4];
+        int difY= mouseY - walls[j*4+1];
+        int difX2 = mouseX - walls[j*4+2];
+        int difY2= mouseY - walls[j*4+3];
+      if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
+        selectednum =j;
+        selected = "wallcornerstart";
+        oldmX = mouseX;
+        oldmY = mouseY;
+      }
+      else if (difX2 < 10 && difX2 > -10 && difY2 < 10 && difY2 > -10) { 
+        selectednum =j;
+        selected = "wallcornerend";
+        oldmX = mouseX;
+        oldmY = mouseY;
+      }
+    }
+  } 
+}
+ 	
+void mouseDragged() {
+  if (selected == "light") {
+    curcmd++;
+    if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+    
+      }
+      commands[curcmd] =new moveLightCommand();
+  }
+  else if (selected == "wall" || selected == "wallcornerstart" || selected == "wallcornerend") {
+  curcmd++;
+    if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+    
+      }
+      commands[curcmd] =new moveWallCommand();
+  }
+//moving a light
+  if (selected == "light" || moving == "light") {
+    for(int i=23; i<=height-50; i+=25) {
+      if (mouseX >= i && mouseX <= i+8)
+          snapX = i;
+      else if (mouseX > i+8 && mouseX <= i+16)
+          snapX = i+12.5;
+      else if (mouseX > i+16 && mouseX < i+25)
+          snapX = i+25;
+      if (mouseY >= i && mouseY <= i+8)
+          snapY = i;
+      else if (mouseY > i+8 && mouseY <= i+16)
+          snapY = i+12.5;
+      else if (mouseY > i+16 && mouseY < i+25)
+          snapY = i+25;
+    } 
+    lights[selectednum*2] = snapX;
+    lights[selectednum*2+1] = snapY; 
+    moving = "light";
+  }
+  //moving a wallcorners
+  else if (selected == "wallcornerend" || moving == "wallcornerend") {
+    for(int i=23; i<=height-50; i+=25) {
+      if (mouseX >= i && mouseX <= i+8)
+          snapX = i;
+      else if (mouseX > i+8 && mouseX <= i+16)
+          snapX = i+12.5;
+      else if (mouseX > i+16 && mouseX < i+25)
+          snapX = i+25;
+      if (mouseY >= i && mouseY <= i+8)
+          snapY = i;
+      else if (mouseY > i+8 && mouseY <= i+16)
+          snapY = i+12.5;
+      else if (mouseY > i+16 && mouseY < i+25)
+          snapY = i+25;
+    } 
+    walls[selectednum*4+2] = snapX;
+    walls[selectednum*4+3] = snapY; 
+    moving = "wallcornerend";
+  }
+  else if (selected == "wallcornerstart" || moving == "wallcornerstart") {
+    for(int i=23; i<=height-50; i+=25) {
+      if (mouseX >= i && mouseX <= i+8)
+          snapX = i;
+      else if (mouseX > i+8 && mouseX <= i+16)
+          snapX = i+12.5;
+      else if (mouseX > i+16 && mouseX < i+25)
+          snapX = i+25;
+      if (mouseY >= i && mouseY <= i+8)
+          snapY = i;
+      else if (mouseY > i+8 && mouseY <= i+16)
+          snapY = i+12.5;
+      else if (mouseY > i+16 && mouseY < i+25)
+          snapY = i+25;
+    } 
+    walls[selectednum*4] = snapX;
+    walls[selectednum*4+1] = snapY; 
+    moving = "wallcornerstart";
+  }
+  //moving a wall
+  else if (selected == "wall" || moving == "wall") {
+   //snape wall 
+     for(int i=23; i<=height-50; i+=25) {
+      if (mouseX >= i && mouseX <= i+8)
+          snapX = i;
+      else if (mouseX > i+8 && mouseX <= i+16)
+          snapX = i+12.5;
+      else if (mouseX > i+16 && mouseX < i+25)
+          snapX = i+25;
+      if (mouseY >= i && mouseY <= i+8)
+          snapY = i;
+      else if (mouseY > i+8 && mouseY <= i+16)
+          snapY = i+12.5;
+      else if (mouseY > i+16 && mouseY < i+25)
+          snapY = i+25;
+    } 
+    mdifX = mdifX + snapX - oldmX;
+    mdifY = mdifY + snapY - oldmY;
+    
+    var checkX1= walls[selectednum*4]+mdifX;
+    var checkY1= walls[selectednum*4+1]+mdifY;
+    var checkX2= walls[selectednum*4+2]+mdifX;
+    var checkY2= walls[selectednum*4+3]+mdifY;
+    
+    for(int i=23; i<=height-50; i+=25) {
+      if (checkX1 >= i && checkX1 <= i+8) {
+       if (walls[selectednum*4] != i)
+        mdifX = 0;
+       walls[selectednum*4] = i;
+      }
+      else if (checkX1 > i+8 && checkX1 <= i+16){
+        if (walls[selectednum*4] != i+12.5)
+          mdifX = 0;
+        walls[selectednum*4] = i+12.5;
+      }
+      else if (checkX1 > i+16 && checkX1 < i+25){
+        if (walls[selectednum*4] != i+25)
+          mdifX = 0;
+        walls[selectednum*4] = i+25;
+      }
+      if (checkY1 >= i && checkY1 <= i+8){
+        if (walls[selectednum*4+1] != i)
+          mdifY = 0;
+        walls[selectednum*4+1] = i;
+      }
+      else if (checkY1 > i+8 && checkY1 <= i+16){
+        if (walls[selectednum*4+1] != i+12.5)
+          mdifY = 0;
+        walls[selectednum*4+1] = i+12.5;
+      }
+      else if (checkY1 > i+16 && checkY1 < i+25){
+        if (walls[selectednum*4+1] != i+25)
+          mdifY = 0;
+        walls[selectednum*4+1] = i+25;
+      }
+    } 
+    for(int i=23; i<=height-50; i+=25) {
+      if (checkX2 >= i && checkX2 <= i+8)
+          walls[selectednum*4+2] = i;
+      else if (checkX2 > i+8 && checkX2 <= i+16)
+          walls[selectednum*4+2] = i+12.5;
+      else if (checkX2 > i+16 && checkX2 < i+25)
+          walls[selectednum*4+2] = i+25;
+      if (checkY2 >= i && checkY2 <= i+8)
+          walls[selectednum*4+3] = i;
+      else if (checkY2 > i+8 && checkY2 <= i+16)
+          walls[selectednum*4+3] = i+12.5;
+      else if (checkY2 > i+16 && checkY2 < i+25)
+          walls[selectednum*4+3] = i+25;
+    } 
+    for(int i=23; i<=height-50; i+=25) {
+      if (mouseX >= i && mouseX <= i+8)
+          snapX = i;
+      else if (mouseX > i+8 && mouseX <= i+16)
+          snapX = i+12.5;
+      else if (mouseX > i+16 && mouseX < i+25)
+          snapX = i+25;
+      if (mouseY >= i && mouseY <= i+8)
+          snapY = i;
+      else if (mouseY > i+8 && mouseY <= i+16)
+          snapY = i+12.5;
+      else if (mouseY > i+16 && mouseY < i+25)
+          snapY = i+25;
+    } 
+    oldmX = snapX;
+    oldmY = snapY;
+    moving =  "wall";
+  }
+  selected = "";
+}
+void mouseClicked() {
+  if (insertlight && numberlights<8) {
+    curcmd++;
+    if (curcmd <= commands.length - 1) {
+      for (var i = curcmd;i < commands.length;i++)
+        commands[i] = null;
+  
+    }
+    commands[curcmd] =new createLightCommand(snapX, snapY);
+    commands[curcmd].execute();
+  }   
+  else if (numberlights==8)
+    alert("You have reached the limit of lights for a design layout");
+}
+
+void mouseReleased() {
+  if (drawwall) {
+    endx = snapX;
+    endy = snapY;
+    curcmd++;
+    if (curcmd <= commands.length - 1) {
+      for (var i = curcmd;i < commands.length;i++)
+        commands[i] = null;
+  
+    }
+    commands[curcmd] =new createWallCommand(startx, starty, endx, endy);
+    commands[curcmd].execute();
+  }  
+  if (moving == "light")
+    commands[curcmd].execute();
+  else if (moving == "wall" || moving == "wallcornerstart" || moving == "wallcornerend")
+    commands[curcmd].execute();
+  moving =  ""
+}
+void newPage() {
+  curcmd++;
+  if (curcmd <= commands.length - 1) {
+    for (var i = curcmd;i < commands.length;i++)
+      commands[i] = null;
+
+  }
+  commands[curcmd] =new newPageCommand();
+  commands[curcmd].execute();
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void copy2d() {
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void deleteseletected() {
+  curcmd++;
+  if (curcmd <= commands.length - 1) {
+    for (var i = curcmd;i < commands.length;i++)
+      commands[i] = null;
+
+  }
+  commands[curcmd] =new deleteSelectedCommand();
+  commands[curcmd].execute();
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void drawWallPress() {     
+  drawwall =  (drawwall)? false : true;;
+  insertlight = false;
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void insertLightPress() {
+  insertlight = (insertlight)? false : true;
+  drawwall = false;
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void zoomIn() {
+  var pressed = document.getElementById("pressed"); 
+  pressed.value = "0";
+}
+void zoomOut() {
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void viewall() {
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void undo() {
+  if (curcmd >= 0) {
+    commands[curcmd--].unexecute();
+  }
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+void redo() {
+  if (commands[curcmd+1]) {
+    commands[++curcmd].execute();
+  }
+  var pressed = document.getElementById("pressed");
+  pressed.value = "0";
+}
+var Command = function() {
+  this.execute = function() {};
+  this.unexecute = function() {}; 
+};
+
+//delete Command
+var deleteSelectedCommand = function deleteSelectedCommand() {
+  Command.call();
+  this.walls = [];
+  this.lights = [];
+    for (int j = 0;j < numberwalls;j++) {
+        this.walls[j*4]= walls[j*4];
+        this.walls[j*4+1]= walls[j*4+1];
+        this.walls[j*4+2]= walls[j*4+2];
+        this.walls[j*4+3]= walls[j*4+3];
+    }
+    for (int k = 0;k < numberlights;k++) {
+        this.lights[k*2] = lights[k*2];
+        this.lights[k*2+1] = lights[k*2+1];
+    }
+  this.selectednum = selectednum;
+  this.selected = selected
+  this.execute = function() {
+    if (this.selected == "light") {
+      for (int k = this.selectednum;k < numberlights-1;k++) {
+        lights[k*2] = lights[k*2+2];
+        lights[k*2+1] = lights[k*2+3];
+      }
+      deleteLight(this.selectednum);
+      numberlights--;
+    }
+    else if (this.selected == "wall") {
+      for (int j = this.selectednum;j < numberwalls-1;j++) {
+        walls[j*4]= walls[j*4+4];
+        walls[j*4+1]= walls[j*4+5];
+        walls[j*4+2]= walls[j*4+6];
+        walls[j*4+3]= walls[j*4+7];
+      }
+      deleteWall(this.selectednum);
+      numberwalls--;
+    }
+    selectednum=null;
+    selected = "";
+  };
+  this.unexecute = function() {
+    if (this.selected === "wall" || this.selected === "wallcornerstart" || this.selected === "wallcornerend") {
+      numberwalls++; 
+      for (int j = 0;j < numberwalls-1;j++)
+        deleteWall(j);
+      for (int j = 0;j < numberwalls;j++) {
+        walls[j*4]= this.walls[j*4];
+        walls[j*4+1]= this.walls[j*4+1];
+        walls[j*4+2]= this.walls[j*4+2];
+        walls[j*4+3]= this.walls[j*4+3];
+        createWall([(walls[j*4]-23)/2.5-100,0,(walls[j*4+1]-23)/2.5-100], [(walls[j*4+2]-23)/2.5-100, 0, (walls[j*4+3]-23)/2.5-100]); 
+      }
+      
+    }
+    else if (this.selected == "light") { 
+      numberlights++;
+      for (int k = 0;k < numberlights-1;k++)
+          deleteLight(k);
+      for (int k = 0;k < numberlights;k++) {
+        lights[k*2] = this.lights[k*2];
+        lights[k*2+1] = this.lights[k*2+1];
+        createLight(k, (lights[k*2]-23)/2.5-100,(lights[k*2+1]-23)/2.5-100);
+      }
+    }
+
+    selectednum = this.selectednum;
+    selected = this.selected
+  };
+};
+
+//new page Command
+var newPageCommand = function newPageCommand() {
+  Command.call();
+  this.deleteSceneC = new deleteSceneCommand();
+  this.numberwalls = numberwalls;
+  this.numberlights = numberlights;
+  this.execute = function() {
+    numberwalls=0;
+    numberlights=0;
+    this.deleteSceneC.execute();
+  };
+  this.unexecute = function() {
+    numberwalls=this.numberwalls;
+    numberlights=this.numberlights;
+    this.deleteSceneC.unexecute();
+  };
+};
+
+//create wall Command
+var createWallCommand = function createWallCommand(startx, starty, endx, endy) {
+  Command.call();
+  this.startx = startx;
+  this.starty = starty;
+  this.endx = endx;
+  this.endy = endy;
+  this.walls = [];
+  for (int j = 0;j < numberwalls;j++) {
+   this.walls[j*4]= walls[j*4];
+   this.walls[j*4+1]= walls[j*4+1];
+   this.walls[j*4+2]= walls[j*4+2];
+   this.walls[j*4+3]= walls[j*4+3];
+  }
+  this.execute = function() {
+    createWall([(this.startx-23)/2.5-100,0,(this.starty-23)/2.5-100], [(this.endx-23)/2.5-100, 0, (this.endy-23)/2.5-100]); 
+    walls[numberwalls*4]=this.startx;  
+    walls[numberwalls*4+1]=this.starty; 
+    walls[numberwalls*4+2]=this.endx; 
+    walls[numberwalls*4+3]=this.endy;
+    numberwalls++;
+  };
+  this.unexecute = function() {
+    deleteWall(numberwalls-1);
+    numberwalls--;
+    for (int j = 0;j < numberwalls;j++) {
+      walls[j*4]= this.walls[j*4];
+      walls[j*4+1]= this.walls[j*4+1];
+      walls[j*4+2]= this.walls[j*4+2];
+      walls[j*4+3]= this.walls[j*4+3];
+    }
+  };
+};
+
+//create light Command
+var createLightCommand = function createLightCommand(snapX, snapY) {
+  Command.call();
+  this.snapX = snapX;
+  this.snapY = snapY;
+  this.lights = [];
+  for (int k = 0;k < numberlights;k++) {
+    this.lights[k*2] = lights[k*2];
+    this.lights[k*2+1] = lights[k*2+1];
+  }
+  this.execute = function() {
+     createLight((this.snapX-23)/2.5-100,(this.snapY-23)/2.5-100);
+     lights[numberlights*2] = this.snapX;
+     lights[numberlights*2+1] = this.snapY;
+     numberlights++;
+  };
+  this.unexecute = function() {
+    deleteLight(numberlights-1);
+    numberlights--;
+    for (int k = 0;k < numberlights;k++) {
+      lights[k*2] = this.lights[k*2];
+      lights[k*2+1] = this.lights[k*2+1];
+    }
+  };
+};
+
+//move wall Command
+var moveWallCommand = function moveWallCommand() {
+  Command.call();
+  this.newWalls=[];
+  this.walls = [];
+  var firstflag = true;
+  for (int j = 0;j < numberwalls;j++) {
+   this.walls[j*4]= walls[j*4];
+   this.walls[j*4+1]= walls[j*4+1];
+   this.walls[j*4+2]= walls[j*4+2];
+   this.walls[j*4+3]= walls[j*4+3];
+  }
+  this.execute = function() {
+   if (firstflag) {
+     for (int j = 0;j < numberwalls;j++) {
+       this.newWalls[j*4]= walls[j*4];
+       this.newWalls[j*4+1]= walls[j*4+1];
+       this.newWalls[j*4+2]= walls[j*4+2];
+       this.newWalls[j*4+3]= walls[j*4+3];
+     }
+     firstflag = false;
+   }
+   for (int j = 0;j < numberwalls;j++) {
+    walls[j*4]= this.newWalls[j*4];
+    walls[j*4+1]= this.newWalls[j*4+1];
+    walls[j*4+2]= this.newWalls[j*4+2];
+    walls[j*4+3]= this.newWalls[j*4+3];
+    moveWall(j,[(walls[j*4]-23)/2.5-100,0,(walls[j*4+1]-23)/2.5-100], [(walls[j*4+2]-23)/2.5-100, 0, (walls[j*4+3]-23)/2.5-100]);
+   }
+  };
+  this.unexecute = function() {
+    for (int j = 0;j < numberwalls;j++) {
+      walls[j*4]= this.walls[j*4];
+      walls[j*4+1]= this.walls[j*4+1];
+      walls[j*4+2]= this.walls[j*4+2];
+      walls[j*4+3]= this.walls[j*4+3];
+      moveWall(j,[(walls[j*4]-23)/2.5-100,0,(walls[j*4+1]-23)/2.5-100], [(walls[j*4+2]-23)/2.5-100, 0, (walls[j*4+3]-23)/2.5-100]);
+    }
+  };
+};
+
+//move Light Command
+var moveLightCommand = function moveLightCommand() {
+  Command.call();
+  this.newLights = [];
+  var firstflag = true;
+  this.lights = [];
+  for (int k = 0;k < numberlights;k++) {
+    this.lights[k*2] = lights[k*2];
+    this.lights[k*2+1] = lights[k*2+1];
+  }
+  this.execute = function() {
+    if (firstflag) {
+      for (int k = 0;k < numberlights;k++) {
+        this.newLights[k*2] = lights[k*2];
+        this.newLights[k*2+1] = lights[k*2+1];
+      }
+      firstflag = false;
+    }
+    for (int k = 0;k < numberlights;k++) {
+      lights[k*2] = this.newLights[k*2];
+      lights[k*2+1] = this.newLights[k*2+1];
+      moveLight(k, (lights[k*2]-23)/2.5-100,(lights[k*2+1]-23)/2.5-100);
+    }
+  };
+  this.unexecute = function() {
+    for (int k = 0;k < numberlights;k++) {
+      lights[k*2] = this.lights[k*2];
+      lights[k*2+1] = this.lights[k*2+1];
+      moveLight(k, (lights[k*2]-23)/2.5-100,(lights[k*2+1]-23)/2.5-100);
+    }
+  };
+};

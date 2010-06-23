@@ -10,7 +10,231 @@
   c3dl.addModel(CHAIR_PATH);
   c3dl.addModel(TABLE_PATH);
   c3dl.addModel("./models/sky/skysphere.dae");
+  //Command pattern
+  var commands = [];
+  var curcmd = -1;
+  
+  //Base Class
+  var Command = function() {
+    this.execute = function() {};
+    this.unexecute = function() {}; 
+  };
+  
+  //delete Command
+  var deleteSelectedCommand = function deleteSelectedCommand() {
+    Command.call();
+    this.objects = objects;
+    this.objectSelected = objectSelected;
+    this.execute = function() {
+      var delNum;
+      for (i = 0; i < numObjects; i++)
+      {
+      if (objects[i] === objectSelected)
+        {
+          delNum = i;
+        }
+      }
+      for (i = delNum; i < numObjects - 1; i++)
+      {
+        objects[i] = objects[i + 1];
+      }
+      scn.removeObjectFromScene(objectSelected);
+      objectSelected = null;
+      numObjects--;
+    };
+    this.unexecute = function() {
+      scn.addObjectToScene(this.objectSelected);
+      objectSelected=this.objectSelected;
+      objects = this.objects;
+      numObjects++;
+    };
+  };
+  
+  //create Command
+  var createObjectCommand = function createObjectCommand(objID) {
+    Command.call();
+    this.objects = objects;
+    this.objectSelected =objectSelected;
+    this.objID = objID;
+    this.newobject;
+    this.execute = function() {
+      if (! this.newobject) {
+        objects[numObjects] = new c3dl.Collada();
+        var isValid = true;
 
+        switch (this.objID)
+        {
+        case 0:
+          objects[numObjects].init(CHAIR_PATH);
+          break;
+        case 1:
+          objects[numObjects].init(TABLE_PATH);
+          break;
+        default:
+          isValid = false;
+          break;
+        }
+
+        if (isValid)
+        {
+          objects[numObjects].scale([0.2, 0.2, 0.2]);
+          scn.addObjectToScene(objects[numObjects]);
+          if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
+          this.newobject = objectSelected = objects[numObjects];
+          objectSelected.setEffect(selectedEffect);
+        }
+      }
+      else {
+        scn.addObjectToScene(this.newobject);
+        if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
+        objectSelected = objects[numObjects] =  this.newobject;
+        objectSelected.setEffect(selectedEffect);
+      }
+      numObjects++;
+      };
+    this.unexecute = function() {
+      numObjects--;
+      scn.removeObjectFromScene(this.newobject);
+      objectSelected=this.objectSelected;
+      objects = this.objects;
+    };
+  };
+  
+  //copy command
+  var copySelectedCommand = function copySelectedCommand() {
+    Command.call();
+    this.objects = objects;
+    this.objectSelected =objectSelected;
+    this.newobject;
+    this.execute = function() {
+      var temp = [];
+      objects[numObjects] = new c3dl.Collada();
+      objects[numObjects].init(objectSelected.getPath());
+      objects[numObjects].setPosition([objectSelected.getPosition()[0], objectSelected.getPosition()[1], objectSelected.getPosition()[2] - objectSelected.getWidth()-1]);
+      scn.addObjectToScene(objects[numObjects]);
+      objectSelected.setEffect(c3dl.effects.STANDARD);
+      temp[0] = objectSelected.getLength();
+      temp[1] = objectSelected.getHeight();
+      temp[2] = objectSelected.getWidth();
+      this.newobject = objectSelected = objects[numObjects];
+      objectSelected.setEffect(selectedEffect);
+      objectSelected.setSize(temp[0], temp[2], temp[1]);
+      numObjects++;
+    };
+    this.unexecute = function() {
+      numObjects--;
+      scn.removeObjectFromScene(this.newobject);
+      objectSelected=this.objectSelected;
+      objects = this.objects;
+    };
+  };
+
+  //move command
+  var moveObjectCommand = function moveObjectCommand(sPos) {
+    Command.call();
+    this.objectSelected = objectSelected;
+    this.sPos = sPos;
+    this.ePos;
+    this.execute = function() {
+    if (!this.ePos)
+      this.ePos = this.objectSelected.getPosition();
+    this.objectSelected.setPosition(this.ePos);
+    };
+    this.unexecute = function() {
+      this.ePos= this.objectSelected.getPosition();
+      this.objectSelected.setPosition(this.sPos); 
+    };
+  };
+  //edit light command
+  var lightCommand = function lightCommand() {
+    Command.call();
+    this.sLight = lights[0].getDiffuse();
+    this.eLight = 0;
+    this.execute = function() {
+    if (!this.eLight)
+      this.eLight = lights[0].getDiffuse();
+    for (i = 0; i < numLights; i++)
+      lights[i].setDiffuse(this.eLight);
+    };
+    this.unexecute = function() {
+      this.eLight= lights[0].getDiffuse();
+      for (i = 0; i < numLights; i++)
+        lights[i].setDiffuse(this.sLight);
+    };
+  };
+  
+  //scale Command
+  var scaleCommand = function scaleCommand(length, width, height) {
+    Command.call();
+    this.objectSelected = objectSelected;
+    this.oldHheight = objectSelected.getHeight();
+    this.oldWidth = objectSelected.getWidth();
+    this.oldLength = objectSelected.getLength();
+    this.length= length; 
+    this.width=width; 
+    this.height=height;
+    this.execute = function() {
+      this.objectSelected.setSize(this.length, this.width, this.height);
+    };
+    this.unexecute = function() {
+      this.objectSelected.setSize(this.oldLength,this.oldWidth,this.oldHheight);
+    };
+  };
+  //rotate command
+  var rotateObjectCommand = function rotateObjectCommand() {
+    Command.call();
+    this.rot;
+    this.objectSelected = objectSelected;
+    this.execute = function(rot) {
+      if (this.rot)
+        this.objectSelected.yaw(this.rot);
+      else 
+        this.rot =rot;
+    };
+    this.unexecute = function() {
+      this.objectSelected.yaw(-this.rot);
+    };
+  };
+  //new page command
+  var deleteSceneCommand = this.deleteSceneCommand = function deleteSceneCommand() {
+    Command.call();
+    this.objects = objects;
+    this.objectSelected = objectSelected;
+    this.numLights = numLights;
+    this.numWalls = numWalls;
+    this.numObjects = numObjects;
+    this.lights = lights;
+    this.walls = walls;
+    this.execute = function(rot) {
+      for (i = 0; i < numObjects; i++)
+        scn.removeObjectFromScene(objects[i]);
+      for (i = 0; i < numWalls; i++)
+        scn.removeObjectFromScene(walls[i]);
+      for (i = 0; i < numLights; i++)
+        scn.removeLight(lights[i]);
+      numLights = 0;
+      numWalls = 0;
+      numObjects = 0;
+      //empty hidden feild of objects
+      document.getElementById('objects').value = "";
+    };
+    this.unexecute = function() {
+      objects=this.objects;
+      objectSelected=this.objectSelected;
+      numLights=this.numLights;
+      numWalls=this.numWalls;
+      numObjects=this.numObjects;
+      lights=this.lights; 
+      walls= this.walls;
+      for (i = 0; i < numObjects; i++)
+        scn.addObjectToScene(objects[i]);
+      for (i = 0; i < numWalls; i++)
+        scn.addObjectToScene(walls[i]);
+      for (i = 0; i < numLights; i++)
+        scn.addLight(lights[i]);
+    };
+  };
+  
   var objectSelected = null;
   var widget = [];
   var selectedEffect = null;
@@ -26,6 +250,7 @@
   var walls = [];
   var objects = [];
   var numObjects = 0;
+  var rot = 0;
   camLeftRight = null;
   camUpDown = null;
 
@@ -62,7 +287,12 @@
   const KEY_UP = 38;
   const KEY_RIGHT = 39;
   const KEY_DOWN = 40;
-
+  const KEY_CTRL = 17;
+  const KEY_A = 65;
+  const KEY_W = 87;
+  const KEY_S = 83;
+  const KEY_D = 68;
+  const KEY_SHIFT = 16;
   // mouse screen coords and button states
   var mouseX = 0;
   var mouseY = 0;
@@ -88,13 +318,23 @@
         key_down = false,
         key_left = false,
         key_right = false,
-        key_m = false;
+        key_ctrl = false,
+        key_w = false,
+        key_a = false,
+        key_s = false,
+        key_d = false,
+        key_shift = false;
       return {
         "KEY_UP": key_up,
         "KEY_DOWN": key_down,
         "KEY_LEFT": key_left,
         "KEY_RIGHT": key_right,
-        "KEY_M": key_m
+        "KEY_CTRL": key_ctrl,
+        "KEY_W": key_w,
+        "KEY_A": key_a,
+        "KEY_S": key_s,
+        "KEY_D": key_d,
+        "KEY_SHIFT": key_shift
       };
     }
   )();
@@ -117,6 +357,24 @@
     case KEY_LEFT:
       keysDown.KEY_LEFT = true;
       break;
+    case KEY_CTRL:
+      keysDown.KEY_CTRL = true;
+      break;
+    case KEY_W:
+      keysDown.KEY_W = true;
+      break;
+    case KEY_A:
+      keysDown.KEY_A = true;
+      break;
+    case KEY_S:
+      keysDown.KEY_S = true;
+      break;
+    case KEY_D:
+      keysDown.KEY_D = true;
+      break;
+    case KEY_SHIFT:
+      keysDown.KEY_SHIFT = true;
+      break;
     default:
       break;
     }
@@ -138,6 +396,24 @@
     case KEY_LEFT:
       keysDown.KEY_LEFT = false;
       break;
+    case KEY_CTRL:
+      keysDown.KEY_CTRL = false;
+      break;
+    case KEY_W:
+      keysDown.KEY_W = false;
+      break;
+    case KEY_A:
+      keysDown.KEY_A = false;
+      break;
+    case KEY_S:
+      keysDown.KEY_S = false;
+      break;
+    case KEY_D:
+      keysDown.KEY_D = false;
+      break;
+    case KEY_SHIFT:
+      keysDown.KEY_SHIFT = false;
+      break;
     default:
       break;
     }
@@ -149,21 +425,73 @@
     {
     case 0:
       buttons[0] = true;
+      if (objectSelected) {
+         curcmd++;
+        if (curcmd <= commands.length - 1) {
+          for (var i = curcmd;i < commands.length;i++)
+            commands[i] = null;
+          
+        }
+        commands[curcmd] =new moveObjectCommand(objectSelected.getPosition());
+      }
       break;
     case 1:
       buttons[1] = true;
+       if (objectSelected) {
+         curcmd++;
+        if (curcmd <= commands.length - 1) {
+          for (var i = curcmd;i < commands.length;i++)
+            commands[i] = null;
+          
+        }
+        commands[curcmd] =new moveObjectCommand(objectSelected.getPosition());
+      }
       break;
     case 2:
       buttons[2] = true;
+      if (objectSelected) {
+         curcmd++;
+        if (curcmd <= commands.length - 1) {
+          for (var i = curcmd;i < commands.length;i++)
+            commands[i] = null;
+          
+        }
+        commands[curcmd] =new rotateObjectCommand();
+        rot = 0;
+      }
       break;
     case 3:
       buttons[3] = true;
+      if (objectSelected) {
+        curcmd++;
+        if (curcmd <= commands.length - 1) {
+          for (var i = curcmd;i < commands.length;i++)
+            commands[i] = null;
+          
+      }
+      commands[curcmd] =new rotateObjectCommand();
+      rot = 0;
+      }
       break;
     case 4:
       buttons[4] = true;
+      curcmd++;
+      if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+        
+      }
+      commands[curcmd] =new lightCommand();
       break;
     case 5:
       buttons[5] = true;
+      curcmd++;
+      if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+        
+      }
+      commands[curcmd] =new lightCommand();
       break;
     case 6:
       buttons[6] = true;
@@ -200,21 +528,29 @@
     {
     case 0:
       buttons[0] = false;
+      if (objectSelected)
+        commands[curcmd].execute();
       break;
     case 1:
       buttons[1] = false;
+      if (objectSelected)
+        commands[curcmd].execute();
       break;
     case 2:
       buttons[2] = false;
+      commands[curcmd].execute(rot);
       break;
     case 3:
       buttons[3] = false;
+      commands[curcmd].execute(rot);
       break;
     case 4:
       buttons[4] = false;
+      commands[curcmd].execute();
       break;
     case 5:
       buttons[5] = false;
+      commands[curcmd].execute();
       break;
     case 6:
       buttons[6] = false;
@@ -339,27 +675,29 @@
   // pressed and has a list of objects picked.
   function pickingHandler(result)
   {
-    var objectsPicked = result.getObjects();
+   var objectsPicked = result.getObjects();
+    if (objectSelected)
+    {
+      objectSelected.setEffect(c3dl.effects.STANDARD);
+      //objectSelected.setDrawBoundingBox(false);
+      objectSelected = null;
+    }
     if (objectsPicked.length > 0)
     {
-      if (objectSelected)
-      {
-        objectSelected.setEffect(c3dl.effects.STANDARD);
-        objectSelected = null;
-      }
       // get the object that was picked
       objectSelected = objectsPicked[0];
       objectSelected.setEffect(selectedEffect);
+      //objectSelected.setDrawBoundingBox(true);
     }
-    else
-    {
-      objectSelected.setEffect(c3dl.effects.STANDARD);
-      objectSelected = null;
-    }
-  }
+  }      
 
   function update(deltaTime)
   {
+
+    if (keysDown.KEY_CTRL) {      
+        camLeftRight = (mouseX -250) /500;
+        camUpDown = (250- mouseY) /500;
+    }
     //update slider position
     $("#updownslider").slider("value", camHeight);
     $("#zoomslider").slider("value", zoom);
@@ -377,25 +715,27 @@
     var moveAmount = CAM_MOVE_SPEED * deltaTime / 100;
 
     //move selected object up 
-    if (buttons[0] && objectSelected != null)
+    if (buttons[0] && objectSelected)
     {
       var curpos = objectSelected.getPosition();
-      objectSelected.setPosition([curpos[0], curpos[1] + 1, curpos[2]]);
+      objectSelected.setPosition([curpos[0], curpos[1] + 1, curpos[2]]);  
     }
     //move selected object down 
-    else if (buttons[1] && objectSelected != null)
+    else if (buttons[1] && objectSelected)
     {
       var curpos = objectSelected.getPosition();
       objectSelected.setPosition([curpos[0], curpos[1] - 1, curpos[2]]);
     }
     //rotate selected object left
-    else if (buttons[2] && objectSelected != null)
+    else if (buttons[2] && objectSelected)
     {
+      rot += -0.1;
       objectSelected.yaw(-0.1)
     }
     //rotate selected object right
-    else if (buttons[3] && objectSelected != null)
+    else if (buttons[3] && objectSelected)
     {
+      rot += 0.1;
       objectSelected.yaw(0.1)
     }
     //light up
@@ -454,25 +794,25 @@
     }
 
     //use arrow key to move camera
-    if (keysDown.KEY_LEFT)
+    if (keysDown.KEY_LEFT || keysDown.KEY_A)
     {
       moveCamera(SIDEWAYS, moveAmount);
     }
-    else if (keysDown.KEY_RIGHT)
+    else if (keysDown.KEY_RIGHT || keysDown.KEY_D)
     {
       moveCamera(SIDEWAYS, -moveAmount);
     }
-    if (keysDown.KEY_UP)
+    if (keysDown.KEY_UP || keysDown.KEY_W)
     {
       moveCamera(FORWARD, moveAmount);
     }
-    else if (keysDown.KEY_DOWN)
+    else if (keysDown.KEY_DOWN || keysDown.KEY_S)
     {
       moveCamera(FORWARD, -moveAmount);
     }
 
     //move selected object to mouse postion
-    if (moveObject)
+    if (moveObject && objectSelected)
     {
       var curpos = objectSelected.getPosition();
       worldCoords = getworldCoords(mouseX, mouseY);
@@ -496,7 +836,6 @@
     {
       zcam[currentCam].rotateOnAxis([0, 1, 0], -camLeftRight / 10);
       zcam[currentCam].pitch(-camUpDown / 10);
-
     }
     //repositioning the camera after rotating it
     zoomInDir = c3dl.multiplyVector(zcam[currentCam].getDir(), zoom);
@@ -538,15 +877,27 @@
 
   function mouseUp(event)
   {
+    if (moveObject)
+      commands[curcmd].execute();
     moveObject = false;
+    tiltHoyKey = false;
   }
 
   function mouseDown(event)
   {
     if (objectSelected)
     {
+      curcmd++;
+      if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+        
+      }
+      commands[curcmd] =new moveObjectCommand(objectSelected.getPosition());
       moveObject = true;
     }
+    else 
+      tiltHoyKey = true;
   }
 
   function mouseMove(event)
@@ -569,13 +920,24 @@
     else if (event.detail) {
       delta = event.detail * 4;
     }
-    // towards user
-    if (-delta < 0) {
-      if (zoom > 5) zoom -= 5;
+    if (keysDown.KEY_SHIFT) {
+      if (-delta < 0) {
+        if (camHeight > 5) camHeight -= 5;
+      }
+      // towards screen
+      else {
+        if (camHeight < 100) camHeight += 5;
+      }
     }
-    // towards screen
     else {
-      if (zoom < 100) zoom += 5;
+      // towards user
+      if (-delta < 0) {
+        if (zoom > 5) zoom -= 5;
+      }
+      // towards screen
+      else {
+        if (zoom < 100) zoom += 5;
+      }
     }
   }
 
@@ -647,75 +1009,56 @@
   //create objects using a factory pattern
   var createObject = this.createObject = function createObject(objID)
   {
-    objects[numObjects] = new c3dl.Collada();
-    var isValid = true;
-
-    switch (objID)
-    {
-    case 0:
-      objects[numObjects].init(CHAIR_PATH);
-      break;
-    case 1:
-      objects[numObjects].init(TABLE_PATH);
-      break;
-    default:
-      isValid = false;
-      break;
+    curcmd++;
+    if (curcmd <= commands.length - 1) {
+      for (var i = curcmd;i < commands.length;i++)
+        commands[i] = null;
+      
     }
-
-    if (isValid)
-    {
-      objects[numObjects].scale([0.2, 0.2, 0.2]);
-      scn.addObjectToScene(objects[numObjects]);
-      if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
-      objectSelected = objects[numObjects];
-      objectSelected.setEffect(selectedEffect);
-    }
-    numObjects++;
+    commands[curcmd] =new createObjectCommand(objID);
+    commands[curcmd].execute();
   }
-
-  //remove selected object from scene
-  function deleteSelected()
+  
+  var deleteSelected = this.deleteSelected = function deleteSelected()
   {
     if (objectSelected)
     {
-      var delNum;
-      for (i = 0; i < numObjects; i++)
-      {
-        if (objects[i] === objectSelected)
-        {
-          delNum = i;
-        }
+      curcmd++;
+      if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+        
       }
-      for (i = delNum; i < numObjects - 1; i++)
-      {
-        objects[i] = objects[i + 1];
-      }
-
-      scn.removeObjectFromScene(objectSelected);
-      objectSelected = null;
-      numObjects--;
+      commands[curcmd] =new deleteSelectedCommand();
+      commands[curcmd].execute();
     }
   }
-
+  
+  var undo = this.undo = function undo()
+  {
+    if (curcmd >= 0) {
+      commands[curcmd--].unexecute();
+    }
+  }
+    var redo = this.redo = function redo()
+  {
+    if (commands[curcmd+1]) {
+      commands[++curcmd].execute();
+    }
+  }
   //copys selected object stats and creates a new one
   var copySelected = this.copySelected = function copySelected()
-  {
+  { 
     if (objectSelected)
     {
-      var temp = [];
-      objects[numObjects] = new c3dl.Collada();
-      objects[numObjects].init(objectSelected.getPath());
-      objects[numObjects].setPosition([objectSelected.getPosition()[0], objectSelected.getPosition()[1], objectSelected.getPosition()[2] - objectSelected.getWidth()-1]);
-      scn.addObjectToScene(objects[numObjects]);
-      objectSelected.setEffect(c3dl.effects.STANDARD);
-      temp[0] = objectSelected.getLength();
-      temp[1] = objectSelected.getHeight();
-      temp[2] = objectSelected.getWidth();
-      objectSelected = objects[numObjects];
-      objectSelected.setEffect(selectedEffect);
-      objectSelected.setSize(temp[0], temp[2], temp[1]);
-      numObjects++;
+      curcmd++;
+      if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+        
+      }
+      commands[curcmd] =new copySelectedCommand();
+      commands[curcmd].execute();
     }
   }
 
@@ -856,22 +1199,6 @@
     scn.addObjectToScene(walls[wallnum]);
   }
 
-  //removes everything in the scene
-  var deleteScene = this.deleteScene = function deleteScene()
-  {
-    for (i = 0; i < numObjects; i++)
-      scn.removeObjectFromScene(objects[i]);
-    for (i = 0; i < numWalls; i++)
-      scn.removeObjectFromScene(walls[i]);
-    for (i = 0; i < numLights; i++)
-      scn.removeLight(lights[i]);
-    numLights = 0;
-    numWalls = 0;
-    numObjects = 0;
-    //empty hidden feild of objects
-    document.getElementById('objects').value = "";
-  }
-
   var forwardCam = this.forwardCam = function forwardCam()
   {
     if (currentCam == 4) currentCam = 0;
@@ -897,7 +1224,6 @@
     newCamHeight = camHeight;
     zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
   }
-
 
   //square function
   function sq(x)
@@ -958,7 +1284,14 @@
 
   var setSize = this.setSize = function setSize(length, width, height)
   {
-    objectSelected.setSize(length, width, height);
+    curcmd++;
+      if (curcmd <= commands.length - 1) {
+        for (var i = curcmd;i < commands.length;i++)
+          commands[i] = null;
+        
+      }
+      commands[curcmd] =new scaleCommand(length, width, height);
+      commands[curcmd].execute();
   }
 
   var getPic = this.getPic = function getPic(length, width, height)
@@ -976,7 +1309,7 @@
     Processing.getInstanceById("CameraWidget").loop();  
   }
 
-  function unpause3d()
+  var unpause3d = this.unpause3d = function unpause3d()
   {
     scn.unpauseScene();
     Processing.getInstanceById("CameraWidget").loop();  
