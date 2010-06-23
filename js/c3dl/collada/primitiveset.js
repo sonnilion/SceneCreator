@@ -28,6 +28,8 @@ c3dl.PrimitiveSet = function ()
   this.normals = null;
   this.texCoords = null;
   this.boundingSphere = null;
+  this.type = null;
+  this.lineList = null;
   this.buffers =
   {
   };
@@ -39,19 +41,39 @@ c3dl.PrimitiveSet = function ()
    @param {Array} normals
    @param {Array} texCoords
    */
-  this.init = function (vertices, normals, texCoords)
+  this.init = function (vertices, normals, texCoords, type)
   {
     this.vertices = vertices;
     this.normals = normals;
     this.texCoords = texCoords;
     this.boundingSphere = new c3dl.BoundingSphere();
-    
+    this.type = type;
     // give the bounding sphere the vertices, so it can properly
     // adjust its radius to completely enclose the object. 
     this.boundingSphere.init(this.vertices);
     this.boundingSphere.setPosition([0, 0, 0]);
   }
-
+  
+  this.linit = function (vertices, faces, type)
+  {
+    this.vertices = [];
+    this.lineList = [];
+    for (var i = 0; i < vertices.length; i++) { 
+      var xyz = [];
+      xyz[0]= parseFloat(vertices[i][0]);
+      xyz[1] = parseFloat(vertices[i][1]);
+      xyz[2] = parseFloat(vertices[i][2]);
+      this.vertices[i]= xyz;
+    }
+    this.type = type;
+    for (var i = 0; i < faces.length; i+=2) {
+      var l = new c3dl.Line();
+      var vert1 = this.vertices[parseInt(faces[i])];
+      var vert2 = this.vertices[parseInt(faces[i+1])];
+      l.setCoordinates([ vert1[0], vert1[1], vert1[2]], [vert2[0], vert2[1], vert2[2] ]);
+      this.lineList.push(l);
+    }
+  }
   /**
    @private
    
@@ -103,7 +125,8 @@ c3dl.PrimitiveSet = function ()
     copy.texCoords = this.texCoords;
     copy.boundingSphere = this.boundingSphere;
     copy.texture = this.texture;
-
+    copy.lineList = this.lineList;
+    copy.type = this.type;
     // get a deep copy of the material since every collada object's primitive set
     // can have its own material.		
     copy.material = this.material ? this.material.getCopy() : null;
@@ -198,6 +221,11 @@ c3dl.PrimitiveSet = function ()
   this.setTexture = function (texture)
   {
     this.texture = texture;
+  }
+  
+  this.getLines = function ()
+  {
+    return this.lineList;
   }
 }
 

@@ -652,7 +652,7 @@ c3dl.ColladaLoader = function ()
     for (var i = 0; i < mesh.childNodes.length; i++)
     {
       if (mesh.childNodes[i].nodeName == "triangles" || mesh.childNodes[i].nodeName == "polygons" ||
-        mesh.childNodes[i].nodeName == "polylist")
+        mesh.childNodes[i].nodeName == "polylist" || mesh.childNodes[i].nodeName =="lines" )
       {
         collations.push(mesh.childNodes[i]);
       }
@@ -672,7 +672,8 @@ c3dl.ColladaLoader = function ()
       //
       // triangles are always composed of 3 vertices so this element does not require <vcount>
       //
-      if (collations[currColl].nodeName == "triangles" || collations[currColl].nodeName == "polylist")
+      if (collations[currColl].nodeName == "triangles" || collations[currColl].nodeName == "polylist" || 
+      collations[currColl].nodeName == "lines")
       {
         var p = this.getFirstChildByNodeName(collations[currColl], "p");
         rawFaces = this.mergeChildData(p.childNodes).split(" ");
@@ -922,9 +923,12 @@ c3dl.ColladaLoader = function ()
       // each primitive collation element can have a material name. this name matches to the
       // <instance_material>'s symbol attribute value.					
       collationElement.tempMaterial = collations[currColl].getAttribute("material");
-      collationElement.init(this.expandFaces(faces, verticesArray, this.vertexOffset, vertexStride), 
-        this.expandFaces(faces, normalsArray, this.normalOffset, normalsStride), 
-        this.expandFaces(faces, texCoordsArray, this.texCoordOffset, 2));
+      if (collations[currColl].nodeName !== "lines")
+        collationElement.init(this.expandFaces(faces, verticesArray, this.vertexOffset, vertexStride), 
+          this.expandFaces(faces, normalsArray, this.normalOffset, normalsStride), 
+          this.expandFaces(faces, texCoordsArray, this.texCoordOffset, 2),collations[currColl].nodeName);
+      else 
+        collationElement.linit(verticesArray, faces , collations[currColl].nodeName);
       geometry.addPrimitiveSet(collationElement);
     } // end iterating over collations
     // get the texture for the geometry

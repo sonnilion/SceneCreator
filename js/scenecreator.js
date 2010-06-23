@@ -79,16 +79,24 @@
         {
           objects[numObjects].scale([0.2, 0.2, 0.2]);
           scn.addObjectToScene(objects[numObjects]);
-          if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
+          if (objectSelected) {
+            objectSelected.setEffect(c3dl.effects.STANDARD);
+            objectSelected.setDrawBoundingBox(false);
+          }
           this.newobject = objectSelected = objects[numObjects];
           objectSelected.setEffect(selectedEffect);
+          objectSelected.setDrawBoundingBox(true);
         }
       }
       else {
         scn.addObjectToScene(this.newobject);
-        if (objectSelected) objectSelected.setEffect(c3dl.effects.STANDARD);
+        if (objectSelected) {
+          objectSelected.setEffect(c3dl.effects.STANDARD);
+          objectSelected.setDrawBoundingBox(false);
+        }
         objectSelected = objects[numObjects] =  this.newobject;
         objectSelected.setEffect(selectedEffect);
+        objectSelected.setDrawBoundingBox(true);
       }
       numObjects++;
       };
@@ -113,11 +121,13 @@
       objects[numObjects].setPosition([objectSelected.getPosition()[0], objectSelected.getPosition()[1], objectSelected.getPosition()[2] - objectSelected.getWidth()-1]);
       scn.addObjectToScene(objects[numObjects]);
       objectSelected.setEffect(c3dl.effects.STANDARD);
+      objectSelected.setDrawBoundingBox(false);
       temp[0] = objectSelected.getLength();
       temp[1] = objectSelected.getHeight();
       temp[2] = objectSelected.getWidth();
       this.newobject = objectSelected = objects[numObjects];
       objectSelected.setEffect(selectedEffect);
+      objectSelected.setDrawBoundingBox(true);
       objectSelected.setSize(temp[0], temp[2], temp[1]);
       numObjects++;
     };
@@ -679,7 +689,7 @@
     if (objectSelected)
     {
       objectSelected.setEffect(c3dl.effects.STANDARD);
-      //objectSelected.setDrawBoundingBox(false);
+      objectSelected.setDrawBoundingBox(false);
       objectSelected = null;
     }
     if (objectsPicked.length > 0)
@@ -687,7 +697,7 @@
       // get the object that was picked
       objectSelected = objectsPicked[0];
       objectSelected.setEffect(selectedEffect);
-      //objectSelected.setDrawBoundingBox(true);
+      objectSelected.setDrawBoundingBox(true);
     }
   }      
 
@@ -1224,6 +1234,7 @@
     newCamHeight = camHeight;
     zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
   }
+
 
   //square function
   function sq(x)
