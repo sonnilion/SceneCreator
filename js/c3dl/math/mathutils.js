@@ -203,10 +203,10 @@ c3dl.getRandom = function (min, max)
 
 c3dl.findMax = function (arrayIn)
 {
-  var max = Math.abs(arrayIn[0]);
+  var max = arrayIn[0];
   for (i=0; i<arrayIn.length; i++) {
-    if (Math.abs(arrayIn[i])>max) {
-      max = Math.abs(arrayIn[i]);
+    if (arrayIn[i]>max) {
+      max = arrayIn[i];
     }
   }
   return max;
@@ -214,10 +214,10 @@ c3dl.findMax = function (arrayIn)
 
 c3dl.findMin = function (arrayIn)
 {
-  var min = Math.abs(arrayIn[0]);
+  var min = arrayIn[0];
   for (i=0; i<arrayIn.length; i++) {
-    if (Math.abs(arrayIn[i])<min) {
-      min = Math.abs(arrayIn[i]);
+    if (arrayIn[i]<min) {
+      min = arrayIn[i];
     }
   }
   return min;

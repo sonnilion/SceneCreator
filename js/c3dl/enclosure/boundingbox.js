@@ -11,6 +11,8 @@ c3dl.BoundingBox = function ()
   this.allverts = [];
   this.boxverts = [];
   this.lineList =[];
+  this.maxMins= [];
+  this.realposition = [];
   this.position = c3dl.makeVector(0.0, 0.0, 0.0);
   this.init = function (vertices)
   {
@@ -23,49 +25,43 @@ c3dl.BoundingBox = function ()
         widthVerts[i] = vertices[j+2];
         j+=3
       }    
-      this.length=c3dl.findMax(lengthVerts)-c3dl.findMin(lengthVerts);
-      this.height=c3dl.findMax(heightVerts)-c3dl.findMin(heightVerts);
-      this.width=c3dl.findMax(widthVerts)-c3dl.findMin(widthVerts);
+       
+      this.maxMins[0] = c3dl.findMax(lengthVerts); 
+      this.maxMins[1] = c3dl.findMin(lengthVerts);
+      this.maxMins[2] = c3dl.findMax(heightVerts);
+      this.maxMins[3] = c3dl.findMin(heightVerts); 
+      this.maxMins[4] = c3dl.findMax(widthVerts); 
+      this.maxMins[5] = c3dl.findMin(widthVerts);     
+     
+      this.realposition[0] = (this.maxMins[0] + this.maxMins[1])/2;
+      this.realposition[1] = (this.maxMins[2] + this.maxMins[3])/2;
+      this.realposition[2] = (this.maxMins[4] + this.maxMins[5])/2;
+      this.length=this.maxMins[0]-this.maxMins[1];
+      this.height=this.maxMins[2]-this.maxMins[3];
+      this.width=this.maxMins[4]-this.maxMins[5];
     }
     for (var i = 0; i <12; i++) {
       this.lineList[i] = new c3dl.Line();
       this.lineList[i].setWidth(2);
-    }
-      
-//    //Centered Objects
-//    //F top left 
-//    this.boxverts[0] =[ this.position[0] - this.length/2, this.position[1] + this.height/2, this.position[2] + this.width/2]
-//    //B top left 
-//    this.boxverts[1] =[ this.position[0] - this.length/2, this.position[1] + this.height/2, this.position[2] - this.width/2]                         
-//    //F top right                       
-//    this.boxverts[2] =[ this.position[0] + this.length/2, this.position[1] + this.height/2, this.position[2] + this.width/2] 
-//    //B top right    
-//    this.boxverts[3] =[ this.position[0] + this.length/2, this.position[1] + this.height/2, this.position[2] - this.width/2] 
-//    //F bottom left 
-//    this.boxverts[4] =[ this.position[0] - this.length/2, this.position[1] - this.height/2, this.position[2] + this.width/2]
-//    //B bottom left
-//    this.boxverts[5] =[ this.position[0] - this.length/2, this.position[1] - this.height/2, this.position[2] - this.width/2]
-//    //F bottom right
-//    this.boxverts[6] =[ this.position[0] + this.length/2, this.position[1] - this.height/2, this.position[2] + this.width/2] 
-//    //B bottom right  
-//    this.boxverts[7] =[ this.position[0] + this.length/2, this.position[1] - this.height/2, this.position[2] - this.width/2]  
-    //Not Centered Objects
+    }  
+
     //F top left 
-    this.boxverts[0] =[ this.position[0] , this.position[1] + this.height, this.position[2] ]
+    this.boxverts[0] =[ this.maxMins[1] - this.realposition[0], this.maxMins[3] - this.realposition[1] ,  this.maxMins[5] - this.realposition[2] ];
     //B top left 
-    this.boxverts[1] =[ this.position[0] , this.position[1] + this.height, this.position[2] - this.width]                         
+    this.boxverts[1] =[ this.maxMins[1] - this.realposition[0] , this.maxMins[3] - this.realposition[1],  this.maxMins[4] - this.realposition[2]];                         
     //F top right                       
-    this.boxverts[2] =[ this.position[0] + this.length, this.position[1] + this.height, this.position[2] ] 
+    this.boxverts[2] =[ this.maxMins[0] - this.realposition[0] , this.maxMins[3] - this.realposition[1],  this.maxMins[5] - this.realposition[2]]; 
     //B top right    
-    this.boxverts[3] =[ this.position[0] + this.length, this.position[1] + this.height, this.position[2] - this.width] 
+    this.boxverts[3] =[ this.maxMins[0]  - this.realposition[0], this.maxMins[3] - this.realposition[1],  this.maxMins[4] - this.realposition[2]];
     //F bottom left 
-    this.boxverts[4] =[ this.position[0] , this.position[1] , this.position[2] ]
+    this.boxverts[4] =[ this.maxMins[1]  - this.realposition[0], this.maxMins[2] - this.realposition[1],  this.maxMins[5]- this.realposition[2] ];
     //B bottom left
-    this.boxverts[5] =[ this.position[0] , this.position[1] , this.position[2] - this.width]
+    this.boxverts[5] =[ this.maxMins[1]  - this.realposition[0], this.maxMins[2] - this.realposition[1],  this.maxMins[4]- this.realposition[2] ];
     //F bottom right
-    this.boxverts[6] =[ this.position[0] + this.length, this.position[1] , this.position[2] ] 
+    this.boxverts[6] =[ this.maxMins[0]  - this.realposition[0], this.maxMins[2] - this.realposition[1],  this.maxMins[5]- this.realposition[2] ]; 
     //B bottom right  
-    this.boxverts[7] =[ this.position[0] + this.length, this.position[1] , this.position[2] - this.width] 
+    this.boxverts[7] =[ this.maxMins[0]  - this.realposition[0], this.maxMins[2]- this.realposition[1] , this.maxMins[4]- this.realposition[2] ];
+
   }
   
   this.setPosition = function (position)
@@ -74,9 +70,11 @@ c3dl.BoundingBox = function ()
       this.boxverts[i] = c3dl.subtractVectors(this.boxverts[i], this.position);
     }
     this.position = [position[0], position[1], position[2]];
+    this.realposition = [position[0]-this.realposition[0], position[1]-this.realposition[1], position[2]-this.realposition[2]];
     for (var i = 0; i <8; i++) {
       this.boxverts[i] = c3dl.addVectors(this.boxverts[i], this.position);
     }
+    
   }
   this.scale = function (scaleVec)
   {
@@ -177,7 +175,7 @@ c3dl.BoundingBox = function ()
   }
   this.getCorners = function () 
   {
-    return [this.position[0] , this.position[2] - this.width, this.position[0] + this.length, this.position[2]];
+    return [this.position[0] + this.maxMins[0], this.position[2] + this.maxMins[5], this.position[0] + this.maxMins[1], this.position[2] + this.maxMins[4]];
   }
 }
 

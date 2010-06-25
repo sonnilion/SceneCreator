@@ -63,14 +63,17 @@ c3dl.PrimitiveSet = function ()
       xyz[0]= parseFloat(vertices[i][0]);
       xyz[1] = parseFloat(vertices[i][1]);
       xyz[2] = parseFloat(vertices[i][2]);
-      this.vertices[i]= xyz;
+      this.vertices.push(xyz[0]);
+      this.vertices.push(xyz[1]);
+      this.vertices.push(xyz[2]);
     }
     this.type = type;
     for (var i = 0; i < faces.length; i+=2) {
       var l = new c3dl.Line();
-      var vert1 = this.vertices[parseInt(faces[i])];
-      var vert2 = this.vertices[parseInt(faces[i+1])];
-      l.setCoordinates([ vert1[0], vert1[1], vert1[2]], [vert2[0], vert2[1], vert2[2] ]);
+      var start = parseInt(faces[i]);
+      var end = parseInt(faces[i+1]);
+      l.setCoordinates([this.vertices[start*3], this.vertices[start*3+1], this.vertices[start*3+2]],
+       [this.vertices[end*3], this.vertices[end*3+1], this.vertices[end*3+2] ]);
       this.lineList.push(l);
     }
   }
@@ -154,7 +157,10 @@ c3dl.PrimitiveSet = function ()
   {
     return this.vertices;
   }
-
+  this.setVertices = function (vertices)
+  {
+    this.vertices=vertices;
+  }
   /**
    Get the single dimensional array of normals of this primitive set. 
    The array of normals is in the order nx, ny, nz, nx, ny, nz,...

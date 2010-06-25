@@ -6,7 +6,7 @@
     </title>
     <link type="text/css" href="css/style.css" rel="stylesheet" />
     <script type="text/javascript" src="js/jquery/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="js/jquery/jquery-ui-1.8.1.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-ui-1.8.2.custom.min.js"></script>
     <script language="javascript" src="js/c3dl/c3dapi.js"></script>
     <script src="js/processing/processing.js"></script>
     <script language="javascript" src="js/scenecreator.js"></script>
@@ -21,9 +21,26 @@
     <br />
       <div id="main3d">
         <div id="sidebar"> 
-        <H1>Items</H1>
-        <img src="images/sidebar/chair.jpg" onclick="createObject(0)" />
-        <img src="images/sidebar/table.jpg" onclick="createObject(1)" />
+        <h3>Items</h3>
+        <div id="accordion">
+			<div>
+				<h3><a href="#">House Objects</a></h3>
+				<div>        
+				  <img src="images/sidebar/chair.jpg" width="50px" height="50px" onclick="createObject(0)" />
+                  <img src="images/sidebar/table.jpg" width="50px" height="50px" onclick="createObject(1)" />
+
+                  
+                </div>
+			</div>
+			<div>
+				<h3><a href="#">Random Objects</a></h3>
+				<div></div>
+			</div>
+			<div>
+				<h3><a href="#">Random Objects</a></h3>
+				<div></div>
+			</div>
+		  </div>
         </div>
         <div id="scenecaster">
           <div id="buttons">
@@ -40,7 +57,7 @@
             <img src="images/icons/lightdown.jpg" title="Darken scene" onmousedown="buttonOn(5)" onmouseup="buttonOff(5)" />
           </div>
           <div id="screen">
-            <canvas id="SceneCaster3d" style="" width="500" height="500"></canvas>
+            <canvas id="SceneCaster3d" style="" width="800" height="600"></canvas>
           </div>
         </div>
         <div id="widget">
@@ -81,11 +98,112 @@
               </td>
             </tr>
           </table>
-         <div id="3dinfo">
-          <h2>Info</h2>
-          *Items selected are blue
-        </div>
+          <div class="toggler">
+            <div id="effect">
+              <h3>Size</h3>
+              <form>
+                <table>
+                <tr>  
+                  <td>Length:</td>
+                  <td><input type="text" id="length" onfocus="setCurLength()" onchange="maintainAspectRatioLength()"/></td> 
+                </tr>
+                <tr>
+              
+                  <td>Width:</td>
+                  <td><input type="text" id="width" onfocus="setCurWidth()" onchange="maintainAspectRatioWidth()"/></td>      
+                </tr>
+                <tr>
+                 
+                  <td>Hieght:</td>
+                  <td><input type="text" id="height" onfocus="setCurHeigth()" onchange="maintainAspectRatioHeight()" /> </td>
+                </tr>
+                </table>
+                <input type="checkbox" checked=checked id="mar" /> Maintain Aspect Ratio<br />
+                <input type="button" value="Back" onclick="cancel()"/>
+                <input type="button" value="OK" onclick="ok()"/>
+              </form>
+              <script type="text/javascript" language="javascript">
+                function ok() {
+                  setSize(document.getElementById("length").value, document.getElementById("width").value, document.getElementById("height").value);
+                  scaleEffect();
+                }
+                function cancel() {
+                  scaleEffect();
+                } 
+                
+                function maintainAspectRatioLength(){
+                  document.getElementById("length").value = parseFloat(document.getElementById("length").value).toFixed(2);
+                  if (document.getElementById("mar").checked) { 
+                    newLength = document.getElementById("length").value;
+                    if (newLength > oldLength) {
+                      document.getElementById("width").value= (document.getElementById("width").value * (newLength / oldLength)).toFixed(2);
+                      document.getElementById("height").value= (document.getElementById("height").value* (newLength / oldLength)).toFixed(2);
+                    }
+                    else if (newLength < oldLength) {
+                    document.getElementById("width").value= document.getElementById("width").value * 1/(oldLength / newLength).toFixed(2);
+                    document.getElementById("height").value= document.getElementById("height").value * 1/(oldLength / newLength).toFixed(2);
+                    }
+                  }
+                }
+                function maintainAspectRatioWidth(){
+                  document.getElementById("width").value = parseFloat(document.getElementById("width").value).toFixed(2);
+                  if (document.getElementById("mar").checked) {
+                    newWidth = document.getElementById("width").value;
+                    if (newWidth > oldWidth) {
+                      document.getElementById("length").value= (document.getElementById("length").value * (newWidth / oldWidth)).toFixed(2);
+                      document.getElementById("height").value= (document.getElementById("height").value* (newWidth / oldWidth)).toFixed(2);
+                    }
+                    else if (newWidth < oldWidth) {
+                    document.getElementById("length").value= (document.getElementById("length").value * 1/(oldWidth / newWidth)).toFixed(2);
+                    document.getElementById("height").value= (document.getElementById("height").value * 1/(oldWidth / newWidth)).toFixed(2);
+                    }
+                  }
+                }
+                function maintainAspectRatioHeight(){
+                  document.getElementById("height").value = parseFloat(document.getElementById("height").value).toFixed(2);  
+                  if (document.getElementById("mar").checked) {
+                    newHeight = document.getElementById("height").value;
+                    if (newHeight > oldHeight) {
+                      document.getElementById("width").value= (document.getElementById("width").value * (newHeight / oldHeight)).toFixed(2);
+                      document.getElementById("length").value= (document.getElementById("length").value* (newHeight / oldHeight)).toFixed(2);
+                    }
+                    else if (newHeight < oldHeight) {
+                    document.getElementById("width").value= (document.getElementById("width").value * 1/(oldHeight / newHeight)).toFixed(2);
+                    document.getElementById("length").value= (document.getElementById("length").value * 1/(oldHeight / newHeight)).toFixed(2);
+                    }
+                  }
+                }
+                function setCurHeigth() {
+                oldHeight= document.getElementById("height").value;
+                }
+                function setCurLength() {
+                oldLength= document.getElementById("length").value;
+                }
+                function setCurWidth() {
+                oldWidth= document.getElementById("width").value;
+                }
+              </script>
+            </div>
+          </div>
         </div>  
+        <div class="info">
+          <h3>Info</h3>
+          <ul>
+            <li>add item to scene from the side bar </li>
+            <li> selection (clicking an item highlights it blue, draws the bounding box, and is set as the selected item)</li> 
+            <li>once an item is selected a user can (using the button above the scene):</li> 
+            <ul> 
+              <li>delete</li> 
+              <li>rotate</li> 
+              <li>move up/down</li> 
+              <li>scale</li> 
+              <li>copy</li> 
+              <li>move to position of the mouse </li> 
+            </ul>
+            <li> camera widget </li> 
+            <li>5 independent cameras </li>
+           </ul>  
+        </div>
       </div>
     <div id="main2d">
       <div> 
@@ -98,11 +216,30 @@
         <img src="images/icons/delete.jpg" title="Delete" onclick="Pressed(3)" />
         <img src="images/icons/drawwall.jpg" title="Draw walls" onclick="Pressed(4)" />
         <img src="images/icons/addlight.jpg" title="Insert lights" onclick="Pressed(5)" />
-        <img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
+        <!--<img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
         <img src="images/icons/zoomout.jpg" title="Zoom out" onclick="Pressed(7)" />
-        <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />
+        <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />-->
+        <script>
+        scaleEffect();
+        var Pressed = function Pressed(bvalue) {
+          var bpressed = document.getElementById('pressed');
+          bpressed.value = bvalue;
+        }
+        </script>
       </div>
       <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
+      <div class="info">
+          <h3>Info</h3>
+          <ul>
+            <li>display 3d object (red), walls (black), and lights (yellow) in a 2d scene </li>
+            <li>create wall (click the start and end points of the wall)</li> 
+            <li>insert lights (click the location to insert light)</li> 
+            <li>new scene(delete all) </li> 
+            <li>walls and lights can be selected</li> 
+            <li>delete selected </li>
+            <li>move selected (walls can the whole wall or just the corner)</li>
+           </ul>  
+       </div>
     </div>
     <div id="maingoogle">
       <div>
@@ -110,10 +247,6 @@
       <input type="button" value="Forward" onclick="google3d.history.forward()"> 
       </div>
       <iframe id="google3d" name="google3d" width="800" height="600" src="http://sketchup.google.com/3dwarehouse/">
-      <script>
-      if (document.google3d.download.onclick)
-        alert("holy shit");
-      </script>
     </div>
   </body>
 </html>

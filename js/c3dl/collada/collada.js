@@ -209,7 +209,11 @@ c3dl.Collada.prototype.init = function (daePath)
   }
   if (this.isReady())
   {
+  c3dl.pushMatrix();
+  c3dl.loadIdentity();
   this.boundingbox.init(this.sceneGraph.getAllVerts());
+  c3dl.popMatrix();
+  this.sceneGraph.center(this.boundingbox.realposition);
   }
 }
 

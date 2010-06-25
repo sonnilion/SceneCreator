@@ -244,6 +244,7 @@ c3dl.SceneNode.prototype.getAllVerts  = function ()
 {
   var allverts =[];
   var numverts = 0;
+  c3dl.pushMatrix();
   for (var i = 0; i < this.children.length; i++)
   { 
     if (this.children[i] instanceof c3dl.SceneNode) {  
@@ -251,9 +252,34 @@ c3dl.SceneNode.prototype.getAllVerts  = function ()
     }
     else if (this.children[i] instanceof c3dl.Geometry) { 
       for (var j = 0; j < this.children[i].getPrimitiveSets().length; j++) {
-        allverts = allverts.concat(this.children[i].getPrimitiveSets()[j].getVertices());
+        var temp  = this.children[i].getPrimitiveSets()[j].getVertices();
+        c3dl.multMatrix(this.getTransform());
+        for (var k = 0; k < temp.length; k+=3) {
+          var temp2 = [temp[k], temp[k+1], temp[k+2]];
+          c3dl.multiplyMatrixByVector(c3dl.peekMatrix(),temp2,temp2);
+          allverts = allverts.concat(temp2);
+        } 
       }
     }
   }
+  c3dl.popMatrix();
   return allverts;
+}
+
+c3dl.SceneNode.prototype.center  = function (newcenter)
+{
+  for (var i = 0; i < this.children.length; i++)
+  { 
+    if (this.children[i] instanceof c3dl.SceneNode) {  
+      this.children[i].center(newcenter);
+    }
+    else if (this.children[i] instanceof c3dl.Geometry) { 
+       var temp = new c3dl.SceneNode();
+       for (var j = 0; j < this.children.length; j++) 
+         temp.addChild(this.children[j]);   
+       this.children = [];
+       this.children[i] = temp; 
+       temp.setTransform(c3dl.makePoseMatrix([1,0,0],[0,1,0],[0,0,1], [-newcenter[0],-newcenter[1],-newcenter[2]])); 
+    }
+  }
 }
