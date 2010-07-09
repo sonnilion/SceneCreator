@@ -7,17 +7,15 @@ c3dl.BoundingBox = function ()
   this.height = 0;
   //z
   this.width = 0;
-  //All Verts
-  this.allverts = [];
+  
   this.boxverts = [];
   this.lineList =[];
   this.maxMins= [];
   this.realposition = [];
-  this.position = c3dl.makeVector(0.0, 0.0, 0.0);
+  this.position = [0,0,0];
   this.init = function (vertices)
   {
     if (vertices) {
-      this.allverts = vertices;
       var lengthVerts=[], widthVerts=[], heightVerts=[], j = 0;
       for (var i = 0; i < vertices.length/3; i++) {
         lengthVerts[i] = vertices[j];
@@ -175,7 +173,23 @@ c3dl.BoundingBox = function ()
   }
   this.getCorners = function () 
   {
-    return [this.position[0] + this.maxMins[0], this.position[2] + this.maxMins[5], this.position[0] + this.maxMins[1], this.position[2] + this.maxMins[4]];
+    return [[(this.boxverts[0][0]).toFixed(2),(this.boxverts[0][2]).toFixed(2)], 
+            [(this.boxverts[1][0].toFixed(2)),(this.boxverts[1][2]).toFixed(2)],
+            [(this.boxverts[2][0]).toFixed(2),(this.boxverts[2][2]).toFixed(2)],
+            [(this.boxverts[3][0]).toFixed(2),(this.boxverts[3][2]).toFixed(2)]];
+  }
+  this.getCopy = function ()
+  {
+    var copy = new c3dl.BoundingBox();
+    copy.length = this.length;
+    copy.height = this.height;
+    copy.width = this.width;
+    copy.boxverts = c3dl.copyObj(this.boxverts);
+    copy.lineList = c3dl.copyObj(this.lineList);
+    copy.maxMins= c3dl.copyObj(this.maxMins);
+    copy.realposition = c3dl.copyObj(this.realposition);
+    copy.position = c3dl.copyObj(this.position);
+    return copy;
   }
 }
 

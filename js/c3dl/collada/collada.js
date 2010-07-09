@@ -440,6 +440,7 @@ c3dl.Collada.prototype.clone = function (other)
 
   this.path = other.path;
   this.sceneGraph = other.sceneGraph.getCopy();
+  this.boundingbox = other.boundingbox.getCopy();
 }
 
 /**
@@ -596,15 +597,18 @@ c3dl.Collada.prototype.setSize = function (length,width,height)
 
 c3dl.Collada.prototype.setDrawBoundingBox = function (drawboundingbox)
 {
-    this.drawboundingbox= drawboundingbox;
+  this.drawboundingbox= drawboundingbox;
 }
 
 c3dl.Collada.prototype.getBoundingBox = function ()
 {
-    this.boundingbox;
+  return this.boundingbox;
 }
 
-
+c3dl.Collada.prototype.getBoundingBoxCorners = function ()
+{
+  return this.boundingbox.getCorners();
+}
 
 
 

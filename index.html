@@ -10,8 +10,7 @@
     <script language="javascript" src="js/c3dl/c3dapi.js"></script>
     <script src="js/processing/processing.js"></script>
     <script language="javascript" src="js/scenecreator.js"></script>
-        <script type="application/processing" src="js/scenecreator2d.pjs"> </script>
-    <script type="application/processing" src="js/camerawidget.pjs"> </script>
+
   </head>
   <body>
     <input type="button" value="2D" onclick="show2d();" />
@@ -20,21 +19,43 @@
     <br />
     <br />
       <div id="main3d">
+      <div id="dialog-saveAs" title="Save As">
+	    <form>
+	    <fieldset>
+		    <label for="name">File Name:</label>
+		    <input type="text" name="name" id="name" class="ui-widget-content ui-corner-all" />
+	    </fieldset>
+	    </form>
+     </div>
+     <div id="dialog-load" title="Load">
+	    <form>
+	    <fieldset>
+		    <label for="selectedname">Select file name:</label> <br />
+		    <select id="selectedname" name="selectedname" multiple="multiple"></select>
+	    </fieldset>
+	    </form>
+     </div>
         <div id="sidebar"> 
         <h3>Items</h3>
         <div id="accordion">
 			<div>
 				<h3><a href="#">House Objects</a></h3>
 				<div>        
-				  <img src="images/sidebar/chair.jpg" width="50px" height="50px" onclick="createObject(0)" />
-                  <img src="images/sidebar/table.jpg" width="50px" height="50px" onclick="createObject(1)" />
-
-                  
+				  <img src="images/sidebar/chair.jpg" width="25px" height="25px" onclick="createObject(0)" />
+                  <img src="images/sidebar/table.jpg" width="25px" height="25px" onclick="createObject(1)" />         
                 </div>
 			</div>
 			<div>
-				<h3><a href="#">Random Objects</a></h3>
-				<div></div>
+				<h3><a href="#">PacMan Objects</a></h3>
+				<div>
+				  <img src="images/sidebar/pacman.jpg" width="25px" height="25px" onclick="createObject(2)" />
+                  <img src="images/sidebar/redghost.jpg" width="25px" height="25px" onclick="createObject(3)" /> 
+                  <img src="images/sidebar/blueghost.jpg" width="25px" height="25px" onclick="createObject(4)" />
+                  <img src="images/sidebar/orangeghost.jpg" width="25px" height="25px" onclick="createObject(5)" /> 
+                  <img src="images/sidebar/pinkghost.jpg" width="25px" height="25px" onclick="createObject(6)" />
+                  <img src="images/sidebar/bigball.jpg" width="25px" height="25px" onclick="createObject(7)" /> 
+                  <img src="images/sidebar/smallball.jpg" width="25px" height="25px" onclick="createObject(8)" /> 
+				</div>
 			</div>
 			<div>
 				<h3><a href="#">Random Objects</a></h3>
@@ -44,6 +65,9 @@
         </div>
         <div id="scenecaster">
           <div id="buttons">
+            <img src="images/icons/load.jpg" title="Load" onclick="load()" />
+            <img src="images/icons/save.jpg" title="Save" onclick="save()" />
+            <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
             <img src="images/icons/undo.jpg" title="Undo" onclick="undo()" />
             <img src="images/icons/redo.jpg" title="Redo" onclick="redo()" />
             <img src="images/icons/copy.jpg" title="Copy" onclick="copySelected()" />
@@ -209,6 +233,9 @@
       <div> 
         <input type="hidden" id="pressed" value="0">
         <input type="hidden" id="objects" value="">
+        <img src="images/icons/load.jpg" title="Load" onclick="load()" />
+        <img src="images/icons/save.jpg" title="Save" onclick="save()" />
+        <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
         <img src="images/icons/undo.jpg" title="Undo" onclick="Pressed(9)" />
         <img src="images/icons/redo.jpg" title="Redo" onclick="Pressed(10)" />
         <img src="images/icons/newpage.jpg" title="New" onclick="Pressed(1)" />
