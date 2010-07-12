@@ -31,7 +31,7 @@
 	    <form>
 	    <fieldset>
 		    <label for="selectedname">Select file name:</label> <br />
-		    <select id="selectedname" name="selectedname" multiple="multiple"></select>
+		    <select id="selectedname" name="selectedname"></select>
 	    </fieldset>
 	    </form>
      </div>
@@ -75,6 +75,7 @@
             <img src="images/icons/movedown.jpg" title="Move down" onmousedown="buttonOn(1)" onmouseup="buttonOff(1)" />
             <img src="images/icons/rotateleft.jpg" title="Rotate left" onmousedown="buttonOn(2)" onmouseup="buttonOff(2)" />
             <img src="images/icons/rotateright.jpg" title="Rotate right" onmousedown="buttonOn(3)" onmouseup="buttonOff(3)" />
+            <img src="images/icons/rotate.jpg" title="Rotate" onclick="rotate()"/>
             <img src="images/icons/delete.jpg" title="Delete" onclick="deleteSelected()" />
             <img src="images/icons/scale.jpg" title="Scale" onclick="scale()"/>
             <img src="images/icons/lightup.jpg" title="Brighten scene" onmousedown="buttonOn(4)" onmouseup="buttonOff(4)" />
@@ -123,7 +124,7 @@
             </tr>
           </table>
           <div class="toggler">
-            <div id="effect">
+            <div id="scaleDiv">
               <h3>Size</h3>
               <form>
                 <table>
@@ -143,18 +144,17 @@
                 </tr>
                 </table>
                 <input type="checkbox" checked=checked id="mar" /> Maintain Aspect Ratio<br />
-                <input type="button" value="Back" onclick="cancel()"/>
-                <input type="button" value="OK" onclick="ok()"/>
+                <input type="button" value="Back" onclick="scaleCancel()"/>
+                <input type="button" value="OK" onclick="scaleOk()"/>
               </form>
               <script type="text/javascript" language="javascript">
-                function ok() {
+                function scaleOk() {
                   setSize(document.getElementById("length").value, document.getElementById("width").value, document.getElementById("height").value);
                   scaleEffect();
                 }
-                function cancel() {
+                function scaleCancel() {
                   scaleEffect();
-                } 
-                
+                }               
                 function maintainAspectRatioLength(){
                   document.getElementById("length").value = parseFloat(document.getElementById("length").value).toFixed(2);
                   if (document.getElementById("mar").checked) { 
@@ -209,24 +209,73 @@
               </script>
             </div>
           </div>
+          <div class="toggler">
+            <div id="rotateDiv">
+              <h3>Rotation</h3>
+              <form>
+                <table>
+                  <tr>  
+                    <td>Axis</td>
+                    <td>
+                      <select id="rotAxis" name="rotAxis">
+                        <option>X</option>
+                        <option>Y</option>
+                        <option>Z</option>
+                      </select>     
+                    </td> 
+                  </tr>
+                  <tr> 
+                    <td>Angle:</td>
+                    <td><input type="rotAngle" id="rotAngle" /></td>      
+                  </tr>
+                </table>
+                <input type="button" value="Back" onclick="rotateCancel()"/>
+                <input type="button" value="OK" onclick="rotateOk()"/>
+              </form>
+               <script type="text/javascript" language="javascript">
+                function rotateOk() {
+                  var axis = document.getElementById("rotAxis").value;
+                  if (axis === "X") {
+                    axis = [1,0,0];
+                  }
+                  else if (axis === "Y") {
+                    axis = [0,1,0];
+                  }
+                  else {
+                    axis = [0,0,1];
+                  }
+                  var rot = (parseFloat(document.getElementById("rotAngle").value) * Math.PI) /180;
+                  rotateOnAxis(axis, rot);
+                  
+                  rotateEffect();
+                }
+                function rotateCancel() {
+                  rotateEffect();
+                }  
+              </script> 
+            </div>
+          </div>
+          
         </div>  
-        <div class="info">
-          <h3>Info</h3>
-          <ul>
-            <li>add item to scene from the side bar </li>
-            <li> selection (clicking an item highlights it blue, draws the bounding box, and is set as the selected item)</li> 
-            <li>once an item is selected a user can (using the button above the scene):</li> 
-            <ul> 
-              <li>delete</li> 
-              <li>rotate</li> 
-              <li>move up/down</li> 
-              <li>scale</li> 
-              <li>copy</li> 
-              <li>move to position of the mouse </li> 
-            </ul>
-            <li> camera widget </li> 
-            <li>5 independent cameras </li>
-           </ul>  
+        <div class="toggler">
+          <div id="info3d">
+            <h3>Info</h3>
+            <ul>
+              <li>add item to scene from the side bar </li>
+              <li> selection (clicking an item highlights it blue, draws the bounding box, and is set as the selected item)</li> 
+              <li>once an item is selected a user can (using the button above the scene):</li> 
+              <ul> 
+                <li>delete</li> 
+                <li>rotate</li> 
+                <li>move up/down</li> 
+                <li>scale</li> 
+                <li>copy</li> 
+                <li>move to position of the mouse </li> 
+              </ul>
+              <li> camera widget </li> 
+              <li>5 independent cameras </li>
+             </ul>  
+          </div>
         </div>
       </div>
     <div id="main2d">
@@ -248,6 +297,7 @@
         <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />-->
         <script>
         scaleEffect();
+        rotateEffect();
         var Pressed = function Pressed(bvalue) {
           var bpressed = document.getElementById('pressed');
           bpressed.value = bvalue;
@@ -255,7 +305,8 @@
         </script>
       </div>
       <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
-      <div class="info">
+      <div class="toggler">
+        <div id="info2d">
           <h3>Info</h3>
           <ul>
             <li>display 3d object (red), walls (black), and lights (yellow) in a 2d scene </li>
@@ -265,7 +316,8 @@
             <li>walls and lights can be selected</li> 
             <li>delete selected </li>
             <li>move selected (walls can the whole wall or just the corner)</li>
-           </ul>  
+           </ul> 
+         </div>
        </div>
     </div>
     <div id="maingoogle">

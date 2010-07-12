@@ -378,6 +378,20 @@ c3dl.Collada.prototype.setEffect = function (effect)
  
  @param {float} angle in radians.
  */
+c3dl.Collada.prototype.rotateOnAxis = function (axisVec, angle)
+{
+  if (this.isReady())
+  {
+    this.sceneGraph.rotateOnAxis(axisVec, angle);
+    this.boundingbox.rotateOnAxis(axisVec,angle);
+  }
+}
+
+/**
+ Rotate around the up vector by a hard amount.
+ 
+ @param {float} angle in radians.
+ */
 c3dl.Collada.prototype.yaw = function (angle)
 {
   if (this.isReady())
@@ -397,6 +411,7 @@ c3dl.Collada.prototype.pitch = function (angle)
   if (this.isReady())
   {
     this.sceneGraph.pitch(angle);
+    this.boundingbox.rotateOnAxis(this.sceneGraph.left,angle);
   }
 }
 
@@ -418,6 +433,7 @@ c3dl.Collada.prototype.roll = function (angle)
   if (this.isReady())
   {
     this.sceneGraph.roll(angle);
+     this.boundingbox.rotateOnAxis(this.sceneGraph.dir,angle);
   }
 }
 

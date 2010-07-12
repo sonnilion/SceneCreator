@@ -50,8 +50,10 @@
       camLeftRight     = null,
       camUpDown        = null,
       scaling          = false,
+      rotating         = false,
       sceneName        = null,
       scalingObject    = null,
+      rotatingObject   = null,
       models           = [],
       wallPos2d        = [],
       enclosures       = [],
@@ -813,11 +815,29 @@
     this.rot;
     this.objectSelected = objectSelected;
     this.execute = function (rot) {
-      if (this.rot) this.objectSelected.yaw(this.rot);
-      else this.rot = rot;
+      if (this.rot) {
+        this.objectSelected.yaw(this.rot);
+      }
+      else {
+        this.rot = rot;
+      }
     };
     this.unexecute = function () {
       this.objectSelected.yaw(-this.rot);
+    };
+  };
+  
+  //Rotate on axis Command
+  var rotateObjectOnAxisCommand = function rotateObjectOnAxisCommand(axisVec,rot) {
+    Command.call();
+    this.rot = rot;
+    this.axisVec = axisVec;
+    this.objectSelected = objectSelected;
+    this.execute = function () {
+      this.objectSelected.rotateOnAxis(this.axisVec,this.rot);
+    };
+    this.unexecute = function () {
+      this.objectSelected.rotateOnAxis(this.axisVec,-this.rot);
     };
   };
   
@@ -1000,6 +1020,15 @@
       else {
         scaleEffect();
         scaling =false;
+      }
+    }
+    if (rotating && rotatingObject !== objectSelected) {
+      if (objectSelected) { 
+        scalingObject = objectSelected;
+      }
+      else {
+        rotateEffect();
+        rotating =false;
       }
     }
     //update slider position
@@ -1307,6 +1336,14 @@
       document.getElementById("height").value=getSize()[1].toFixed(2);
     }
   }
+  //rotation pop-up
+  var rotate = this.rotate = function rotate() {
+    if (objectSelected) {
+      rotating=true;
+      rotatingObject = objectSelected;
+      rotateEffect();
+    }
+  }
   var getSize = this.getSize = function getSize() {
     var size = [];
     size[0] = objectSelected.getLength();
@@ -1322,6 +1359,16 @@
       }
     }
     commands[curcmd] = new scaleCommand(length, width, height);
+    commands[curcmd].execute();
+  }
+  var rotateOnAxis = this.rotateOnAxis = function rotateOnAxis(axis, rot) {
+    curcmd++;
+    if (curcmd <= commands.length - 1) {
+      for (var i = curcmd, l = commands.length; i < l; i++) {
+        commands[i] = null;
+      }
+    }
+    commands[curcmd] = new rotateObjectOnAxisCommand(axis, rot);
     commands[curcmd].execute();
   }
   var getPic = this.getPic = function getPic(length, width, height) {
@@ -1758,7 +1805,9 @@ function getEnclosureLength(test) {
     });
     //run the currently selected effect
 	var scaleEffect = this.scaleEffect = function scaleEffect(){
-	  var options = {};
-      $("#effect").toggle("slide",options,500);
+      $("#scaleDiv").toggle("slide",500);
+	};	
+	var rotateEffect = this.rotateEffect = function rotateEffect(){
+      $("#rotateDiv").toggle("slide",500);
 	};	
 })();
