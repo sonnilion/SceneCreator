@@ -114,7 +114,9 @@
         key_a = false,
         key_s = false,
         key_d = false,
-        key_q = false;
+        key_q = false,
+        key_shift= false,
+        key_p= false;
       return {
         "KEY_UP": key_up,
         "KEY_DOWN": key_down,
@@ -125,7 +127,9 @@
         "KEY_A": key_a,
         "KEY_S": key_s,
         "KEY_D": key_d,
-        "KEY_Q": key_q
+        "KEY_Q": key_q,
+        "KEY_SHIFT": key_shift,
+        "KEY_P": key_p,
       };
     }
   )();
@@ -150,6 +154,8 @@
   const KEY_S = 83;
   const KEY_D = 68;
   const KEY_Q = 81;
+  const KEY_P = 80;
+  const KEY_SHIFT = 16;
 
   ////////////////////////////////////////////////////////////////////////////
   // Functions 
@@ -169,9 +175,6 @@
     case KEY_LEFT:
       keysDown.KEY_LEFT = true;
       break;
-    case KEY_E:
-      keysDown.KEY_E = true;
-      break;
     case KEY_W:
       keysDown.KEY_W = true;
       break;
@@ -184,8 +187,8 @@
     case KEY_D:
       keysDown.KEY_D = true;
       break;
-    case KEY_Q:
-      keysDown.KEY_Q = true;
+    case KEY_SHIFT:
+      keysDown.KEY_SHIFT = true;
       break;
     default:
       break;
@@ -224,6 +227,16 @@
       break;
     case KEY_Q:
       tiltHotKey =  (tiltHotKey)? false : true;
+      break;
+    case KEY_SHIFT:
+      keysDown.KEY_SHIFT = false;
+      break;
+    case KEY_P:
+      if (keysDown.KEY_SHIFT) {
+        var img = document.createElement('img');
+        document.getElementById('mainImages').appendChild(img);
+        img.src = getPNG();
+      }
       break;
     default:
       break;
@@ -452,6 +465,7 @@
     document.getElementById("main2d").setAttribute("style", "display:inline;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
     document.getElementById("maingoogle").setAttribute("style", "display:none;");
+    document.getElementById("mainImages").setAttribute("style", "display:none;");
     pause3d();
     unpause2d();
   }
@@ -459,6 +473,7 @@
     document.getElementById("main3d").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("maingoogle").setAttribute("style", "display:none;");
+    document.getElementById("mainImages").setAttribute("style", "display:none;");
     unpause3d();
     pause2d();
   }
@@ -466,9 +481,19 @@
     document.getElementById("maingoogle").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
+    document.getElementById("mainImages").setAttribute("style", "display:none;");
     pause3d();
     pause2d();
   }
+  var showImages = this.showImages = function showImages() {
+    document.getElementById("mainImages").setAttribute("style", "display:inline;");
+    document.getElementById("main2d").setAttribute("style", "display:none;");
+    document.getElementById("main3d").setAttribute("style", "display:none;");
+    document.getElementById("maingoogle").setAttribute("style", "display:none;");
+    pause3d();
+    pause2d();
+  }
+  
   
   //pausing and unpausing the 2d and 3d to increase speed
   function pause3d() {
@@ -1371,16 +1396,29 @@
     commands[curcmd] = new rotateObjectOnAxisCommand(axis, rot);
     commands[curcmd].execute();
   }
-  var getPic = this.getPic = function getPic(length, width, height) {
-    var path = "images/sidebar/";
-    if (objectSelected.getPath() === CHAIR_PATH) {
-      path = path + "chair.jpg";
+  var getPNG = function getPNG(){
+      var temp = scn.getGL();
+      var arr = temp.readPixels(0, 0, 800 , 600 , temp.RGBA, temp.UNSIGNED_BYTE);
+      var cvs = document.createElement('canvas');
+      cvs.width = 800;
+      cvs.height = 600;
+      var ctx2d = cvs.getContext('2d');
+      var image = ctx2d.createImageData(cvs.width, cvs.height);
+ 
+      for (var y = 0; y < cvs.height; y++){
+        for (var x = 0; x < cvs.width; x++){
+       
+          var index = (y * cvs.width + x) * 4;          
+          var index2 = ((cvs.height-1-y) * cvs.width + x) * 4;
+         
+          for(var p = 0; p < 4; p++){
+            image.data[index2 + p] = arr[index + p];
+          }
+        }
+      }
+      ctx2d.putImageData(image, 0, 0);
+      return cvs.toDataURL();
     }
-    else if (objectSelected.getPath() === TABLE_PATH) {
-      path = path + "table.jpg";
-    }
-    return path;
-  }
   
   ////////////////////////////////////////////////////////////////////////////
   // 2d Functions 
@@ -1810,4 +1848,10 @@ function getEnclosureLength(test) {
 	var rotateEffect = this.rotateEffect = function rotateEffect(){
       $("#rotateDiv").toggle("slide",500);
 	};	
+	var help2d = this.help2d = function help2d(){
+      $("#info2d").toggle("slide",500);
+	};
+	var help3d = this.help3d = function help3d(){
+      $("#info3d").toggle("slide",500);
+	};
 })();

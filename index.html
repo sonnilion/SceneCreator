@@ -16,55 +16,59 @@
     <input type="button" value="2D" onclick="show2d();" />
     <input type="button" value="3D" onclick="show3d();" />
     <input type="button" value="Google3dWarhouse" onclick="showgoogle();" />
+    <input type="button" value="Images" onclick="showImages();" />
     <br />
     <br />
-      <div id="main3d">
-      <div id="dialog-saveAs" title="Save As">
-	    <form>
-	    <fieldset>
-		    <label for="name">File Name:</label>
-		    <input type="text" name="name" id="name" class="ui-widget-content ui-corner-all" />
-	    </fieldset>
-	    </form>
-     </div>
-     <div id="dialog-load" title="Load">
-	    <form>
-	    <fieldset>
-		    <label for="selectedname">Select file name:</label> <br />
-		    <select id="selectedname" name="selectedname"></select>
-	    </fieldset>
-	    </form>
-     </div>
-        <div id="sidebar"> 
-        <h3>Items</h3>
-        <div id="accordion">
-			<div>
-				<h3><a href="#">House Objects</a></h3>
-				<div>        
-				  <img src="images/sidebar/chair.jpg" width="25px" height="25px" onclick="createObject(0)" />
-                  <img src="images/sidebar/table.jpg" width="25px" height="25px" onclick="createObject(1)" />         
-                </div>
-			</div>
-			<div>
-				<h3><a href="#">PacMan Objects</a></h3>
-				<div>
-				  <img src="images/sidebar/pacman.jpg" width="25px" height="25px" onclick="createObject(2)" />
-                  <img src="images/sidebar/redghost.jpg" width="25px" height="25px" onclick="createObject(3)" /> 
-                  <img src="images/sidebar/blueghost.jpg" width="25px" height="25px" onclick="createObject(4)" />
-                  <img src="images/sidebar/orangeghost.jpg" width="25px" height="25px" onclick="createObject(5)" /> 
-                  <img src="images/sidebar/pinkghost.jpg" width="25px" height="25px" onclick="createObject(6)" />
-                  <img src="images/sidebar/bigball.jpg" width="25px" height="25px" onclick="createObject(7)" /> 
-                  <img src="images/sidebar/smallball.jpg" width="25px" height="25px" onclick="createObject(8)" /> 
-				</div>
-			</div>
-			<div>
-				<h3><a href="#">Random Objects</a></h3>
-				<div></div>
-			</div>
-		  </div>
-        </div>
-        <div id="scenecaster">
-          <div id="buttons">
+    <div id="mainImages">
+    </div>
+    <div id="main3d">
+        <div id="dialog-saveAs" title="Save As">
+	      <form>
+	      <fieldset>
+		      <label for="name">File Name:</label>
+		      <input type="text" name="name" id="name" class="ui-widget-content ui-corner-all" />
+	      </fieldset>
+	      </form>
+       </div>
+        <div id="dialog-load" title="Load">
+	      <form>
+	      <fieldset>
+		      <label for="selectedname">Select file name:</label> <br />
+		      <select id="selectedname" name="selectedname"></select>
+	      </fieldset>
+	      </form>
+       </div>
+        <table>
+         <tr>
+           <td valign=top rowspan="3" id="sidebar" > 
+             <h3>Items</h3>
+             <div id="accordion">
+			  <div>
+				  <h3><a href="#">House Objects</a></h3>
+				  <div>        
+				    <img src="images/sidebar/chair.jpg" width="25px" height="25px" onclick="createObject(0)" />
+                    <img src="images/sidebar/table.jpg" width="25px" height="25px" onclick="createObject(1)" />         
+                  </div>
+			  </div>
+			  <div>
+				  <h3><a href="#">PacMan Objects</a></h3>
+				  <div>
+				    <img src="images/sidebar/pacman.jpg" width="25px" height="25px" onclick="createObject(2)" />
+                    <img src="images/sidebar/redghost.jpg" width="25px" height="25px" onclick="createObject(3)" /> 
+                    <img src="images/sidebar/blueghost.jpg" width="25px" height="25px" onclick="createObject(4)" />
+                    <img src="images/sidebar/orangeghost.jpg" width="25px" height="25px" onclick="createObject(5)" /> 
+                    <img src="images/sidebar/pinkghost.jpg" width="25px" height="25px" onclick="createObject(6)" />
+                    <img src="images/sidebar/bigball.jpg" width="25px" height="25px" onclick="createObject(7)" /> 
+                    <img src="images/sidebar/smallball.jpg" width="25px" height="25px" onclick="createObject(8)" /> 
+				  </div>
+			  </div>
+			  <div>
+				  <h3><a href="#">Random Objects</a></h3>
+				  <div></div>
+			  </div>
+		    </div>
+           </td>
+           <td colspan="2">
             <img src="images/icons/load.jpg" title="Load" onclick="load()" />
             <img src="images/icons/save.jpg" title="Save" onclick="save()" />
             <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
@@ -80,183 +84,191 @@
             <img src="images/icons/scale.jpg" title="Scale" onclick="scale()"/>
             <img src="images/icons/lightup.jpg" title="Brighten scene" onmousedown="buttonOn(4)" onmouseup="buttonOff(4)" />
             <img src="images/icons/lightdown.jpg" title="Darken scene" onmousedown="buttonOn(5)" onmouseup="buttonOff(5)" />
-          </div>
-          <div id="screen">
-            <canvas id="SceneCaster3d" style="" width="800" height="600"></canvas>
-          </div>
-        </div>
-        <div id="widget">
-          <table>
-            <tr align=center>
-              <td>Height</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>Zoom</td>
-            </tr>
-            <tr align=center>
-              <td><input type="button" title="Increase camera height" value="+" onmousedown="buttonOn(6)" onmouseup="buttonOff(6)" /></td>
-              <td></td>
-              <td><input type="button" title="Move forward" value="&uarr;" onmousedown="buttonOn(10)" onmouseup="buttonOff(10)"/></td>
-              <td></td>
-              <td><input type="button" Title="Zoom in" value="+" onmousedown="buttonOn(8)" onmouseup="buttonOff(8)" /></td>
-            </tr>
-            <tr align=center>
-              <td><div id="updownslider"></div></td>
-              <td><input type="button" Title="Move left" value="&larr;" onmousedown="buttonOn(12)" onmouseup="buttonOff(12)" /></td>
-              <td><input type="hidden" id="topview" value=""><canvas id="CameraWidget" data-processing-sources="js/camerawidget.pjs" width="200" height="200"></canvas></td>
-              <td><input type="button" Title="Move right" value="&rarr;" onmousedown="buttonOn(13)" onmouseup="buttonOff(13)" /></td>
-              <td><div id="zoomslider"></div></td>
-            </tr>
-            <tr align=center>
-              <td><input type="button" title="Decrease camera height" value="-" onmousedown="buttonOn(7)" onmouseup="buttonOff(7)" /></td>
-              <td></td>
-              <td><input type="button" title="Move backward" value="&darr;" onmousedown="buttonOn(11)" onmouseup="buttonOff(11)"/></td>
-              <td></td>
-              <td><input type="button" title="Zoom out" value="-" onmousedown="buttonOn(9)" onmouseup="buttonOff(9)" /></td>
-            </tr>
-            <tr>
-              <td colspan="5" align=center>
-                <input type="button" value="<< Cam" onclick="backCam()" />
-                <input type="button" value="Top View" onclick="topView()" />
-                <input type="button" value="Cam >>" onclick="forwardCam()" />
-              </td>
-            </tr>
-          </table>
-          <div class="toggler">
-            <div id="scaleDiv">
-              <h3>Size</h3>
-              <form>
-                <table>
-                <tr>  
-                  <td>Length:</td>
-                  <td><input type="text" id="length" onfocus="setCurLength()" onchange="maintainAspectRatioLength()"/></td> 
-                </tr>
-                <tr>
-              
-                  <td>Width:</td>
-                  <td><input type="text" id="width" onfocus="setCurWidth()" onchange="maintainAspectRatioWidth()"/></td>      
-                </tr>
-                <tr>
-                 
-                  <td>Hieght:</td>
-                  <td><input type="text" id="height" onfocus="setCurHeigth()" onchange="maintainAspectRatioHeight()" /> </td>
-                </tr>
-                </table>
-                <input type="checkbox" checked=checked id="mar" /> Maintain Aspect Ratio<br />
-                <input type="button" value="Back" onclick="scaleCancel()"/>
-                <input type="button" value="OK" onclick="scaleOk()"/>
-              </form>
-              <script type="text/javascript" language="javascript">
-                function scaleOk() {
-                  setSize(document.getElementById("length").value, document.getElementById("width").value, document.getElementById("height").value);
-                  scaleEffect();
-                }
-                function scaleCancel() {
-                  scaleEffect();
-                }               
-                function maintainAspectRatioLength(){
-                  document.getElementById("length").value = parseFloat(document.getElementById("length").value).toFixed(2);
-                  if (document.getElementById("mar").checked) { 
-                    newLength = document.getElementById("length").value;
-                    if (newLength > oldLength) {
-                      document.getElementById("width").value= (document.getElementById("width").value * (newLength / oldLength)).toFixed(2);
-                      document.getElementById("height").value= (document.getElementById("height").value* (newLength / oldLength)).toFixed(2);
-                    }
-                    else if (newLength < oldLength) {
-                    document.getElementById("width").value= document.getElementById("width").value * 1/(oldLength / newLength).toFixed(2);
-                    document.getElementById("height").value= document.getElementById("height").value * 1/(oldLength / newLength).toFixed(2);
-                    }
-                  }
-                }
-                function maintainAspectRatioWidth(){
-                  document.getElementById("width").value = parseFloat(document.getElementById("width").value).toFixed(2);
-                  if (document.getElementById("mar").checked) {
-                    newWidth = document.getElementById("width").value;
-                    if (newWidth > oldWidth) {
-                      document.getElementById("length").value= (document.getElementById("length").value * (newWidth / oldWidth)).toFixed(2);
-                      document.getElementById("height").value= (document.getElementById("height").value* (newWidth / oldWidth)).toFixed(2);
-                    }
-                    else if (newWidth < oldWidth) {
-                    document.getElementById("length").value= (document.getElementById("length").value * 1/(oldWidth / newWidth)).toFixed(2);
-                    document.getElementById("height").value= (document.getElementById("height").value * 1/(oldWidth / newWidth)).toFixed(2);
-                    }
-                  }
-                }
-                function maintainAspectRatioHeight(){
-                  document.getElementById("height").value = parseFloat(document.getElementById("height").value).toFixed(2);  
-                  if (document.getElementById("mar").checked) {
-                    newHeight = document.getElementById("height").value;
-                    if (newHeight > oldHeight) {
-                      document.getElementById("width").value= (document.getElementById("width").value * (newHeight / oldHeight)).toFixed(2);
-                      document.getElementById("length").value= (document.getElementById("length").value* (newHeight / oldHeight)).toFixed(2);
-                    }
-                    else if (newHeight < oldHeight) {
-                    document.getElementById("width").value= (document.getElementById("width").value * 1/(oldHeight / newHeight)).toFixed(2);
-                    document.getElementById("length").value= (document.getElementById("length").value * 1/(oldHeight / newHeight)).toFixed(2);
-                    }
-                  }
-                }
-                function setCurHeigth() {
-                oldHeight= document.getElementById("height").value;
-                }
-                function setCurLength() {
-                oldLength= document.getElementById("length").value;
-                }
-                function setCurWidth() {
-                oldWidth= document.getElementById("width").value;
-                }
-              </script>
-            </div>
-          </div>
-          <div class="toggler">
-            <div id="rotateDiv">
-              <h3>Rotation</h3>
-              <form>
-                <table>
-                  <tr>  
-                    <td>Axis</td>
-                    <td>
-                      <select id="rotAxis" name="rotAxis">
-                        <option>X</option>
-                        <option>Y</option>
-                        <option>Z</option>
-                      </select>     
-                    </td> 
-                  </tr>
-                  <tr> 
-                    <td>Angle:</td>
-                    <td><input type="rotAngle" id="rotAngle" /></td>      
-                  </tr>
-                </table>
-                <input type="button" value="Back" onclick="rotateCancel()"/>
-                <input type="button" value="OK" onclick="rotateOk()"/>
-              </form>
-               <script type="text/javascript" language="javascript">
-                function rotateOk() {
-                  var axis = document.getElementById("rotAxis").value;
-                  if (axis === "X") {
-                    axis = [1,0,0];
-                  }
-                  else if (axis === "Y") {
-                    axis = [0,1,0];
-                  }
-                  else {
-                    axis = [0,0,1];
-                  }
-                  var rot = (parseFloat(document.getElementById("rotAngle").value) * Math.PI) /180;
-                  rotateOnAxis(axis, rot);
+            <img src="images/icons/help.jpg" title="Help/Info" onclick="help3d()" />
+           </td>
+         </tr>
+         <tr>
+           <td rowspan="2">
+                <canvas id="SceneCaster3d" style="" width="800" height="600"></canvas>
+           </td>
+           <td valign=top>
+            <table>
+              <tr align=center>
+                <td>Height</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Zoom</td>
+              </tr>
+              <tr align=center>
+                <td><input type="button" title="Increase camera height" value="+" onmousedown="buttonOn(6)" onmouseup="buttonOff(6)" /></td>
+                <td></td>
+                <td><input type="button" title="Move forward" value="&uarr;" onmousedown="buttonOn(10)" onmouseup="buttonOff(10)"/></td>
+                <td></td>
+                <td><input type="button" Title="Zoom in" value="+" onmousedown="buttonOn(8)" onmouseup="buttonOff(8)" /></td>
+              </tr>
+              <tr align=center>
+                <td><div id="updownslider"></div></td>
+                <td><input type="button" Title="Move left" value="&larr;" onmousedown="buttonOn(12)" onmouseup="buttonOff(12)" /></td>
+                <td><input type="hidden" id="topview" value=""><canvas id="CameraWidget" data-processing-sources="js/camerawidget.pjs" width="200" height="200"></canvas></td>
+                <td><input type="button" Title="Move right" value="&rarr;" onmousedown="buttonOn(13)" onmouseup="buttonOff(13)" /></td>
+                <td><div id="zoomslider"></div></td>
+              </tr>
+              <tr align=center>
+                <td><input type="button" title="Decrease camera height" value="-" onmousedown="buttonOn(7)" onmouseup="buttonOff(7)" /></td>
+                <td></td>
+                <td><input type="button" title="Move backward" value="&darr;" onmousedown="buttonOn(11)" onmouseup="buttonOff(11)"/></td>
+                <td></td>
+                <td><input type="button" title="Zoom out" value="-" onmousedown="buttonOn(9)" onmouseup="buttonOff(9)" /></td>
+              </tr>
+              <tr>
+                <td colspan="5" align=center>
+                  <input type="button" value="<< Cam" onclick="backCam()" />
+                  <input type="button" value="Top View" onclick="topView()" />
+                  <input type="button" value="Cam >>" onclick="forwardCam()" />
+                </td>
+              </tr>
+            </table>
+           </td>
+         </tr>
+         <tr>
+           <td>
+            <div class="toggler">
+                <div id="scaleDiv">
+                  <h3>Size</h3>
+                  <form>
+                    <table>
+                    <tr>  
+                      <td>Length:</td>
+                      <td><input type="text" id="length" onfocus="setCurLength()" onchange="maintainAspectRatioLength()"/></td> 
+                    </tr>
+                    <tr>
                   
-                  rotateEffect();
-                }
-                function rotateCancel() {
-                  rotateEffect();
-                }  
-              </script> 
-            </div>
-          </div>
-          
-        </div>  
+                      <td>Width:</td>
+                      <td><input type="text" id="width" onfocus="setCurWidth()" onchange="maintainAspectRatioWidth()"/></td>      
+                    </tr>
+                    <tr>
+                     
+                      <td>Hieght:</td>
+                      <td><input type="text" id="height" onfocus="setCurHeigth()" onchange="maintainAspectRatioHeight()" /> </td>
+                    </tr>
+                    </table>
+                    <input type="checkbox" checked=checked id="mar" /> Maintain Aspect Ratio<br />
+                    <input type="button" value="Back" onclick="scaleCancel()"/>
+                    <input type="button" value="OK" onclick="scaleOk()"/>
+                  </form>
+                  <script type="text/javascript" language="javascript">
+                    function scaleOk() {
+                      setSize(document.getElementById("length").value, document.getElementById("width").value, document.getElementById("height").value);
+                      scaleEffect();
+                    }
+                    function scaleCancel() {
+                      scaleEffect();
+                    }               
+                    function maintainAspectRatioLength(){
+                      document.getElementById("length").value = parseFloat(document.getElementById("length").value).toFixed(2);
+                      if (document.getElementById("mar").checked) { 
+                        newLength = document.getElementById("length").value;
+                        if (newLength > oldLength) {
+                          document.getElementById("width").value= (document.getElementById("width").value * (newLength / oldLength)).toFixed(2);
+                          document.getElementById("height").value= (document.getElementById("height").value* (newLength / oldLength)).toFixed(2);
+                        }
+                        else if (newLength < oldLength) {
+                        document.getElementById("width").value= document.getElementById("width").value * 1/(oldLength / newLength).toFixed(2);
+                        document.getElementById("height").value= document.getElementById("height").value * 1/(oldLength / newLength).toFixed(2);
+                        }
+                      }
+                    }
+                    function maintainAspectRatioWidth(){
+                      document.getElementById("width").value = parseFloat(document.getElementById("width").value).toFixed(2);
+                      if (document.getElementById("mar").checked) {
+                        newWidth = document.getElementById("width").value;
+                        if (newWidth > oldWidth) {
+                          document.getElementById("length").value= (document.getElementById("length").value * (newWidth / oldWidth)).toFixed(2);
+                          document.getElementById("height").value= (document.getElementById("height").value* (newWidth / oldWidth)).toFixed(2);
+                        }
+                        else if (newWidth < oldWidth) {
+                        document.getElementById("length").value= (document.getElementById("length").value * 1/(oldWidth / newWidth)).toFixed(2);
+                        document.getElementById("height").value= (document.getElementById("height").value * 1/(oldWidth / newWidth)).toFixed(2);
+                        }
+                      }
+                    }
+                    function maintainAspectRatioHeight(){
+                      document.getElementById("height").value = parseFloat(document.getElementById("height").value).toFixed(2);  
+                      if (document.getElementById("mar").checked) {
+                        newHeight = document.getElementById("height").value;
+                        if (newHeight > oldHeight) {
+                          document.getElementById("width").value= (document.getElementById("width").value * (newHeight / oldHeight)).toFixed(2);
+                          document.getElementById("length").value= (document.getElementById("length").value* (newHeight / oldHeight)).toFixed(2);
+                        }
+                        else if (newHeight < oldHeight) {
+                        document.getElementById("width").value= (document.getElementById("width").value * 1/(oldHeight / newHeight)).toFixed(2);
+                        document.getElementById("length").value= (document.getElementById("length").value * 1/(oldHeight / newHeight)).toFixed(2);
+                        }
+                      }
+                    }
+                    function setCurHeigth() {
+                    oldHeight= document.getElementById("height").value;
+                    }
+                    function setCurLength() {
+                    oldLength= document.getElementById("length").value;
+                    }
+                    function setCurWidth() {
+                    oldWidth= document.getElementById("width").value;
+                    }
+                  </script>
+                </div>
+              </div>
+            <div class="toggler">
+                <div id="rotateDiv">
+                  <h3>Rotation</h3>
+                  <form>
+                    <table>
+                      <tr>  
+                        <td>Axis</td>
+                        <td>
+                          <select id="rotAxis" name="rotAxis">
+                            <option>X</option>
+                            <option>Y</option>
+                            <option>Z</option>
+                          </select>     
+                        </td> 
+                      </tr>
+                      <tr> 
+                        <td>Angle:</td>
+                        <td><input type="rotAngle" id="rotAngle" /></td>      
+                      </tr>
+                    </table>
+                    <input type="button" value="Back" onclick="rotateCancel()"/>
+                    <input type="button" value="OK" onclick="rotateOk()"/>
+                  </form>
+                   <script type="text/javascript" language="javascript">
+                    function rotateOk() {
+                      var axis = document.getElementById("rotAxis").value;
+                      if (axis === "X") {
+                        axis = [1,0,0];
+                      }
+                      else if (axis === "Y") {
+                        axis = [0,1,0];
+                      }
+                      else {
+                      alert("test");
+                        axis = [0,0,1];
+                      }
+                      var rot = (parseFloat(document.getElementById("rotAngle").value) * Math.PI) /180;
+                      rotateOnAxis(axis, rot);
+                      
+                      rotateEffect();
+                    }
+                    function rotateCancel() {
+                      rotateEffect();
+                    }  
+                  </script> 
+                </div>
+              </div>
+           </td>
+         </tr>
+       </table>
         <div class="toggler">
           <div id="info3d">
             <h3>Info</h3>
@@ -279,32 +291,33 @@
         </div>
       </div>
     <div id="main2d">
-      <div> 
-        <input type="hidden" id="pressed" value="0">
-        <input type="hidden" id="objects" value="">
-        <img src="images/icons/load.jpg" title="Load" onclick="load()" />
-        <img src="images/icons/save.jpg" title="Save" onclick="save()" />
-        <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
-        <img src="images/icons/undo.jpg" title="Undo" onclick="Pressed(9)" />
-        <img src="images/icons/redo.jpg" title="Redo" onclick="Pressed(10)" />
-        <img src="images/icons/newpage.jpg" title="New" onclick="Pressed(1)" />
-        <img src="images/icons/copy.jpg" title="Copy" onclick="Pressed(2)" />
-        <img src="images/icons/delete.jpg" title="Delete" onclick="Pressed(3)" />
-        <img src="images/icons/drawwall.jpg" title="Draw walls" onclick="Pressed(4)" />
-        <img src="images/icons/addlight.jpg" title="Insert lights" onclick="Pressed(5)" />
-        <!--<img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
-        <img src="images/icons/zoomout.jpg" title="Zoom out" onclick="Pressed(7)" />
-        <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />-->
-        <script>
-        scaleEffect();
-        rotateEffect();
-        var Pressed = function Pressed(bvalue) {
-          var bpressed = document.getElementById('pressed');
-          bpressed.value = bvalue;
-        }
-        </script>
-      </div>
-      <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
+      <table>
+        <tr>
+          <td>
+            <input type="hidden" id="pressed" value="0">
+            <input type="hidden" id="objects" value="">
+            <img src="images/icons/load.jpg" title="Load" onclick="load()" />
+            <img src="images/icons/save.jpg" title="Save" onclick="save()" />
+            <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
+            <img src="images/icons/undo.jpg" title="Undo" onclick="Pressed(9)" />
+            <img src="images/icons/redo.jpg" title="Redo" onclick="Pressed(10)" />
+            <img src="images/icons/newpage.jpg" title="New" onclick="Pressed(1)" />
+            <img src="images/icons/copy.jpg" title="Copy" onclick="Pressed(2)" />
+            <img src="images/icons/delete.jpg" title="Delete" onclick="Pressed(3)" />
+            <img src="images/icons/drawwall.jpg" title="Draw walls" onclick="Pressed(4)" />
+            <img src="images/icons/addlight.jpg" title="Insert lights" onclick="Pressed(5)" />
+            <!--<img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
+            <img src="images/icons/zoomout.jpg" title="Zoom out" onclick="Pressed(7)" />
+            <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />-->
+            <img src="images/icons/help.jpg" title="Help/Info" onclick="help2d()" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
+          </td>
+        </tr>
+      </table>
       <div class="toggler">
         <div id="info2d">
           <h3>Info</h3>
@@ -319,13 +332,31 @@
            </ul> 
          </div>
        </div>
+      <script>
+        scaleEffect();
+        rotateEffect();
+        help3d();
+        help2d();
+        var Pressed = function Pressed(bvalue) {
+          var bpressed = document.getElementById('pressed');
+          bpressed.value = bvalue;
+        }
+       </script>
     </div>
     <div id="maingoogle">
-      <div>
-      <input type="button" value="Back" onclick="google3d.history.back()">
-      <input type="button" value="Forward" onclick="google3d.history.forward()"> 
-      </div>
-      <iframe id="google3d" name="google3d" width="800" height="600" src="http://sketchup.google.com/3dwarehouse/">
+      <table>
+        <tr>
+          <td>
+            <input type="button" value="Back" onclick="google3d.history.back()">
+            <input type="button" value="Forward" onclick="google3d.history.forward()"> 
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <iframe id="google3d" name="google3d" width="800" height="600" src="http://sketchup.google.com/3dwarehouse/">
+          </td>
+        </tr>
+      </table>
     </div>
   </body>
 </html>
