@@ -19,6 +19,9 @@
     <input type="button" value="Images" onclick="showImages();" />
     <br />
     <br />
+    <div id="viewerMain">
+      <canvas id="objectViewer" style="" width="800" height="600"></canvas>
+    </div>
     <div id="mainImages">
     </div>
     <div id="main3d">
@@ -82,6 +85,7 @@
             <img src="images/icons/rotate.jpg" title="Rotate" onclick="rotate()"/>
             <img src="images/icons/delete.jpg" title="Delete" onclick="deleteSelected()" />
             <img src="images/icons/scale.jpg" title="Scale" onclick="scale()"/>
+            <img src="images/icons/viewobject.jpg" title="View Object" onclick="viewObject()"/>
             <img src="images/icons/lightup.jpg" title="Brighten scene" onmousedown="buttonOn(4)" onmouseup="buttonOff(4)" />
             <img src="images/icons/lightdown.jpg" title="Darken scene" onmousedown="buttonOn(5)" onmouseup="buttonOff(5)" />
             <img src="images/icons/help.jpg" title="Help/Info" onclick="help3d()" />
@@ -89,7 +93,7 @@
          </tr>
          <tr>
            <td rowspan="2">
-                <canvas id="SceneCaster3d" style="" width="800" height="600"></canvas>
+             <canvas id="SceneCaster3d" style="" width="800" height="600"></canvas>
            </td>
            <td valign=top>
             <table>

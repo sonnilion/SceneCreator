@@ -1,6 +1,7 @@
 (function () {
+  c3dl.addMainCallBack(canvasViewer, "objectViewer");
   c3dl.addMainCallBack(canvasMain, "SceneCaster3d");
- 
+
   ////////////////////////////////////////////////////////////////////////////
   // Model Used
   ////////////////////////////////////////////////////////////////////////////  
@@ -63,7 +64,13 @@
       pointsUsed       = [],
       closedNodes      = [],
       tiltHotKey       = false,
-      heightZoomHotKey = false;
+      heightZoomHotKey = false,
+      scn              = null,
+      scnViewer        = null,
+      camViewer = new c3dl.FreeCamera(),
+      objectViewing    = null,
+      viewer           = false,
+      holding          = false;
   //Command
   var commands = [],
       curcmd = -1;
@@ -88,6 +95,8 @@
   // mouse screen coords and button states
   var mouseX            = 0,
       mouseY            = 0,
+      oldMouseX         = 0,
+      oldMouseY         = 0,
       selEndWorldCoords = [0, 0];
       
   var mouseButtonsDown = (
@@ -407,10 +416,14 @@
       commands[curcmd].execute();
     }
     moveObject = false;
+    holding = false;
   }
   
   function mouseDown(event) {
-
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+    holding = true;
+    
   }
 
   //when the mouse is moved it returns mouse coords relative to window
@@ -431,30 +444,42 @@
     else if (event.detail) {
       delta = event.detail * 4;
     }
-    if (heightZoomHotKey) {
-      if (-delta < 0) {
-        if (camHeight > 5) {
-          camHeight -= 5;
+    
+    if (viewer) {
+      var curPos = camViewer.getPosition();
+        if (-delta < 0) {
+          camViewer.setPosition([curPos[0],curPos[1],curPos[2]+1]);
         }
-      }
-      // towards screen
-      else {
-        if (camHeight < 100) {
-          camHeight += 5;
+        else {
+          camViewer.setPosition([curPos[0],curPos[1],curPos[2]-1]);
         }
-      }
     }
     else {
-      // towards user
-      if (-delta < 0) {
-        if (zoom > 5) {
-          zoom -= 5;
+      if (heightZoomHotKey) {
+        if (-delta < 0) {
+          if (camHeight > 5) {
+            camHeight -= 5;
+          }
+        }
+        // towards screen
+        else {
+          if (camHeight < 100) {
+            camHeight += 5;
+          }
         }
       }
-      // towards screen
       else {
-        if (zoom < 100) { 
-          zoom += 5;
+        // towards user
+        if (-delta < 0) {
+          if (zoom > 5) {
+            zoom -= 5;
+          }
+        }
+        // towards screen
+        else {
+          if (zoom < 100) { 
+            zoom += 5;
+          }
         }
       }
     }
@@ -466,43 +491,74 @@
     document.getElementById("main3d").setAttribute("style", "display:none;");
     document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("mainImages").setAttribute("style", "display:none;");
+    document.getElementById("viewerMain").setAttribute("style", "display:none;");
     pause3d();
     unpause2d();
+    viewer = false;
   }
   var show3d = this.show3d = function show3d() {
     document.getElementById("main3d").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("mainImages").setAttribute("style", "display:none;");
+    document.getElementById("viewerMain").setAttribute("style", "display:none;");
     unpause3d();
     pause2d();
+    viewer = false;
   }
   var showgoogle = this.showgoogle = function showgoogle() {
     document.getElementById("maingoogle").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
     document.getElementById("mainImages").setAttribute("style", "display:none;");
+    document.getElementById("viewerMain").setAttribute("style", "display:none;");
     pause3d();
     pause2d();
+    viewer = false;
   }
   var showImages = this.showImages = function showImages() {
     document.getElementById("mainImages").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
     document.getElementById("maingoogle").setAttribute("style", "display:none;");
+    document.getElementById("viewerMain").setAttribute("style", "display:none;");
     pause3d();
     pause2d();
+    viewer = false;
   }
   
+  var viewObject = this.viewObject = function viewObject() {
+    if (objectSelected) {
+      if (objectViewing) {
+        scnViewer.removeObjectFromScene(objectViewing);
+      }
+      objectViewing = new c3dl.Collada();
+      objectViewing.clone(objectSelected);
+      scnViewer.addObjectToScene(objectViewing);
+      objectViewing.setPosition([0,0,0]);
+      camViewer.setPosition([0, 0, 30]);
+      document.getElementById("viewerMain").setAttribute("style", "display:inline;");
+      document.getElementById("main2d").setAttribute("style", "display:none;");
+      document.getElementById("main3d").setAttribute("style", "display:none;");
+      document.getElementById("maingoogle").setAttribute("style", "display:none;");
+      document.getElementById("mainImages").setAttribute("style", "display:none;");
+      pause3d();
+      pause2d();
+      scnViewer.unpauseScene();
+      viewer = true;
+    }
+  }
   
   //pausing and unpausing the 2d and 3d to increase speed
   function pause3d() {
     scn.pauseScene();
     Processing.getInstanceById("CameraWidget").loop();
+    scnViewer.pauseScene();
   }
   var unpause3d = this.unpause3d = function unpause3d() {
     scn.unpauseScene();
     Processing.getInstanceById("CameraWidget").loop();
+    scnViewer.pauseScene();
   }
 
   function pause2d() {
@@ -910,7 +966,7 @@
   };
   
   ////////////////////////////////////////////////////////////////////////////
-  //3d Setup 
+  //3d Setup Main
   ////////////////////////////////////////////////////////////////////////////
   
   // The program main
@@ -922,7 +978,7 @@
     document.getElementById('objects').value = "";
     show2d();
     // Create GL context
-    renderer = new c3dl.WebGL();
+    var renderer = new c3dl.WebGL();
     renderer.createRenderer(this);
     // Attach renderer to the scene
     scn.setRenderer(renderer);
@@ -1183,10 +1239,56 @@
     //repositioning the camera after rotating it
     zoomInDir = c3dl.multiplyVector(zcam[currentCam].getDir(), zoom);
     cam[currentCam].setPosition(c3dl.subtractVectors(zcam[currentCam].getPosition(), zoomInDir))
-    for (i = 0; i < numObjects; i++) {
-      
-     
+    for (i = 0; i < numObjects; i++) {  
       document.getElementById('objects').value = document.getElementById('objects').value +  objects[i].getBoundingBoxCorners() + ",";
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////
+  //3d Setup Object Viewer
+  ////////////////////////////////////////////////////////////////////////////
+  
+  // The program main
+  function canvasViewer(canvasName) {
+    // Create new c3dl.Scene object
+    scnViewer = new c3dl.Scene();
+    scnViewer.setCanvasTag(canvasName);
+    
+    // Create GL context
+    var renderer2 = new c3dl.WebGL();
+    renderer2.createRenderer(this);
+    // Attach renderer to the scene
+    scnViewer.setRenderer(renderer2);
+    scnViewer.init(canvasName);
+    if(renderer2.isReady() ){
+    scnViewer.setAmbientLight([0, 0, 0, 0]);
+    var light = new c3dl.PositionalLight();
+    light.setPosition([0, 10, 35]);
+    light.setDiffuse([1, 1, 1, 1]);
+    light.setOn(true);
+    scnViewer.addLight(light);
+    camViewer.setPosition([0, 0, 30]);
+    camViewer.setLookAtPoint([0.0, 0.0, 0.0]);
+    // Add the camera to the scene
+    scnViewer.setCamera(camViewer);
+    // Start the scene
+    scnViewer.startScene();
+    // tell the scene what function to use when
+    // a mouse event is detected
+    scnViewer.setUpdateCallback(updateViewer);
+    scnViewer.setMouseCallback(mouseUp, mouseDown, mouseMove, mouseWheel);
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////
+  // Canvas Update 
+  ////////////////////////////////////////////////////////////////////////////
+  function updateViewer(deltaTime) {
+    if (holding) {
+      objectViewing.rotateOnAxis([0,1,0],(mouseX - oldMouseX)/100);
+      objectViewing.rotateOnAxis([1,0,0],(mouseY - oldMouseY) /100);
+      oldMouseX = mouseX;
+      oldMouseY = mouseY;
     }
   }
   
@@ -1225,8 +1327,14 @@
   
   //returns clicked coordinates X and Y
   function getClickedCoords(event) {
-    var canvas = scn.getCanvas();
-    var canvasPosition = c3dl.getObjectPosition(scn.getCanvas());
+    if (viewer) {
+      var canvas = scnViewer.getCanvas();
+      
+    }
+    else {
+      var canvas = scn.getCanvas();
+    }
+    var canvasPosition = c3dl.getObjectPosition(canvas);
     // event.clientX and event.clientY contain where the user clicked 
     // on the client area of the browser
     // canvasPosition holds the coordinate of the top left corner where the canvas resides

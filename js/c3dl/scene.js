@@ -48,7 +48,7 @@ c3dl.Scene = function ()
   // when users render points which playing a DVD on OS X.
   var pointRenderingMode = c3dl.POINT_MODE_SPHERE;
   var exitFlag = false; // Exits the render loop
-  var pauseFlag = false;
+  var pauseFlag = true;
   var canvasTag = null;
   var canvas2Dlist = [];
 
