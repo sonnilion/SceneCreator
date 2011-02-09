@@ -56,6 +56,7 @@ c3dl_require('math/vector.js');
 c3dl_require('math/matrix.js');
 c3dl_require('math/quaternion.js');
 c3dl_require('matrixstack.js');
+
 //cameras
 c3dl_require('camera/camera.js');
 c3dl_require('camera/freecamera.js');
@@ -73,6 +74,14 @@ c3dl_require('actors/actor.js');
 c3dl_require('actors/primitive.js');
 c3dl_require('actors/point.js');
 c3dl_require('actors/line.js');
+
+//shapes
+c3dl_require('shapes/shape.js');
+c3dl_require('shapes/cube.js');
+c3dl_require('shapes/plane.js');
+c3dl_require('shapes/sphere.js');
+c3dl_require('shapes/custom.js');
+c3dl_require('shapes/customplane.js');
 
 //frustum culling
 c3dl_require('frustum_culling/frustum.js');

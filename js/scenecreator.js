@@ -948,7 +948,9 @@
       selectedAxis = null,
       updateTimer = 0,
       fCounter = 0,
-	    tweets = [];
+	    tweets = [],
+      roofs = [],
+      floors = [];
   //Command
   var commands = [],
       curcmd = -1;
@@ -2389,6 +2391,7 @@
     scn.setCollision(false);
     // Attach renderer to the scene
     scn.setRenderer(renderer);
+    drawRoofandFloor();
     if (scn.init(canvasName)) {
       scn.setCulling("All");
       //skybox
@@ -2426,26 +2429,6 @@
         zOffset += 100;
       }
 
-      //Temp Floor and Ceiling until they can be created on the fly
-      var tempFloor = new c3dl.Collada();
-      tempFloor.init(FLOOR_PATH);
-      tempFloor.centerObject();
-      tempFloor.scale([5, 1, 5]);
-      tempFloor.setTexture("./images/inside.jpg");
-      tempFloor.setPickable(false);
-      tempFloor.setPosition([0, -0.01, 0]);
-      tempFloor.setStatic(true);
-      scn.addObjectToScene(tempFloor);
-      var tempCeiling = new c3dl.Collada();
-      tempCeiling.init(FLOOR_PATH);
-      tempCeiling.centerObject();
-      tempCeiling.scale([5, 1, 5]);
-      tempCeiling.setPickable(false);
-      tempCeiling.setTexture("./images/ceiling.jpg");
-      tempCeiling.setPosition([0, 15, 0]);
-      tempCeiling.rotateOnAxis([0,0,1], Math.PI);
-      tempCeiling.setStatic(true);
-      scn.addObjectToScene(tempCeiling);
       //create an object
       createWall([-25, 0, -25], [25, 0, -25]);
       createWall([25, 0, -25], [25, 0, 25]);
@@ -3371,9 +3354,81 @@
   
   
   function drawRoofandFloor() {
-    
+    if (scn) {
+      for (var i = 0; i < roofs.length; i++) {
+        scn.removeObjectFromScene(roofs[i]);
+        scn.removeObjectFromScene(floors[i]);
+      }
+      floors = [];
+      roofs = [];
+      for (var i = 0; i < enclosures.length; i++) {
+        var verts = [];
+        var clock = isClockWise(enclosures[i]);
+        for (var j = 0; j < enclosures[i].length; j++) {
+          verts.push((enclosures[i][j]-23)/2.5-100);
+        }
+        if (clock) {
+          var temp = [];
+          for (var j = verts.length-1; j > 0; j-=2) {
+            temp.push(verts[j-1]);
+            temp.push(verts[j]);
+          }
+          roofs[i] = new c3dl.CustomPlane(temp);
+        }
+        else {
+          roofs[i] = new c3dl.CustomPlane(verts);
+        }
+        roofs[i].setPosition([0, 15, 0]);
+        roofs[i].setTexture("images/ceiling.jpg");
+        scn.addObjectToScene(roofs[i]);
+        if (clock) {
+          floors[i] = new c3dl.CustomPlane(verts);
+        }
+        else {
+          var temp = [];
+          for (var j = verts.length-1; j > 0; j-=2) {
+            temp.push(verts[j-1]);
+            temp.push(verts[j]);
+          }
+          floors[i] = new c3dl.CustomPlane(temp);
+        }
+        floors[i].setPosition([0, -0.01, 0]); 
+        floors[i].setTexture("images/inside.jpg");
+        scn.addObjectToScene(floors[i]);
+      }
+    }
   }
   
+ 
+ 
+  function isClockWise(enclosure) {
+    var i,j,k;
+    var count = 0;
+    var z;
+    var poly = [];
+    for (i=0, j = 0; i < enclosure.length;i+=2, j++) {
+      poly[j] = [];
+      poly[j][0] = enclosure[i];
+      poly[j][1] = enclosure[i+1];
+
+    }
+    for (i=0;i<poly.length;i++) {
+      j = (i + 1) % poly.length;
+      k = (i + 2) % poly.length;
+      z = (poly[j][0] - poly[i][0]) * (poly[k][1] - poly[j][1]);
+      z -= (poly[j][1] - poly[i][1]) * (poly[k][0] - poly[j][0]);
+      if (z < 0) {
+        count--;
+      }
+      else if (z > 0) {
+        count++;
+      }
+    }
+    if (count > 0) {
+      return false;
+    }
+    return true;
+  }
   var checkEnclosures = this.checkEnclosures = function () {
     enclosures = [];
     closedNodes = []

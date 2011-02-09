@@ -30,6 +30,7 @@ c3dl.PrimitiveSet = function ()
   this.type = null;
   this.lineList = null;
   this.boundingVolume = null;
+  this.fillType = null;
   this.buffers =
   {
   };
@@ -43,6 +44,29 @@ c3dl.PrimitiveSet = function ()
    */
   this.init = function (vertices, normals, texCoords,type)
   {
+  /*
+    var temp = [];
+    alert("vertices");
+    alert(vertices.length);
+    for (var i = 0; i < vertices.length; i++) {
+      temp.push(vertices[i]);
+    }
+    alert(temp);
+    var temp = [];
+    alert("normals");
+    alert(normals.length);
+    for (var i = 0; i < normals.length; i++) {
+      temp.push(normals[i]);
+    }
+    alert(temp);
+    var temp = [];
+    alert("texCoords");
+    alert(texCoords.length);
+    for (var i = 0; i < texCoords.length; i++) {
+      temp.push(texCoords[i]);
+    }
+    alert(temp);
+    */
     this.vertices = vertices;
     this.normals = normals;
     this.texCoords = texCoords;
