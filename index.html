@@ -5,101 +5,78 @@
       SceneCreator
     </title>
     <link type="text/css" href="css/style.css" rel="stylesheet" />
-    <script type="text/javascript" src="js/jquery/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="js/jquery/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="js/jquery/jquery-ui-1.8.9.custom.min.js"></script>
     <script type="text/javascript" src="js/c3dl/c3dapi.js"></script>
     <script src="js/processing/processing.js"></script>
     <script type="text/javascript" src="js/scenecreator.js"></script>
-    <script type="application/processing" id="twitterPjs">
-      /* @pjs preload="images/twitter.jpg"; */
-      int x, y;
-      var canvasCtx;
-      var userImages = [];
-      void setup() {
-        noLoop();
-      }
-
-      void draw(tweets,canvasIn) {	   
-        y = 70;
-        PImage logo;
-        logo = loadImage("images/twitter.jpg");
-        background(logo);
-        fill(255);
-        rect(20, 50, 216, 442);   
-        if (tweets) {
-          canvasCtx = canvasIn.getContext("2d");
-          for (var i = 0; i < tweets.length && y < 400;i++) {
-            x = 25
-            //User Avatar
-            userImages[i] = new Image();
-            userImages[i].src= tweets[i].img;
-            userImages[i].width =20;
-            userImages[i].height =20;
-            canvasCtx.drawImage(userImages[i],x,y-20,20,20);
-            displayTweet(tweets[i]);
-            
-          }
-        }
-      }
-
-      void displayTweet(tweet) {
-        PFont fontA = loadFont("Arial");
-        int fontSize=20;
-        float myWidth;
-        textFont(fontA, fontSize);
-        //Name
-        fill(0, 102, 153);
-        text(tweet.user + ":", x+23, y);
-        int fontSize=15;
-        textFont(fontA, fontSize);
-        y = y + fontSize-10;
-        //Text
-        fill(0, 102, 153);
-        var height = Math.ceil(((fontA.width(tweet.text) * fontSize)*2) / 215);
-        text(tweet.text, x, y,216,fontSize*height);
-        y = y + fontSize*height;
-      }
-    </script>
-    <script type="application/processing" id="ClockPjs">
-    void setup() {
-      size(256, 256);
-      stroke(0);
-      smooth();
-    }
-    void draw() {
-      background(0);
-      fill(255);
-      noStroke();
-      // Angles for sin() and cos() start at 3 o'clock;
-      // subtract HALF_PI to make them start at the top
-      ellipse(128, 128, 160, 160);
-      float s = map(second(), 0, 60, 0, TWO_PI) + HALF_PI;
-      float m = map(minute(), 0, 60, 0, TWO_PI) + HALF_PI;
-      float h = map(hour() % 12, 0, 12, 0, TWO_PI) + HALF_PI;
-      stroke(0);
-      strokeWeight(1);
-      line(128, 128, sin(s) * 72 + 128, cos(s) * 72 + 128);  
-      strokeWeight(2);  
-      line(128, 128, sin(m) * 60 + 128, cos(m) * 60 + 128);  
-      strokeWeight(4);  
-      line(128, 128, sin(h) * 50 + 128, cos(h) * 50 + 128);  
-    }
-    </script>
   </head>
   <body>
-    <div id="mainButtons">
-      <input type="button" value="2D" onclick="show2d();" />
-      <input type="button" value="3D" onclick="show3d();" />
-      <input type="button" value="Google3dWarhouse" onclick="showgoogle();" />
-      <input type="button" value="Images" onclick="showImages();" />
-      <br/>
-    </div>
     <div id="viewerMain">
+      <input type="button" value="Back" onclick="show3d();" />
       <canvas id="objectViewer" style="" width="800" height="600"></canvas>
     </div>
     <div id="mainImages">
+      <div id="tool-tabs">
+        <ul>
+          <li><a href="#File">File</a></li>
+                <li><a href="#SceneOptions">Scene Options</a></li>
+                <li><a href="#Help">Help</a></li>
+              </ul>
+              <div id="File" >
+                <a onclick="load();">Load</a><br/>
+                <a onclick="save();">Save</a><br/>
+                <a onclick="saveAs();">SaveAs</a><br/>
+              </div>
+              <div id="SceneOptions" >
+                <a onclick="show2d();">2D</a><br/>
+                <a onclick="show3d();">3D</a><br/>
+                <a onclick="showImages();">Veiw Saved Images</a><br/>
+              </div>
+              <div id="Help">
+                <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
+        </div>
+      </div>
     </div>
     <div id="main3d">
+      <div id="3d-tool-tabs">
+        <ul>
+          <li><a href="#File">File</a></li>
+                <li><a href="#SceneOptions">Scene Options</a></li>
+                <li><a href="#ObjectOptions">Object Options</a></li>
+                <li><a href="#ObjectWidgets">Object Widgets</a></li>
+                <li><a href="#Help">Help</a></li>
+              </ul>
+              <div id="File" >
+                <a onclick="load();">Load</a><br/>
+                <a onclick="save();">Save</a><br/>
+                <a onclick="saveAs();">SaveAs</a><br/>
+                <a onclick="undo();">Undo</a><br/>
+                <a onclick="redo();">Redo</a>
+              </div>
+              <div id="SceneOptions" >
+                <a onclick="show2d();">2D</a><br/>
+                <a onclick="show3d();">3D</a><br/>
+                <a onclick="showImages();">Veiw Saved Images</a><br/>
+                <a onclick="var img = document.createElement('img'); document.getElementById('mainImages').appendChild(img); img.src = getPNG();">Save Image</a><br/>
+                <a>Lighting</a> 
+              </div>
+              <div id="ObjectOptions">
+                <a onclick="viewObject();">View Object</a><br/>
+                <a onclick="copySelected();">Clone</a><br/>
+                <a onclick="deleteSelected();">Delete</a><br/>
+                <a onclick="rotate();">Rotate</a><br/>
+                <a onclick="scale();">Scale</a><br/>
+              </div>
+              <div id="ObjectWidgets">
+                <a onclick="toggleMoveWidget();">Move</a><br/>
+                <a onclick="toggleScaleWidget();">Scale</a><br/>
+                <a onclick="toggleRotateWidget();">Rotate</a>
+              </div>
+                <div id="Help">
+                <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
+              </div>
+      </div>
       <div id="dialog-saveAs" title="Save As">
 	      <form>
 	      <fieldset>
@@ -116,73 +93,48 @@
 	      </fieldset>
 	      </form>
        </div>
-      <table> 
+      <table border="1"> 
         <tr>
-          <td valign=top rowspan="4" id="sidebar"> 
-            <h3>Items</h3>
+        <td valign=top rowspan="3" id="sidebar"> 
+            <h3>Object List</h3>
             <div id="accordion">
               <div>
-                <h3><a href="#">House Objects</a></h3>
+                <h3><a href="#">House</a></h3>
                 <div>        
-                  <img src="images/sidebar/chair.jpg" width="25px" height="25px" onclick="createObject(0)" />
-                  <img src="images/sidebar/table.jpg" width="25px" height="25px" onclick="createObject(1)" />    
-                  <img src="images/sidebar/lamp.jpg" width="25px" height="25px" onclick="createObject(9)" /> 
-                  <img src="images/sidebar/ceilinglamp.jpg" width="25px" height="25px" onclick="createObject(10)" /> 
-                  <img src="images/sidebar/picture.jpg" width="25px" height="25px" onclick="createObject(11)" /> 					
+                  <button onclick="createObject(0)"><img src="images/sidebar/chair.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(1)"><img src="images/sidebar/table.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(9)"><img src="images/sidebar/lamp.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(11)"><img src="images/sidebar/ceilinglamp.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(10)"><img src="images/sidebar/picture.jpg" width="25px" height="25px"/></button> 					
                 </div>
               </div>
               <div>
-                <h3><a href="#">PacMan Objects</a></h3>
+                <h3><a href="#">PacMan</a></h3>
                 <div>
-                  <img src="images/sidebar/pacman.jpg" width="25px" height="25px" onclick="createObject(2)" />
-                  <img src="images/sidebar/redghost.jpg" width="25px" height="25px" onclick="createObject(3)" /> 
-                  <img src="images/sidebar/blueghost.jpg" width="25px" height="25px" onclick="createObject(4)" />
-                  <img src="images/sidebar/orangeghost.jpg" width="25px" height="25px" onclick="createObject(5)" /> 
-                  <img src="images/sidebar/pinkghost.jpg" width="25px" height="25px" onclick="createObject(6)" />
-                  <img src="images/sidebar/bigball.jpg" width="25px" height="25px" onclick="createObject(7)" /> 
-                  <img src="images/sidebar/smallball.jpg" width="25px" height="25px" onclick="createObject(8)" /> 
+                  <button onclick="createObject(2)"><img src="images/sidebar/pacman.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(3)"><img src="images/sidebar/redghost.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(4)"><img src="images/sidebar/blueghost.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(5)"><img src="images/sidebar/orangeghost.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(6)"><img src="images/sidebar/pinkghost.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(7)"><img src="images/sidebar/bigball.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(8)"><img src="images/sidebar/smallball.jpg" width="25px" height="25px"/></button> 
                 </div>
               </div>
               <div>
-                <h3><a href="#">Scene Caster Objects</a></h3>
+                <h3><a href="#">Special</a></h3>
                 <div>
-                  <img src="images/sidebar/SC.jpg" width="25px" height="25px" onclick="createObject(12)" /> 		
-                  <img src="images/sidebar/twitter.jpg" width="25px" height="25px" onclick="showTwitter()" /> 		
-                  <img src="images/sidebar/pjs.jpg" width="25px" height="25px" onclick="createClock()" /> 		
-                  <img src="images/sidebar/flickr.jpg" width="25px" height="25px" onclick="showFlickr()" /> 		
-                  <img src="images/sidebar/poster.jpg" width="25px" height="25px" onclick="showImageSrcDiv()" /> 	
-                  <img src="images/sidebar/video.jpg" width="25px" height="25px" onclick="showVideoSrcDiv()" /> 	
-                  <img src="images/sidebar/video.jpg" width="25px" height="25px" onclick="createTV()" /> 	
+                  <button onclick="showTwitter()"><img src="images/sidebar/twitter.jpg" width="25px" height="25px" /></button> 		
+                  <button onclick="createClock()"><img src="images/sidebar/pjs.jpg" width="25px" height="25px"/></button> 		
+                  <button onclick="showFlickr()"><img src="images/sidebar/flickr.jpg" width="25px" height="25px"/></button> 		
+                  <button onclick="showImageSrcDiv()"><img src="images/sidebar/poster.jpg" width="25px" height="25px"/></button> 	
+                  <button onclick="showVideoSrcDiv()"><img src="images/sidebar/video.jpg" width="25px" height="25px"/></button> 	
+                  <button onclick="createTV()"><img src="images/sidebar/video.jpg" width="25px" height="25px"/></button>	
                 </div>
               </div>
             </div>
           </td>
-          <td colspan="2">
-            <img src="images/icons/load.jpg" title="Load" onclick="load()" />
-            <img src="images/icons/save.jpg" title="Save" onclick="save()" />
-            <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
-            <img src="images/icons/undo.jpg" title="Undo" onclick="undo()" />
-            <img src="images/icons/redo.jpg" title="Redo" onclick="redo()" />
-            <img src="images/icons/copy.jpg" title="Copy" onclick="copySelected()" />
-            <img src="images/icons/moveup.jpg" title="Move up" onmousedown="buttonOn(0)" onmouseup="buttonOff(0)" />
-            <img src="images/icons/movedown.jpg" title="Move down" onmousedown="buttonOn(1)" onmouseup="buttonOff(1)" />
-            <img src="images/icons/rotateleft.jpg" title="Rotate left" onmousedown="buttonOn(2)" onmouseup="buttonOff(2)" />
-            <img src="images/icons/rotateright.jpg" title="Rotate right" onmousedown="buttonOn(3)" onmouseup="buttonOff(3)" />
-            <img src="images/icons/rotate.jpg" title="Rotate" onclick="rotate()"/>
-            <img src="images/icons/delete.jpg" title="Delete" onclick="deleteSelected()" />
-            <img src="images/icons/scale.jpg" title="Scale" onclick="scale()"/>
-            <img src="images/icons/viewobject.jpg" title="View Object" onclick="viewObject()"/>
-            <img src="images/icons/lightup.jpg" title="Brighten scene" onmousedown="buttonOn(4)" onmouseup="buttonOff(4)" />
-            <img src="images/icons/lightdown.jpg" title="Darken scene" onmousedown="buttonOn(5)" onmouseup="buttonOff(5)" />
-            <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank"><img src="images/icons/help.jpg" title="Help/Info"/></a> 
-            <input type="button" value="Move Widget" onclick="toggleMoveWidget();" />
-            <input type="button" value="Scale Widget" onclick="toggleScaleWidget();" />
-            <input type="button" value="Rotate Widget" onclick="toggleRotateWidget();" />
-          </td>
-        </tr>
-        <tr>
           <td rowspan="3">
-            <canvas id="SceneCaster3d" width="800" height="600"></canvas><br/>
+            <canvas id="SceneCaster3d"></canvas><br/>
             <span id="fps"></span> <br/>
             <span id="testing"></span>
           </td>
@@ -390,6 +342,36 @@
       </table>
     </div>
     <div id="main2d">
+                <div id="2d-tool-tabs">
+              <ul>
+                <li><a href="#File">File</a></li>
+                <li><a href="#SceneOptions">Scene Options</a></li>
+                <li><a href="#2dOptions">2D Options</a></li>
+                <li><a href="#Help">Help</a></li>
+              </ul>
+              <div id="File" >
+                <a onclick="load();">Load</a><br/>
+                <a onclick="save();">Save</a><br/>
+                <a onclick="saveAs();">SaveAs</a><br/>
+                <a onclick="undo();">Undo</a><br/>
+                <a onclick="redo();">Redo</a>
+              </div>
+              <div id="SceneOptions" >
+                <a onclick="show2d();">2D</a><br/>
+                <a onclick="show3d();">3D</a><br/>
+                <a onclick="showImages();">Veiw Saved Images</a><br/>
+              </div>
+              <div id="2dOptions">
+                <a onclick="viewObject();">View Object</a><br/>
+                <a onclick="copySelected();">Clone</a><br/>
+                <a onclick="deleteSelected();">Delete</a><br/>
+                <a onclick="rotate();">Rotate</a><br/>
+                <a onclick="scale();">Scale</a><br/>
+              </div>
+                <div id="Help">
+                <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
+              </div>
+            </div>
       <table>
         <tr>
           <td>
@@ -425,21 +407,6 @@
           bpressed.value = bvalue;
         }
        </script>
-    </div>
-    <div id="maingoogle">
-      <table>
-        <tr>
-          <td>
-            <input type="button" value="Back" onclick="google3d.history.back()">
-            <input type="button" value="Forward" onclick="google3d.history.forward()"> 
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <!--<iframe id="google3d" width="800" height="600" src="http://sketchup.google.com/3dwarehouse/">-->
-          </td>
-        </tr>
-      </table>
     </div>
     <div id="TwitterDiv">
       <form action="test.html" method="get">

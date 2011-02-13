@@ -1402,7 +1402,6 @@
   var show2d = this.show2d = function () {
     document.getElementById("main2d").setAttribute("style", "display:inline;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("mainImages").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
     document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
@@ -1415,9 +1414,7 @@
   }
   var show3d = this.show3d = function () {
     document.getElementById("main3d").setAttribute("style", "display:inline;");
-    document.getElementById("mainButtons").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("mainImages").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
     document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
@@ -1428,25 +1425,10 @@
     pause2d();
     viewer = false;
   }
-  var showgoogle = this.showgoogle = function () {
-    document.getElementById("maingoogle").setAttribute("style", "display:inline;");
-    document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("mainImages").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-    document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-    document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-    pause3d();
-    pause2d();
-    viewer = false;
-  }
   var showImages = this.showImages = function () {
     document.getElementById("mainImages").setAttribute("style", "display:inline;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
     document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
     document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
@@ -1461,9 +1443,7 @@
     document.getElementById("mainImages").setAttribute("style", "display:none;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("mainButtons").setAttribute("style", "display:none;");
     document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
     document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
     document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
@@ -1477,9 +1457,7 @@
     document.getElementById("mainImages").setAttribute("style", "display:none;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("mainButtons").setAttribute("style", "display:none;");
     document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
     document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
     pause3d();
@@ -1493,9 +1471,7 @@
     document.getElementById("mainImages").setAttribute("style", "display:none;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("mainButtons").setAttribute("style", "display:none;");
     document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
     pause3d();
     pause2d();
@@ -1509,9 +1485,7 @@
     document.getElementById("mainImages").setAttribute("style", "display:none;");
     document.getElementById("main2d").setAttribute("style", "display:none;");
     document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("maingoogle").setAttribute("style", "display:none;");
     document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("mainButtons").setAttribute("style", "display:none;");
     document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
     pause3d();
     pause2d();
@@ -1523,12 +1497,12 @@
     objectSelected.canvas.setAttribute('id',"Clock");  
     objectSelected.canvas.setAttribute('width',256);  
     objectSelected.canvas.setAttribute('height',256);  
-    var scripts = document.getElementsByTagName("script");
-    for ( var i = 0; i < scripts.length; i++ ) {
-      if (scripts[i].id == "ClockPjs" ) {
-        objectSelected.pjs = new Processing(objectSelected.canvas, scripts[i].text);      
-      }
-    }
+    var oRequest = new XMLHttpRequest();
+    oRequest.open("GET","js/clock.pjs",false);
+    oRequest.setRequestHeader("User-Agent",navigator.userAgent);
+    oRequest.send(null);
+    var script = oRequest.responseText;
+    objectSelected.pjs = new Processing(objectSelected.canvas, script);      
     objectSelected.model.setTexture(objectSelected.canvas);
   }
   var createTwitter = this.createTwitter = function (query) {
@@ -1542,13 +1516,13 @@
     objectSelected.canvas.setAttribute('id',"Twitter");  
     objectSelected.canvas.setAttribute('width',256);  
     objectSelected.canvas.setAttribute('height',512);  
-    var scripts = document.getElementsByTagName("script");
-    for ( var i = 0; i < scripts.length; i++ ) {
-      if (scripts[i].id == "twitterPjs" ) {
-        objectSelected.pjs = new Processing(objectSelected.canvas, scripts[i].text); 
-        objectSelected.query = query;      
-      }
-    }
+    var oRequest = new XMLHttpRequest();
+    oRequest.open("GET","js/twitter.pjs",false);
+    oRequest.setRequestHeader("User-Agent",navigator.userAgent);
+    oRequest.send(null);
+    var script = oRequest.responseText;
+    objectSelected.pjs = new Processing(objectSelected.canvas, script); 
+    objectSelected.query = query;      
     objectSelected.model.setTexture(objectSelected.canvas);
   }
   
@@ -1629,7 +1603,6 @@
       document.getElementById("viewerMain").setAttribute("style", "display:inline;");
       document.getElementById("main2d").setAttribute("style", "display:none;");
       document.getElementById("main3d").setAttribute("style", "display:none;");
-      document.getElementById("maingoogle").setAttribute("style", "display:none;");
       document.getElementById("mainImages").setAttribute("style", "display:none;");
       pause3d();
       pause2d();
@@ -2376,7 +2349,7 @@
     var canvas = scn.getCanvas();
     var myWidth = window.innerWidth;    
     CANVAS_WIDTH = canvas.width = Math.floor(myWidth*0.6);
-    CANVAS_HEIGHT = canvas.height = Math.floor(canvas.width*0.75);
+    CANVAS_HEIGHT = canvas.height = Math.floor(Math.round(9 * canvas.width / 16));
     //empty hidden feild of objects
     document.getElementById('objects').value = "";
     show2d();
@@ -2478,8 +2451,8 @@
     var canvas = scn.getCanvas();
     var myWidth = window.innerWidth;    
     if (canvas.width !== Math.floor(myWidth*0.6)) {
-      CANVAS_WIDTH = canvas.width = Math.floor(myWidth*0.6);
-      CANVAS_HEIGHT = canvas.height = Math.floor(canvas.width*0.75);
+      CANVAS_WIDTH = canvas.width = Math.floor(myWidth*0.5);
+      CANVAS_HEIGHT = canvas.height = Math.floor(Math.round(9 * canvas.width / 16));
     }
     if (objectSelected) { 
       if (mWidget.getVisible()) {
@@ -3131,7 +3104,7 @@
     commands[curcmd] = new rotateObjectOnAxisCommand(axis, rot);
     commands[curcmd].execute();
   }
-  var getPNG = function () {
+  var getPNG = this.getPNG = function () {
     var ctx = scn.getGL();
     try{
       var arr = ctx.readPixels(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, ctx.RGBA, ctx.UNSIGNED_BYTE);
@@ -3711,8 +3684,14 @@
     var name = $("#name");
     // Accordion
     $("#accordion").accordion({
+      fillSpace: true,
       header: "h3"
     });
+    
+    //tabs
+		$( "#3d-tool-tabs" ).tabs();
+		$( "#2d-tool-tabs" ).tabs();
+		$( "#tool-tabs" ).tabs();
   });
   //run the currently selected effect
   var scaleEffect = this.scaleEffect = function () {

@@ -1,0 +1,46 @@
+/* @pjs preload="images/twitter.jpg"; */
+int x, y;
+var canvasCtx;
+var userImages = [];
+void setup() {
+  noLoop();
+}
+void draw(tweets,canvasIn) {	   
+  y = 70;
+  PImage logo;
+  logo = loadImage("images/twitter.jpg");
+  background(logo);
+  fill(255);
+  rect(20, 50, 216, 442);   
+  if (tweets) {
+    canvasCtx = canvasIn.getContext("2d");
+    for (var i = 0; i < tweets.length && y < 400;i++) {
+      x = 25
+      //User Avatar
+      userImages[i] = new Image();
+      userImages[i].src= tweets[i].img;
+      userImages[i].width =20;
+      userImages[i].height =20;
+      canvasCtx.drawImage(userImages[i],x,y-20,20,20);
+      displayTweet(tweets[i]);      
+    }
+  }
+}
+
+void displayTweet(tweet) {
+  PFont fontA = loadFont("Arial");
+  int fontSize=20;
+  float myWidth;
+  textFont(fontA, fontSize);
+  //Name
+  fill(0, 102, 153);
+  text(tweet.user + ":", x+23, y);
+  int fontSize=15;
+  textFont(fontA, fontSize);
+  y = y + fontSize-10;
+  //Text
+  fill(0, 102, 153);
+  var height = Math.ceil(((fontA.width(tweet.text) * fontSize)*2) / 215);
+  text(tweet.text, x, y,216,fontSize*height);
+  y = y + fontSize*height;
+}
