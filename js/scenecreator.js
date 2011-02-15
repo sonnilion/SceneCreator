@@ -2540,43 +2540,30 @@
     //set scene to current camera
     scn.setCamera(zcam[currentCam]);
     var moveAmount = CAM_MOVE_SPEED * deltaTime / 100;
-    //move selected object up 
+    
+    //empty
     if (buttons[0] && objectSelected) {
-      var curpos = objectSelected.model.getPosition();
-      objectSelected.model.setPosition([curpos[0], curpos[1] + 1, curpos[2]]);
+
     }
-    //move selected object down 
+    //empty
     else if (buttons[1] && objectSelected) {
-      var curpos = objectSelected.model.getPosition();
-      objectSelected.model.setPosition([curpos[0], curpos[1] - 1, curpos[2]]);
+
     }
-    //rotate selected object left
+    //empty
     else if (buttons[2] && objectSelected) {
-      rot += -0.1;
-      objectSelected.model.yaw(-0.1)
+
     }
-    //rotate selected object right
+    //empty
     else if (buttons[3] && objectSelected) {
-      rot += 0.1;
-      objectSelected.model.yaw(0.1)
+
     }
-    //light up
+    //empty
     else if (buttons[4]) {
-      var aLight = lights[0].getDiffuse();
-      for (i = 0; i < numLights; i++) {
-        if (aLight[1] < 1) {
-          lights[i].setDiffuse([aLight[0] + 0.1, aLight[1] + 0.1, aLight[2] + 0.1, aLight[3] + 0.1]);
-        }
-      }
+
     }
-    //light down
+    //empty
     else if (buttons[5]) {
-      var aLight = lights[0].getDiffuse();
-      for (i = 0; i < numLights; i++) {
-        if (aLight[1] > 0) {
-          lights[i].setDiffuse([aLight[0] - 0.1, aLight[1] - 0.1, aLight[2] - 0.1, aLight[3] - 0.1]);
-        }
-      }
+
     }
     //ud Up 
     else if (buttons[6]) {
@@ -3638,6 +3625,19 @@
       max: 100,
       slide: function (event, ui) {
         objectSelected.video.volume = ui.value/100;
+      }
+    });
+    //scene lighting slider
+    $('#lightSlider').slider({
+      value: 1,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      range: "min",
+      slide: function (event, ui) {
+        for (i = 0; i < numLights; i++) {
+          lights[i].setDiffuse([ui.value, ui.value, ui.value, ui.value]);
+        } 
       }
     });
     //selected video position slider

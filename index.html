@@ -20,21 +20,21 @@
       <div id="tool-tabs">
         <ul>
           <li><a href="#File">File</a></li>
-                <li><a href="#SceneOptions">Scene Options</a></li>
-                <li><a href="#Help">Help</a></li>
-              </ul>
-              <div id="File" >
-                <a onclick="load();">Load</a><br/>
-                <a onclick="save();">Save</a><br/>
-                <a onclick="saveAs();">SaveAs</a><br/>
-              </div>
-              <div id="SceneOptions" >
-                <a onclick="show2d();">2D</a><br/>
-                <a onclick="show3d();">3D</a><br/>
-                <a onclick="showImages();">Veiw Saved Images</a><br/>
-              </div>
-              <div id="Help">
-                <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
+          <li><a href="#SceneOptions">Scene Options</a></li>
+          <li><a href="#Help">Help</a></li>
+        </ul>
+        <div id="File" >
+          <a onclick="load();">Load</a><br/>
+          <a onclick="save();">Save</a><br/>
+          <a onclick="saveAs();">SaveAs</a><br/>
+        </div>
+        <div id="SceneOptions" >
+          <a onclick="show2d();">2D</a><br/>
+          <a onclick="show3d();">3D</a><br/>
+          <a onclick="showImages();">Veiw Saved Images</a><br/>
+        </div>
+        <div id="Help">
+          <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
         </div>
       </div>
     </div>
@@ -42,60 +42,66 @@
       <div id="3d-tool-tabs">
         <ul>
           <li><a href="#File">File</a></li>
-                <li><a href="#SceneOptions">Scene Options</a></li>
-                <li><a href="#ObjectOptions">Object Options</a></li>
-                <li><a href="#ObjectWidgets">Object Widgets</a></li>
-                <li><a href="#Help">Help</a></li>
-              </ul>
-              <div id="File" >
-                <a onclick="load();">Load</a><br/>
-                <a onclick="save();">Save</a><br/>
-                <a onclick="saveAs();">SaveAs</a><br/>
-                <a onclick="undo();">Undo</a><br/>
-                <a onclick="redo();">Redo</a>
-              </div>
-              <div id="SceneOptions" >
-                <a onclick="show2d();">2D</a><br/>
-                <a onclick="show3d();">3D</a><br/>
-                <a onclick="showImages();">Veiw Saved Images</a><br/>
-                <a onclick="var img = document.createElement('img'); document.getElementById('mainImages').appendChild(img); img.src = getPNG();">Save Image</a><br/>
-                <a>Lighting</a> 
-              </div>
-              <div id="ObjectOptions">
-                <a onclick="viewObject();">View Object</a><br/>
-                <a onclick="copySelected();">Clone</a><br/>
-                <a onclick="deleteSelected();">Delete</a><br/>
-                <a onclick="rotate();">Rotate</a><br/>
-                <a onclick="scale();">Scale</a><br/>
-              </div>
-              <div id="ObjectWidgets">
-                <a onclick="toggleMoveWidget();">Move</a><br/>
-                <a onclick="toggleScaleWidget();">Scale</a><br/>
-                <a onclick="toggleRotateWidget();">Rotate</a>
-              </div>
-                <div id="Help">
-                <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
-              </div>
+          <li><a href="#SceneOptions">Scene Options</a></li>
+          <li><a href="#ObjectOptions">Object Options</a></li>
+          <li><a href="#ObjectWidgets">Object Widgets</a></li>
+          <li><a href="#Help">Help</a></li>
+        </ul>
+        <div id="File" >
+          <a onclick="load();">Load</a><br/>
+          <a onclick="save();">Save</a><br/>
+          <a onclick="saveAs();">SaveAs</a><br/>
+          <a onclick="undo();">Undo</a><br/>
+          <a onclick="redo();">Redo</a>
+        </div>
+        <div id="SceneOptions" >
+          <a onclick="show2d();">2D</a><br/>
+          <a onclick="show3d();">3D</a><br/>
+          <a onclick="showImages();">Veiw Saved Images</a><br/>
+          <a onclick="var img = document.createElement('img'); document.getElementById('mainImages').appendChild(img); img.src = getPNG();">Save Image</a><br/>
+          <table>
+            <tr>
+              <td width="100px"><a>Lighting</a></td>
+              <td width="200px"><div id="lightSlider"></div></td>
+            </tr>
+          </table>  
+          
+        </div>
+        <div id="ObjectOptions">
+          <a onclick="viewObject();">View Object</a><br/>
+          <a onclick="copySelected();">Clone</a><br/>
+          <a onclick="deleteSelected();">Delete</a><br/>
+          <a onclick="rotate();">Rotate</a><br/>
+          <a onclick="scale();">Scale</a><br/>
+        </div>
+        <div id="ObjectWidgets">
+          <a onclick="toggleMoveWidget();">Move</a><br/>
+          <a onclick="toggleScaleWidget();">Scale</a><br/>
+          <a onclick="toggleRotateWidget();">Rotate</a>
+        </div>
+        <div id="Help">
+          <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
+        </div>
       </div>
       <div id="dialog-saveAs" title="Save As">
 	      <form>
-	      <fieldset>
-		      <label for="name">File Name:</label>
-		      <input type="text" name="name" id="name" class="ui-widget-content ui-corner-all" />
-	      </fieldset>
+          <fieldset>
+            <label for="name">File Name:</label>
+            <input type="text" name="name" id="name" class="ui-widget-content ui-corner-all" />
+          </fieldset>
 	      </form>
       </div>
       <div id="dialog-load" title="Load">
 	      <form>
-	      <fieldset>
-		      <label for="selectedname">Select file name:</label> <br />
-		      <select id="selectedname" name="selectedname"></select>
-	      </fieldset>
+          <fieldset>
+            <label for="selectedname">Select file name:</label> <br />
+            <select id="selectedname" name="selectedname"></select>
+          </fieldset>
 	      </form>
-       </div>
-      <table border="1"> 
+      </div>
+      <table> 
         <tr>
-        <td valign=top rowspan="3" id="sidebar"> 
+          <td valign=top rowspan="3" id="sidebar"> 
             <h3>Object List</h3>
             <div id="accordion">
               <div>
@@ -305,11 +311,11 @@
                 }  
               </script> 
             </div>
-      
           </td>
         </tr>
+        <tr>
           <td valign=bottom>
-          <div id="objInfo">
+            <div id="objInfo">
               <h3>Object Info</h3>
               <img id= "objPic" width="50px" height="50px" />
               <table>
@@ -337,68 +343,43 @@
               </span>
             </div>
           </td>
-        <tr>
         </tr>
       </table>
     </div>
     <div id="main2d">
-                <div id="2d-tool-tabs">
-              <ul>
-                <li><a href="#File">File</a></li>
-                <li><a href="#SceneOptions">Scene Options</a></li>
-                <li><a href="#2dOptions">2D Options</a></li>
-                <li><a href="#Help">Help</a></li>
-              </ul>
-              <div id="File" >
-                <a onclick="load();">Load</a><br/>
-                <a onclick="save();">Save</a><br/>
-                <a onclick="saveAs();">SaveAs</a><br/>
-                <a onclick="undo();">Undo</a><br/>
-                <a onclick="redo();">Redo</a>
-              </div>
-              <div id="SceneOptions" >
-                <a onclick="show2d();">2D</a><br/>
-                <a onclick="show3d();">3D</a><br/>
-                <a onclick="showImages();">Veiw Saved Images</a><br/>
-              </div>
-              <div id="2dOptions">
-                <a onclick="viewObject();">View Object</a><br/>
-                <a onclick="copySelected();">Clone</a><br/>
-                <a onclick="deleteSelected();">Delete</a><br/>
-                <a onclick="rotate();">Rotate</a><br/>
-                <a onclick="scale();">Scale</a><br/>
-              </div>
-                <div id="Help">
-                <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
-              </div>
-            </div>
-      <table>
-        <tr>
-          <td>
-            <input type="hidden" id="pressed" value="0">
-            <input type="hidden" id="objects" value="">
-            <img src="images/icons/load.jpg" title="Load" onclick="load()" />
-            <img src="images/icons/save.jpg" title="Save" onclick="save()" />
-            <img src="images/icons/saveAs.jpg" title="SaveAs" onclick="saveAs()" />
-            <img src="images/icons/undo.jpg" title="Undo" onclick="Pressed(9)" />
-            <img src="images/icons/redo.jpg" title="Redo" onclick="Pressed(10)" />
-            <img src="images/icons/newpage.jpg" title="New" onclick="Pressed(1)" />
-            <img src="images/icons/copy.jpg" title="Copy" onclick="Pressed(2)" />
-            <img src="images/icons/delete.jpg" title="Delete" onclick="Pressed(3)" />
-            <img src="images/icons/drawwall.jpg" title="Draw walls" onclick="Pressed(4)" />
-            <img src="images/icons/addlight.jpg" title="Insert lights" onclick="Pressed(5)" />
-            <!--<img src="images/icons/zoomin.jpg" title="Zoom in" onclick="Pressed(6)" />
-            <img src="images/icons/zoomout.jpg" title="Zoom out" onclick="Pressed(7)" />
-            <img src="images/icons/veiwall.jpg" title="View all" onclick="Pressed(8)" />-->
-            <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank"><img src="images/icons/help.jpg" title="Help/Info"/></a> 
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
-          </td>
-        </tr>
-      </table>
+      <div id="2d-tool-tabs">
+        <ul>
+          <li><a href="#File">File</a></li>
+          <li><a href="#SceneOptions">Scene Options</a></li>
+          <li><a href="#2dOptions">2D Options</a></li>
+          <li><a href="#Help">Help</a></li>
+        </ul>
+        <div id="File" >
+          <a onclick="load();">Load</a><br/>
+          <a onclick="save();">Save</a><br/>
+          <a onclick="saveAs();">SaveAs</a><br/>
+          <a onclick="Pressed(9);">Undo</a><br/>
+          <a onclick="Pressed(10);">Redo</a>
+        </div>
+        <div id="SceneOptions" >
+          <a onclick="show2d();">2D</a><br/>
+          <a onclick="show3d();">3D</a><br/>
+          <a onclick="showImages();">Veiw Saved Images</a><br/>
+        </div>
+        <div id="2dOptions">
+          <a onclick="Pressed(1);">New Scene</a><br/>
+          <a onclick="Pressed(2);">Clone</a><br/>
+          <a onclick="Pressed(3);">Delete</a><br/>
+          <a onclick="Pressed(4);">Draw walls</a><br/>
+          <a onclick="Pressed(5);">Insert lights</a><br/>
+        </div>
+        <div id="Help">
+          <a href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
+        </div>
+      </div>
+      <input type="hidden" id="pressed" value="0">
+      <input type="hidden" id="objects" value="">
+      <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
       <script>
         scaleEffect();
         rotateEffect();
@@ -411,279 +392,278 @@
     <div id="TwitterDiv">
       <form action="test.html" method="get">
         <table id="advForm" cellspacing="0">
-        <tr>
-          <td colspan="2">
-            <b>Find tweets based on...</b>
-          </td>
-          <td>
-
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Words
-          </th>
-          <td>
-            All of these words
-          </td>
-          <td>
-            <input id="ands" name="ands" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            This exact phrase
-          </td>
-          <td>
-            <input id="phrase" name="phrase" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Any of these words
-          </td>
-          <td>
-            <input id="ors" name="ors" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            None of these words
-          </td>
-          <td>
-            <input id="nots" name="nots" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            This hashtag
-          </td>
-          <td>
-            <input id="tag" name="tag" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Written in
-          </td>
-          <td>
-            <select id="lang" name="lang">
-              <option value="all" selected="selected">Any Language</option>
-              <option value="ar">Arabic (العربية)</option>
-              <option value="da">Danish (dansk)</option>
-              <option value="nl">Dutch (Nederlands)</option>
-              <option value="en">English</option>
-              <option value="fa">Farsi / Persian (فارسی)</option>
-              <option value="fi">Finnish (suomen kieli)</option>
-              <option value="fr">French (français)</option>
-              <option value="de">German (Deutsch)</option>
-              <option value="hu">Hungarian (Magyar)</option>
-              <option value="is">Icelandic (Íslenska)</option>
-              <option value="it">Italian (Italiano)</option>
-              <option value="ja">Japanese (日本語)</option>
-              <option value="no">Norwegian (Norsk)</option>
-              <option value="pl">Polish (polski)</option>
-              <option value="pt">Portuguese (Português)</option>
-              <option value="ru">Russian (русский язык)</option>
-              <option value="es">Spanish (español)</option>
-              <option value="sv">Swedish (Svenska)</option>
-              <option value="th">Thai (ไทย)</option>
-            </select>
-            <span>(persistent)</span>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-          </td>
-        </tr>
-        <tr>
-          <th>
-            People
-          </th>
-          <td>
-            From this person
-          </td>
-          <td>
-            <input id="from" name="from" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            To this person
-          </td>
-          <td>
-            <input id="to" name="to" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Referencing this person
-          </td>
-          <td>
-            <input id="ref" name="ref" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Places
-          </th>
-          <td>
-            Near this place
-          </td>
-          <td>
-            <input id="near" name="near" type="text" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Within this distance
-          </td>
-          <td>
-            <select id="within" name="within">
-              <option value="1">1</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15" selected="selected">15</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-              <option value="500">500</option>
-              <option value="1000">1000</option>
-            </select>
-            <input checked="checked" id="units_mi" name="units" type="radio" value="mi" /> miles <input id="units_km" name="units" type="radio" value="km" /> kilometers
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Dates
-          </th>
-          <td>
-            Since this date
-          </td>
-          <td>
-            <input id="since" name="since" type="text" /> (YYYY-MM-DD)
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Until this date
-          </td>
-          <td>
-            <input id="until" name="until" type="text" /> (YYYY-MM-DD)
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Attitudes
-          </th>
-          <td>
-            With positive attitude :)
-          </td>
-          <td>
-            <input id="tude1" name="tude1" type="checkbox" value=":)" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            With negative attitude :(
-          </td>
-          <td>
-            <input id="tude2" name="tude2" type="checkbox" value=":(" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Asking a question ?
-          </td>
-          <td>
-            <input id="tude3" name="tude3" type="checkbox" value="?" />
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3">
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Other
-          </th>
-          <td>
-            Containing links
-          </td>
-          <td>
-            <input id="filter" name="filter" type="checkbox" value="links" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Include retweets
-          </td>
-          <td>
-            <input id="include" name="include" type="checkbox" value="retweets" />
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td>
-            Results per page
-          </td>
-          <td>
-            <select id="rpp" name="rpp">
-              <option value="10">10</option>
-              <option value="15" selected="selected">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-              <option value="30">30</option>
-              <option value="50">50</option>
-            </select>
-            <span>(persistent)</span>
-          </td>
-        </tr>
-        <tr>
-          <th>
-          </th>
-          <td colspan="2">
-            <input type="button" value="Search" onclick="createQueryString();" />
-            <input type="button" value="Cancel" onclick="show3d();" />
-          </td>
-        </tr>
+          <tr>
+            <td colspan="2">
+              <b>Find tweets based on...</b>
+            </td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Words
+            </th>
+            <td>
+              All of these words
+            </td>
+            <td>
+              <input id="ands" name="ands" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              This exact phrase
+            </td>
+            <td>
+              <input id="phrase" name="phrase" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Any of these words
+            </td>
+            <td>
+              <input id="ors" name="ors" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              None of these words
+            </td>
+            <td>
+              <input id="nots" name="nots" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              This hashtag
+            </td>
+            <td>
+              <input id="tag" name="tag" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Written in
+            </td>
+            <td>
+              <select id="lang" name="lang">
+                <option value="all" selected="selected">Any Language</option>
+                <option value="ar">Arabic (العربية)</option>
+                <option value="da">Danish (dansk)</option>
+                <option value="nl">Dutch (Nederlands)</option>
+                <option value="en">English</option>
+                <option value="fa">Farsi / Persian (فارسی)</option>
+                <option value="fi">Finnish (suomen kieli)</option>
+                <option value="fr">French (français)</option>
+                <option value="de">German (Deutsch)</option>
+                <option value="hu">Hungarian (Magyar)</option>
+                <option value="is">Icelandic (Íslenska)</option>
+                <option value="it">Italian (Italiano)</option>
+                <option value="ja">Japanese (日本語)</option>
+                <option value="no">Norwegian (Norsk)</option>
+                <option value="pl">Polish (polski)</option>
+                <option value="pt">Portuguese (Português)</option>
+                <option value="ru">Russian (русский язык)</option>
+                <option value="es">Spanish (español)</option>
+                <option value="sv">Swedish (Svenska)</option>
+                <option value="th">Thai (ไทย)</option>
+              </select>
+              <span>(persistent)</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              People
+            </th>
+            <td>
+              From this person
+            </td>
+            <td>
+              <input id="from" name="from" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              To this person
+            </td>
+            <td>
+              <input id="to" name="to" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Referencing this person
+            </td>
+            <td>
+              <input id="ref" name="ref" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Places
+            </th>
+            <td>
+              Near this place
+            </td>
+            <td>
+              <input id="near" name="near" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Within this distance
+            </td>
+            <td>
+              <select id="within" name="within">
+                <option value="1">1</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15" selected="selected">15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+              </select>
+              <input checked="checked" id="units_mi" name="units" type="radio" value="mi" /> miles <input id="units_km" name="units" type="radio" value="km" /> kilometers
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Dates
+            </th>
+            <td>
+              Since this date
+            </td>
+            <td>
+              <input id="since" name="since" type="text" /> (YYYY-MM-DD)
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Until this date
+            </td>
+            <td>
+              <input id="until" name="until" type="text" /> (YYYY-MM-DD)
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Attitudes
+            </th>
+            <td>
+              With positive attitude :)
+            </td>
+            <td>
+              <input id="tude1" name="tude1" type="checkbox" value=":)" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              With negative attitude :(
+            </td>
+            <td>
+              <input id="tude2" name="tude2" type="checkbox" value=":(" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Asking a question ?
+            </td>
+            <td>
+              <input id="tude3" name="tude3" type="checkbox" value="?" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+            </td>
+          </tr>
+          <tr>
+            <th>
+              Other
+            </th>
+            <td>
+              Containing links
+            </td>
+            <td>
+              <input id="filter" name="filter" type="checkbox" value="links" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Include retweets
+            </td>
+            <td>
+              <input id="include" name="include" type="checkbox" value="retweets" />
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td>
+              Results per page
+            </td>
+            <td>
+              <select id="rpp" name="rpp">
+                <option value="10">10</option>
+                <option value="15" selected="selected">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+              </select>
+              <span>(persistent)</span>
+            </td>
+          </tr>
+          <tr>
+            <th>
+            </th>
+            <td colspan="2">
+              <input type="button" value="Search" onclick="createQueryString();" />
+              <input type="button" value="Cancel" onclick="show3d();" />
+            </td>
+          </tr>
         </table>
         <script type="text/javascript">
           function createQueryString () {
@@ -853,7 +833,7 @@
     </script>
   </div>
     <div id="ImageSrcDiv">
-      <form action="test.html" method="get">
+      <form method="get">
         <b>Url of image...</b> <br/>
         <input id="cUrl" name="cUrl" type="text" />
         <input type="button" value="Search" onclick="createCustomImgObject(document.getElementById('cUrl').value);" />
@@ -861,12 +841,12 @@
       </form>
     </div>
     <div id="VideoSrcDiv">
-    <form action="test.html" method="get">
-      <b>Url of video...</b> <br/>
-      <input id="vUrl" name="vUrl" type="text" />
-      <input type="button" value="Search" onclick="createVideoObject(document.getElementById('vUrl').value);" />
-      <input type="button" value="Cancel" onclick="show3d();" />
-    </form>
-  </div>
+      <form method="get">
+        <b>Url of video...</b> <br/>
+        <input id="vUrl" name="vUrl" type="text" />
+        <input type="button" value="Search" onclick="createVideoObject(document.getElementById('vUrl').value);" />
+        <input type="button" value="Cancel" onclick="show3d();" />
+      </form>
+    </div>
   </body>
 </html>
