@@ -292,7 +292,7 @@
       var camPos = zcam[currentCam].getPosition();
       this.wallNorm = wall.model.getDirection();
       var difPos = c3dl.subtractVectors(camPos, wallPos);
-      c3dl.normalizeVector(difPos)
+      c3dl.normalizeVector(difPos);
       var theta = c3dl.vectorDotProduct(difPos, this.wallNorm);
       theta = Math.acos(theta);
       var width = this.model.getWidth() / 2 + wall.model.getWidth() / 2;
@@ -941,7 +941,6 @@
       holding = false,
       sceneObjectList = new SceneObjectList,
       wallSelected = null,
-      wallObjectFlag = false,
       mWidget = null,
       sWidget = null,
       rWidget = null,
@@ -2097,9 +2096,19 @@
           objectSelected.model.setPosition([0, 15 - (objectSelected.model.getHeight() / 2), 0]);
         }
         if (objectSelected.snapTo === "wall") {
-          alert("Please Select a wall the attach object")
-          wallObjectFlag = true;
-          objectSelected.model.setPosition([0, -50, 0]);
+          var wallHit = [];
+          for (var i = 0, len = walls.length; i < len; i++) {
+            var currObj = walls[i];
+            if (currObj.model.isVisible() && currObj.model.isInsideFrustum()) {
+              if (currObj.model.rayIntersectsEnclosures(zcam[currentCam].getPosition(), zcam[currentCam].dir)) {
+                wallHit.push(currObj);
+              }
+            }
+            if (wallHit.length) {
+              objectSelected.placeObjectOnWall(wallHit[0]);
+            }
+          }
+          moveObject = false;
         }
         else {
           objectSelected.model.setPosition([0, objectSelected.model.getHeight() / 2, 0]);
@@ -2618,14 +2627,6 @@
     else if (keysDown.KEY_DOWN || keysDown.KEY_S) {
       moveCamera(FORWARD, -moveAmount);
     }
-    if (wallObjectFlag) {
-      if (wallSelected) {
-        objectSelected.placeObjectOnWall(wallSelected);
-        wallSelected = null;
-        wallObjectFlag = false;
-      }
-    }
-    else {
       //move selected object to mouse postion
       if (!objectSelected) {
         closeAllWidgets();
@@ -2686,7 +2687,7 @@
           }
         }
       }
-    }
+    
     //Camera stuff
     //setting height
     if (newCamHeight - camHeight) {
@@ -2772,16 +2773,8 @@
   function pickingHandler(result) {
     var objectsPicked = result.getObjects();
     if (objectsPicked.length > 0) {
-      //check for selecting a wall for adding wall objects
-      if (wallObjectFlag) {
-        for (var i = 0, len = walls.length; i < len; i++) {
-          if (objectsPicked[0] === walls[i].model) {
-            wallSelected = walls[i];
-          }
-        }
-      }
       //check move widget selection
-      else if (mWidget.getVisible()) {
+      if (mWidget.getVisible()) {
         objectSelected.model.setRenderObb(true);
         for (var i = 0, len = objectsPicked.length; i < len; i++) {
           for (var j = 0; j < 3; j++) {
