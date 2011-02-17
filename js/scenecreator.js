@@ -28,6 +28,17 @@
   const CUSTOMVIDEO_PATH = "./models/customvideo.dae";
   const CLOCK_PATH = "./models/clock.dae";
   const TV_PATH = "./models/tv.dae";
+  const SC1_PATH = "./models/sc/810/810OpenCollada.dae";
+  const SC2_PATH = "./models/sc/868/868OpenCollada.dae";
+  const SC3_PATH = "./models/sc/k-108-3/K-108-3OpenCollada.dae";
+  const SC4_PATH = "./models/sc/k-110-3/K-110-3OpenCollada.dae";
+  const SC5_PATH = "./models/sc/k-839/k-839OpenCollada.dae";
+  const SC6_PATH = "./models/sc/k-1454/K-1454OpenCollada.dae";
+  const SC7_PATH = "./models/sc/k-2200/k-2200OpenCollada.dae";
+  const SC8_PATH = "./models/sc/k-2314/k-2314OpenCollada.dae";
+  const SC9_PATH = "./models/sc/k-2605/k-2605OpenCollada.dae";
+  const SC10_PATH = "./models/sc/k-15136/k-15136OpenCollada.dae";
+
   //Adding Models
   c3dl.addModel("./models/sky/skysphere.dae");
   c3dl.addModel(WALL_PATH);
@@ -50,6 +61,17 @@
   c3dl.addModel(CUSTOMVIDEO_PATH);
   c3dl.addModel(CLOCK_PATH);
   c3dl.addModel(TV_PATH);
+  c3dl.addModel(SC1_PATH);
+  c3dl.addModel(SC2_PATH);
+  c3dl.addModel(SC3_PATH);
+  c3dl.addModel(SC4_PATH);
+  c3dl.addModel(SC5_PATH);
+  c3dl.addModel(SC6_PATH);
+  c3dl.addModel(SC7_PATH);
+  c3dl.addModel(SC8_PATH);
+  c3dl.addModel(SC9_PATH);
+  c3dl.addModel(SC10_PATH);
+
   
   //Widgets
   const MoveX = "./models/movewidget/x.dae";
@@ -85,63 +107,67 @@
     this.list = [];
     this.init = function () {
       //models created so clone can be used
-      this.list[0] = new SceneObject();
+      for (var i = 0; i < 29; i++) {
+        this.list[i] = new SceneObject();
+      }
       this.list[0].init(CHAIR_PATH, "object", "floor", false);
       this.list[0].model.scale([0.08, 0.08, 0.08]);
-      this.list[1] = new SceneObject();
       this.list[1].init(TABLE_PATH, "object", "floor", true);
       this.list[1].model.scale([0.25, 0.25, 0.25]);
-      this.list[2] = new SceneObject();
       this.list[2].init(PACMAN_PATH, "object", "floor", false);
       this.list[2].model.scale([0.005, 0.005, 0.005]);
-      this.list[3] = new SceneObject();
       this.list[3].init(REDGHOST_PATH, "object", "floor", false);
       this.list[3].model.scale([5, 5, 5]);
-      this.list[4] = new SceneObject();
       this.list[4].init(BLUEGHOST_PATH, "object", "floor", false);
       this.list[4].model.scale([5, 5, 5]);
-      this.list[5] = new SceneObject();
       this.list[5].init(ORANGEGHOST_PATH, "object", "floor", false);
       this.list[5].model.scale([5, 5, 5]);
-      this.list[6] = new SceneObject();
       this.list[6].init(PINKGHOST_PATH, "object", "floor", false);
       this.list[6].model.scale([5, 5, 5]);
-      this.list[7] = new SceneObject();
       this.list[7].init(PACMANBALL_PATH, "object", "floor", false);
       this.list[7].model.scale([0.04, 0.04, 0.04]);
-      this.list[8] = new SceneObject();
       this.list[8].init(PACMANBALL_PATH, "object", "floor", false);
       this.list[8].model.scale([0.02, 0.02, 0.02]);
-      this.list[9] = new SceneObject();
       this.list[9].init(LAMP_PATH, "object", "object", false);
       this.list[9].model.scale([0.1, 0.1, 0.1]);
-      this.list[10] = new SceneObject();
       this.list[10].init(CEILINGLAMP_PATH, "object", "ceiling", false);
       this.list[10].model.scale([0.08, 0.08, 0.08]);
-      this.list[11] = new SceneObject();
       this.list[11].init(PICTURE_PATH, "object", "wall", false);
       this.list[11].model.scale([0.06, 0.06, 0.06]);
-      this.list[12] = new SceneObject();
       this.list[12].init(PLAY_PATH, "object", "floor", false);
       this.list[12].model.scale([0.8, 0.8, 0.8]);
-      this.list[13] = new SceneObject();
       this.list[13].init(TWITTER_PATH, "object", "wall", false, "Twitter", "Displays a twitter feed", "images/sidebar/twitter.jpg");
       this.list[13].model.scale([2, 4, 0.25]);
-      this.list[14] = new SceneObject();
       this.list[14].init(CLOCK_PATH, "object", "wall", false);
       this.list[14].model.scale([0.1, 0.1, 0.1]);
-      this.list[15] = new SceneObject();
       this.list[15].init(FLICKR_PATH, "object", "wall", false, "Flickr", "Displays a flickr album", "images/sidebar/flickr.jpg");
       this.list[15].model.scale([2, 2, 0.25]);
-      this.list[16] = new SceneObject();
       this.list[16].init(CUSTOMIMG_PATH, "object", "wall", false, "CustomImage", "Displays a custom image from a selected url");
       this.list[16].model.scale([2, 2, 0.25]);
-      this.list[17] = new SceneObject();
       this.list[17].init(CUSTOMVIDEO_PATH, "object", "wall", false, "CustomVideo", "Displays a custom video from a selected url");
       this.list[17].model.scale([2, 2, 0.25]);
-      this.list[18] = new SceneObject();
       this.list[18].init(TV_PATH, "object", "object", false, "TV", "Displays a custom video from a selected url on the screen");
       this.list[18].model.scale([0.01, 0.01, 0.01]);
+      this.list[19].init(SC1_PATH, "object", "floor", false);
+      this.list[19].model.scale([0.2, 0.2, 0.2]);
+      this.list[20].init(SC2_PATH, "object", "floor", false);
+      this.list[20].model.scale([0.2, 0.2, 0.2]);
+      this.list[21].init(SC3_PATH, "object", "floor", false);
+      this.list[21].model.scale([0.2, 0.2, 0.2]);
+      this.list[22].init(SC4_PATH, "object", "floor", false);
+      this.list[22].model.scale([0.2, 0.2, 0.2]);
+      this.list[23].init(SC5_PATH, "object", "floor", false);
+      this.list[23].model.scale([0.2, 0.2, 0.2]);
+      this.list[24].init(SC6_PATH, "object", "floor", false);
+      this.list[24].model.scale([0.2, 0.2, 0.2]);
+      this.list[25].init(SC7_PATH, "object", "floor", false);
+      this.list[25].model.scale([0.2, 0.2, 0.2]);
+      this.list[26].init(SC8_PATH, "object", "floor", false);
+      this.list[26].model.scale([0.2, 0.2, 0.2]);
+      this.list[27].init(SC9_PATH, "object", "floor", false);
+      this.list[27].model.scale([0.2, 0.2, 0.2]);
+      this.list[28].init(SC10_PATH, "object", "floor", false);
+      this.list[28].model.scale([0.02, 0.02, 0.02]);
     };
     this.getSceneObject = function (num) {
       closeAllWidgets();
@@ -166,9 +192,9 @@
     //Allow objects to sit on object
     this.stand = false;
     //reference to object siting on it
-    this.objectOnTop = [];
+    this.childObjectList = [];
     //reference to object it is sitting on
-    this.objectOnBottom = null;
+    this.parentObject = null;
     //picture of the object
     this.picture = null;
     //description of the object
@@ -235,13 +261,13 @@
     this.moveObject = function (mouseX, mouseY) {
       if (this.snapTo === "wall") {
         this.oldpos = this.model.getPosition();
-        var worldCoords = currNode(mouseX, mouseY, this.model.getPosition(), this.wallNorm);
-        var wallCenter = this.objectOnBottom.model.getPosition();
-        var height = this.objectOnBottom.model.getHeight() / 2;
-        var length = this.objectOnBottom.model.getLength() / 2;
+        var worldCoords = getIntersectionOnPlane(mouseX, mouseY, this.model.getPosition(), this.model.getDirection());
+        var wallCenter = this.parentObject.model.getPosition();
+        var height = this.parentObject.model.getHeight() / 2;
+        var length = this.parentObject.model.getLength() / 2;
         var difLen = c3dl.subtractVectors([wallCenter[0], 0, wallCenter[2]], [worldCoords[0], 0, worldCoords[2]]);
         difLen = c3dl.vectorLength(difLen);
-        difLen = difLen - this.objectOnBottom.model.getWidth() / 2 - this.model.getWidth() / 2;
+        difLen = difLen - this.parentObject.model.getWidth() / 2 - this.model.getWidth() / 2;
         var difHeight = worldCoords[1] - wallCenter[1];
         if (difHeight + this.model.getHeight() / 2 < height && difLen + this.model.getLength() / 2 + 1 < length && difLen - this.model.getLength() / 2 - 1 > -length && difHeight - this.model.getHeight() / 2 > -height) {
           this.model.setPosition(worldCoords)
@@ -262,7 +288,7 @@
     };
     this.handleCollision = function (objectCollided) {
       if (this.snapTo === "object" && objectCollided.type === "object" && objectCollided.stand) {
-        if (objectCollided !== this.objectOnBottom) {
+        if (objectCollided !== this.parentObject) {
           this.placeObjectOnObject(objectCollided);
           commands[curcmd].execute();
           moveObject = false;
@@ -270,7 +296,7 @@
         }
       }
       else if (this.snapTo === "wall" && objectCollided.type === "wall") {
-        if (objectCollided !== this.objectOnBottom) {
+        if (objectCollided !== this.parentObject) {
           this.model.rotateOnAxis([0,1,0], -this.angle);
           this.placeObjectOnWall(objectCollided);
           commands[curcmd].execute();
@@ -280,14 +306,14 @@
       }
       else {
         this.model.setPosition(this.oldpos);
-        for (var i = 0, len = this.objectOnTop.length; i < len; i++) {
-          this.objectOnTop[i].model.setPosition(this.objectOnTop[i].oldpos);
+        for (var i = 0, len = this.childObjectList.length; i < len; i++) {
+          this.childObjectList[i].model.setPosition(this.childObjectList[i].oldpos);
         }
       }
     };
     this.placeObjectOnWall = function (wall) {
-      this.objectOnBottom = wall;
-      wall.objectOnTop.push(this);
+      this.parentObject = wall;
+      wall.childObjectList.push(this);
       var wallPos = wall.model.getPosition();
       var camPos = zcam[currentCam].getPosition();
       this.wallNorm = wall.model.getDirection();
@@ -321,8 +347,8 @@
     this.moveTopObjects = function (x, z) {
       this.oldpos = this.model.getPosition();
       this.model.setPosition([this.oldpos[0] - x, this.oldpos[1], this.oldpos[2] - z]);
-      for (var i = 0, len = this.objectOnTop.length; i < len; i++) {
-        this.objectOnTop[i].moveTopObjects(x, z);
+      for (var i = 0, len = this.childObjectList.length; i < len; i++) {
+        this.childObjectList[i].moveTopObjects(x, z);
       }
     };
     this.placeObjectOnObject = function (obj) {
@@ -330,59 +356,60 @@
         this.oldpos = this.model.getPosition();
         var temp = obj.model.getPosition();
         this.model.setPosition([temp[0], temp[1] + (obj.model.getHeight() / 2) + (this.model.getHeight() / 2) -0.01, temp[2]]);
-        obj.objectOnTop.push(this);
-        this.objectOnBottom = obj;
+        obj.childObjectList.push(this);
+        this.parentObject = obj;
       }
     };
-    this.removeObjectOnTop = function (obj) {
+    this.removeChildFromChildObjectList = function (obj) {
       var foundFlag = false;
-      for (var i = 0, len = this.objectOnTop.length; i < len; i++) {
-        if (this.objectOnTop[i] === obj) {
+      for (var i = 0, len = this.childObjectList.length; i < len; i++) {
+        if (this.childObjectList[i] === obj) {
           foundFlag = true;
-          this.objectOnTop[i] = null;
+          this.childObjectList[i] = null;
         }
         else if (foundFlag) {
-          this.objectOnTop[i-1] = this.objectOnTop[i];
+          this.childObjectList[i-1] = this.childObjectList[i];
         }
       }
-       this.objectOnTop.pop();
+       this.childObjectList.pop();
     };
-    this.updateWallObjects = function (oldWallPos, wallObjList, oldLength) {
-      this.objectOnTop = wallObjList;
+    this.updateWallObjects = function (oldWallPos, wallObjList, oldLength) {    
+      this.childObjectList = wallObjList;
       var newLength = this.model.getLength();
       var difLength = newLength / oldLength;
       var m = (this.endPoint[2] - this.startPoint[2]) / (this.endPoint[0] - this.startPoint[0]);
       if (isFinite(m)) {
         var b = (m * -this.startPoint[0]) + this.startPoint[2];
-        for (var i = 0, len = this.objectOnTop.length; i < len; i++) {
-          this.objectOnTop[i].objectOnBottom = this;
-          this.objectOnTop[i].model.yaw(-this.objectOnTop[i].angle);
-          this.objectOnTop[i].model.yaw(this.angle);
-          this.objectOnTop[i].setAngle(this.angle);
-          var modelPos = this.objectOnTop[i].model.getPosition();
+        for (var i = 0, len = this.childObjectList.length; i < len; i++) {
+          this.childObjectList[i].parentObject = this;
+          this.childObjectList[i].model.yaw(-this.childObjectList[i].angle);
+          this.childObjectList[i].model.yaw(this.angle);
+          this.childObjectList[i].setAngle(this.angle);
+          this.childObjectList[i].wallnorm
+          var modelPos = this.childObjectList[i].model.getPosition();
 
           var x = this.model.getPosition()[0] + ((modelPos[0] - oldWallPos[0]) * difLength);
           var y = (m * x) + b;
           var newPos = [x, modelPos[1], y];
-          var norm = this.objectOnTop[i].model.getDirection();
-          var width = this.model.getWidth() / 2 + this.objectOnTop[i].model.getWidth() / 2;
+          var norm = this.childObjectList[i].model.getDirection();
+          var width = this.model.getWidth() / 2 + this.childObjectList[i].model.getWidth() / 2;
           newPos = c3dl.addVectors(newPos, c3dl.multiplyVector(norm, width));
-          this.objectOnTop[i].model.setPosition(newPos);
+          this.childObjectList[i].model.setPosition(newPos);
         }
       }
       else {
         var z = oldWallPos[2] - this.model.getPosition()[2];
-        for (var i = 0, len = this.objectOnTop.length; i < len; i++) {
-          this.objectOnTop[i].objectOnBottom = this;
-          this.objectOnTop[i].model.yaw(-this.objectOnTop[i].angle);
-          this.objectOnTop[i].model.yaw(this.angle);
-          this.objectOnTop[i].setAngle(this.angle);
-          var mPos = this.objectOnTop[i].model.getPosition();
+        for (var i = 0, len = this.childObjectList.length; i < len; i++) {
+          this.childObjectList[i].parentObject = this;
+          this.childObjectList[i].model.yaw(-this.childObjectList[i].angle);
+          this.childObjectList[i].model.yaw(this.angle);
+          this.childObjectList[i].setAngle(this.angle);
+          var mPos = this.childObjectList[i].model.getPosition();
           var newPos = [this.model.getPosition()[0], mPos[1], (mPos[2] - z)];
-          var norm = this.objectOnTop[i].model.getDirection();
-          var width = this.model.getWidth() / 2 + this.objectOnTop[i].model.getWidth() / 2;
+          var norm = this.childObjectList[i].model.getDirection();
+          var width = this.model.getWidth() / 2 + this.childObjectList[i].model.getWidth() / 2;
           newPos = c3dl.addVectors(newPos, c3dl.multiplyVector(norm, width));
-          this.objectOnTop[i].model.setPosition(newPos);
+          this.childObjectList[i].model.setPosition(newPos);
         }
       }
     };
@@ -445,8 +472,8 @@
         this.obj.model.setPosition([pos[0] + dif, pos[1], pos[2]]);
       }
       else if (selectedAxis === this.model[1]) {
-        var worldCoords = currNode(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir());
-        var worldCoordsOrig = currNode(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir());
+        var worldCoords = getIntersectionOnPlane(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir());
+        var worldCoordsOrig = getIntersectionOnPlane(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir());
         var dif = worldCoords[1] - worldCoordsOrig[1];
         this.obj.model.setPosition([pos[0], pos[1] + dif, pos[2]]);
       }
@@ -520,10 +547,10 @@
           height = obj.model.getHeight();
       if (selectedAxis === this.model[0]) {
         var worldCoords = getworldCoords(mouseX, mouseY, this.obj.model.getPosition()[1]);
-        worldCoords[1] = currNode(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
+        worldCoords[1] = getIntersectionOnPlane(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
         worldCoords = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(obj.model.getTransform()), worldCoords);
         var worldCoordsOrig = getworldCoords(this.x, this.y, this.obj.model.getPosition()[1]);
-        worldCoordsOrig[1] = currNode(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
+        worldCoordsOrig[1] = getIntersectionOnPlane(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
         worldCoordsOrig = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(obj.model.getTransform()), worldCoordsOrig);
         var dif = worldCoords[0] / worldCoordsOrig[0];
         if (length * dif > 0) {
@@ -532,10 +559,10 @@
       }
       else if (selectedAxis === this.model[1]) {
         var worldCoords = getworldCoords(mouseX, mouseY, this.obj.model.getPosition()[1]);
-        worldCoords[1] = currNode(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
+        worldCoords[1] = getIntersectionOnPlane(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
         worldCoords = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(obj.model.getTransform()), worldCoords);
         var worldCoordsOrig = getworldCoords(this.x, this.y, this.obj.model.getPosition()[1]);
-        worldCoordsOrig[1] = currNode(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
+        worldCoordsOrig[1] = getIntersectionOnPlane(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
         worldCoordsOrig = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(obj.model.getTransform()), worldCoordsOrig);
         var dif = worldCoords[1] / worldCoordsOrig[1];
         if (height * dif > 0) {
@@ -544,10 +571,10 @@
       }
       else if (selectedAxis === this.model[2]) {
         var worldCoords = getworldCoords(mouseX, mouseY, this.obj.model.getPosition()[1]);
-        worldCoords[1] = currNode(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
+        worldCoords[1] = getIntersectionOnPlane(mouseX, mouseY, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
         worldCoords = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(obj.model.getTransform()), worldCoords);
         var worldCoordsOrig = getworldCoords(this.x, this.y, this.obj.model.getPosition()[1]);
-        worldCoordsOrig[1] = currNode(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
+        worldCoordsOrig[1] = getIntersectionOnPlane(this.x, this.y, this.obj.model.getPosition(), scn.getCamera().getDir())[1];
         worldCoordsOrig = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(obj.model.getTransform()), worldCoordsOrig);
         var dif = worldCoords[2] / worldCoordsOrig[2];
         if (width * dif > 0) {
@@ -631,14 +658,14 @@
         var temp = c3dl.normalizeVector(c3dl.subtractVectors(obj.model.getPosition(), zcam[currentCam].getPosition()));
         var angle = c3dl.vectorDotProduct([1, 0, 0], temp);
         if (angle < -0.14 || angle > 0.14) {
-          this.pointOnSphere = currNode(this.x, this.y, obj.model.getPosition(), [1, 0, 0]);
+          this.pointOnSphere = getIntersectionOnPlane(this.x, this.y, obj.model.getPosition(), [1, 0, 0]);
           //calculate the line equation for the line tangent from the rotate widget
           var m = -1 * (this.pointOnSphere[2] - centerPos[2]) / (this.pointOnSphere[1] - centerPos[1]);
           var b = this.pointOnSphere[1] - (m * this.pointOnSphere[2]);
-          var x = currNode(mouseX, mouseY, obj.model.getPosition(), [1, 0, 0])[2];
+          var x = getIntersectionOnPlane(mouseX, mouseY, obj.model.getPosition(), [1, 0, 0])[2];
           var y = (m * x) + b;
           
-          var x2 = currNode(this.x, this.y, obj.model.getPosition(), [1, 0, 0])[2];
+          var x2 = getIntersectionOnPlane(this.x, this.y, obj.model.getPosition(), [1, 0, 0])[2];
           var y2 = (m * x2) + b;
 
           //angle in between tangent and mouse pos
@@ -650,7 +677,7 @@
           var pos2 = [this.pointOnSphere[0], temp2, this.pointOnSphere[2]+1];          
           this.l.setCoordinates(pos1,pos2);
           
-          pos2 = currNode(mouseX, mouseY, obj.model.getPosition(), [1, 0, 0]);
+          pos2 = getIntersectionOnPlane(mouseX, mouseY, obj.model.getPosition(), [1, 0, 0]);
           pos1 = c3dl.normalizeVector(c3dl.subtractVectors(pos1, this.pointOnSphere));
           pos2 = c3dl.normalizeVector(c3dl.subtractVectors(pos2, this.pointOnSphere));
           var angle = c3dl.vectorDotProduct(pos1, pos2);
@@ -763,14 +790,14 @@
         var temp = c3dl.normalizeVector(c3dl.subtractVectors(obj.model.getPosition(), zcam[currentCam].getPosition()));
         var angle = c3dl.vectorDotProduct([0, 0, 1], temp);
         if (angle < -0.14 || angle > 0.14) {
-          this.pointOnSphere = currNode(this.x, this.y, obj.model.getPosition(), [0, 0, 1]);
+          this.pointOnSphere = getIntersectionOnPlane(this.x, this.y, obj.model.getPosition(), [0, 0, 1]);
           //calculate the line equation for the line tangent from the rotate widget
           var m = -1 * (this.pointOnSphere[0] - centerPos[0]) / (this.pointOnSphere[1] - centerPos[1]);
           var b = this.pointOnSphere[1] - (m * this.pointOnSphere[0]);
-          var x = currNode(mouseX, mouseY, obj.model.getPosition(), [0, 0, 1])[0];
+          var x = getIntersectionOnPlane(mouseX, mouseY, obj.model.getPosition(), [0, 0, 1])[0];
           var y = (m * x) + b;
           
-          var x2 = currNode(this.x, this.y, obj.model.getPosition(), [0, 0, 1])[0];
+          var x2 = getIntersectionOnPlane(this.x, this.y, obj.model.getPosition(), [0, 0, 1])[0];
           var y2 = (m * x2) + b;
 
           //angle in between tangent and mouse pos
@@ -782,7 +809,7 @@
           var pos2 = [this.pointOnSphere[0]+1, temp2, this.pointOnSphere[2]];
           this.l.setCoordinates(pos1,pos2);
           
-          pos2 = currNode(mouseX, mouseY, obj.model.getPosition(), [0, 0, 1]);
+          pos2 = getIntersectionOnPlane(mouseX, mouseY, obj.model.getPosition(), [0, 0, 1]);
           pos1 = c3dl.normalizeVector(c3dl.subtractVectors(pos1, this.pointOnSphere));
           pos2 = c3dl.normalizeVector(c3dl.subtractVectors(pos2, this.pointOnSphere));
           var angle = c3dl.vectorDotProduct(pos1, pos2);
@@ -1144,73 +1171,21 @@
     switch (buttonID) {
     case 0:
       buttons[0] = true;
-      if (objectSelected) {
-        curcmd++;
-        if (curcmd <= commands.length - 1) {
-          for (var i = curcmd, l = commands.length; i < l; i++) {
-            commands[i] = null;
-          }
-        }
-        commands[curcmd] = new moveObjectCommand(objectSelected.model.getPosition());
-      }
       break;
     case 1:
       buttons[1] = true;
-      if (objectSelected) {
-        curcmd++;
-        if (curcmd <= commands.length - 1) {
-          for (var i = curcmd, l = commands.length; i < l; i++) {
-            commands[i] = null;
-          }
-        }
-        commands[curcmd] = new moveObjectCommand(objectSelected.model.getPosition());
-      }
       break;
     case 2:
       buttons[2] = true;
-      if (objectSelected) {
-        curcmd++;
-        if (curcmd <= commands.length - 1) {
-          for (var i = curcmd, l = commands.length; i < l; i++) {
-            commands[i] = null;
-          }
-        }
-        commands[curcmd] = new rotateObjectCommand();
-        rot = 0;
-      }
       break;
     case 3:
       buttons[3] = true;
-      if (objectSelected) {
-        curcmd++;
-        if (curcmd <= commands.length - 1) {
-          for (var i = curcmd, l = commands.length; i < l; i++) {
-            commands[i] = null;
-          }
-        }
-        commands[curcmd] = new rotateObjectCommand();
-        rot = 0;
-      }
       break;
     case 4:
       buttons[4] = true;
-      curcmd++;
-      if (curcmd <= commands.length - 1) {
-        for (var i = curcmd, l = commands.length; i < l; i++) {
-          commands[i] = null;
-        }
-      }
-      commands[curcmd] = new lightCommand();
       break;
     case 5:
       buttons[5] = true;
-      curcmd++;
-      if (curcmd <= commands.length - 1) {
-        for (var i = curcmd, l = commands.length; i < l; i++) {
-          commands[i] = null;
-        }
-      }
-      commands[curcmd] = new lightCommand();
       break;
     case 6:
       buttons[6] = true;
@@ -1246,27 +1221,21 @@
     switch (buttonID) {
     case 0:
       buttons[0] = false;
-      if (objectSelected) commands[curcmd].execute();
       break;
     case 1:
       buttons[1] = false;
-      if (objectSelected) commands[curcmd].execute();
       break;
     case 2:
       buttons[2] = false;
-      commands[curcmd].execute(rot);
       break;
     case 3:
       buttons[3] = false;
-      commands[curcmd].execute(rot);
       break;
     case 4:
       buttons[4] = false;
-      commands[curcmd].execute();
       break;
     case 5:
       buttons[5] = false;
-      commands[curcmd].execute();
       break;
     case 6:
       buttons[6] = false;
@@ -1696,29 +1665,29 @@
       serial.objects[i].dir = objects[i].model.sceneGraph.dir;
       serial.objects[i].left = objects[i].model.sceneGraph.left;
       serial.objects[i].up = objects[i].model.sceneGraph.up;
-      if (objects[i].objectOnTop.length) {
-        serial.objects[i].objectOnTop = [];
-        for (var j = 0; j < objects[i].objectOnTop.length; j++) {
+      if (objects[i].childObjectList.length) {
+        serial.objects[i].childObjectList = [];
+        for (var j = 0; j < objects[i].childObjectList.length; j++) {
           for (var k = 0; k < numObjects; k++) {
-            if (objects[i].objectOnTop[j] === objects[k]) {
-              serial.objects[i].objectOnTop.push(k);
+            if (objects[i].childObjectList[j] === objects[k]) {
+              serial.objects[i].childObjectList.push(k);
             }
           }
         }
       }
-      if (objects[i].objectOnBottom) {
+      if (objects[i].parentObject) {
         for (var k = 0; k < numObjects; k++) {
-          if (objects[i].objectOnBottom === objects[k]) {
+          if (objects[i].parentObject === objects[k]) {
             serial.objects[i].onWall=false; 
-            serial.objects[i].objectOnBottom=k;
+            serial.objects[i].parentObject=k;
           }
         }
         for (var k = 0; k < numWalls; k++) {
-          if (objects[i].objectOnBottom === walls[k]) {
+          if (objects[i].parentObject === walls[k]) {
             serial.objects[i].onWall=true; 
             serial.objects[i].wallNorm = objects[i].wallNorm;
             serial.objects[i].angle = objects[i].angle;
-            serial.objects[i].objectOnBottom=k;
+            serial.objects[i].parentObject=k;
           }
         }
       }
@@ -1735,12 +1704,12 @@
       serial.walls[i].angle = walls[i].angle;
       serial.walls[i].startPoint = walls[i].startPoint;
       serial.walls[i].endPoint = walls[i].endPoint;
-      if (walls[i].objectOnTop.length) {
-        serial.walls[i].objectOnTop = [];
-        for (var j = 0; j < walls[i].objectOnTop.length; j++) {
+      if (walls[i].childObjectList.length) {
+        serial.walls[i].childObjectList = [];
+        for (var j = 0; j < walls[i].childObjectList.length; j++) {
           for (var k = 0; k < numObjects; k++) {
-            if (walls[i].objectOnTop[j] === objects[k]) {
-              serial.walls[i].objectOnTop.push(k);
+            if (walls[i].childObjectList[j] === objects[k]) {
+              serial.walls[i].childObjectList.push(k);
             }
           }
         }
@@ -1880,28 +1849,28 @@
     }
     //put object on objects
     for (var i = 0; i < numObjects; i++) {
-      if (serial.objects[i].objectOnTop) {
-        objects[i].objectOnTop = [];
-        for (var j = 0; j < serial.objects[i].objectOnTop.length; j++) {
-          objects[i].objectOnTop.push(objects[serial.objects[i].objectOnTop[j]]);
+      if (serial.objects[i].childObjectList) {
+        objects[i].childObjectList = [];
+        for (var j = 0; j < serial.objects[i].childObjectList.length; j++) {
+          objects[i].childObjectList.push(objects[serial.objects[i].childObjectList[j]]);
         }
       }
-      if (serial.objects[i].objectOnBottom >= 0) {
+      if (serial.objects[i].parentObject >= 0) {
         if (serial.objects[i].onWall){
           objects[i].wallNorm = serial.objects[i].wallNorm;
           objects[i].angle = serial.objects[i].angle;
-          objects[i].objectOnBottom= walls[serial.objects[i].objectOnBottom];
+          objects[i].parentObject= walls[serial.objects[i].parentObject];
         }
         else {
-          objects[i].objectOnBottom= objects[serial.objects[i].objectOnBottom];
+          objects[i].parentObject= objects[serial.objects[i].parentObject];
         } 
       }
     }
     for (var i = 0; i < numWalls; i++) {
-      if (serial.walls[i].objectOnTop) {
-        walls[i].objectOnTop = [];
-        for (var j = 0; j < serial.walls[i].objectOnTop.length; j++) {
-          walls[i].objectOnTop.push(objects[serial.walls[i].objectOnTop[j]]);
+      if (serial.walls[i].childObjectList) {
+        walls[i].childObjectList = [];
+        for (var j = 0; j < serial.walls[i].childObjectList.length; j++) {
+          walls[i].childObjectList.push(objects[serial.walls[i].childObjectList[j]]);
         }
       }
     }
@@ -2104,9 +2073,9 @@
                 wallHit.push(currObj);
               }
             }
-            if (wallHit.length) {
-              objectSelected.placeObjectOnWall(wallHit[0]);
-            }
+          }
+          if (wallHit.length) {
+            objectSelected.placeObjectOnWall(wallHit[0]);
           }
           moveObject = false;
         }
@@ -2667,8 +2636,8 @@
         if (sceneObjectsCollided[0]) {
           for (var i = 0, len = sceneObjectsCollided.length; i < len; i++) {
             var foundFlag = true;
-            for (var j = 0, len2 = objectSelected.objectOnTop.length; j < len2; j++) {
-              if (objectSelected.objectOnTop[j] === sceneObjectsCollided[i]) {
+            for (var j = 0, len2 = objectSelected.childObjectList.length; j < len2; j++) {
+              if (objectSelected.childObjectList[j] === sceneObjectsCollided[i]) {
                 foundFlag = false;
               }
             }
@@ -2678,11 +2647,11 @@
           }
         }
         else {
-          if (objectSelected.objectOnBottom && objectSelected.snapTo !== "wall") {
+          if (objectSelected.parentObject && objectSelected.snapTo !== "wall") {
             var curpos = objectSelected.model.getPosition();
             objectSelected.model.setPosition([curpos[0], objectSelected.model.getHeight() / 2, curpos[2]]);
-            objectSelected.objectOnBottom.removeObjectOnTop(objectSelected);
-            objectSelected.objectOnBottom = null;
+            objectSelected.parentObject.removeChildFromChildObjectList(objectSelected);
+            objectSelected.parentObject = null;
             
           }
         }
@@ -2772,89 +2741,93 @@
 
   function pickingHandler(result) {
     var objectsPicked = result.getObjects();
-    if (objectsPicked.length > 0) {
-      //check move widget selection
-      if (mWidget.getVisible()) {
-        objectSelected.model.setRenderObb(true);
-        for (var i = 0, len = objectsPicked.length; i < len; i++) {
-          for (var j = 0; j < 3; j++) {
-            if (objectsPicked[i] === mWidget.model[j]) {
-              selectedAxis = mWidget.model[j];
-              mWidget.model[j].setEffect(selectedEffect);
-              mWidget.selected();
-              curcmd++;
-              if (curcmd <= commands.length - 1) {
-                for (var i = curcmd, l = commands.length; i < l; i++) {
-                  commands[i] = null;
-                }
+
+    //check move widget selection
+    if (mWidget.getVisible()) {
+      objectSelected.model.setRenderObb(true);
+      for (var i = 0, len = objectsPicked.length; i < len; i++) {
+        for (var j = 0; j < 3; j++) {
+          if (objectsPicked[i] === mWidget.model[j]) {
+            selectedAxis = mWidget.model[j];
+            mWidget.model[j].setEffect(selectedEffect);
+            mWidget.selected();
+            curcmd++;
+            if (curcmd <= commands.length - 1) {
+              for (var i = curcmd, l = commands.length; i < l; i++) {
+                commands[i] = null;
               }
-              commands[curcmd] = new moveObjectCommand(objectSelected.model.getPosition());
-              i = len;
             }
+            commands[curcmd] = new moveObjectCommand(objectSelected.model.getPosition());
+            i = len;
           }
-        }
-      }
-      //check scale widget selection
-      else if (sWidget.getVisible()) {
-        objectSelected.model.setRenderObb(true);
-        for (var i = 0, len = objectsPicked.length; i < len; i++) {
-          for (var j = 0; j < 3; j++) {
-            if (objectsPicked[i] === sWidget.model[j]) {
-              selectedAxis = sWidget.model[j];
-              sWidget.model[j].setEffect(selectedEffect);
-              sWidget.selected();
-              curcmd++;
-              if (curcmd <= commands.length - 1) {
-                for (var i = curcmd, l = commands.length; i < l; i++) {
-                  commands[i] = null;
-                }
-              }
-              commands[curcmd] = new scaleCommand(objectSelected.model.getLength(), objectSelected.model.getWidth(), objectSelected.model.getHeight());
-              i = len;
-            }
-          }
-        }
-      }
-      //check rotate widget selection
-      else if (rWidget.getVisible()) {
-        objectSelected.model.setRenderObb(true);
-        for (var i = 0, len = objectsPicked.length; i < len; i++) {
-          for (var j = 0; j < 3; j++) {
-            if (objectsPicked[i] === rWidget.model[j]) {
-              selectedAxis = rWidget.model[j];
-              rWidget.model[j].setEffect(selectedEffect);
-              rWidget.selected();
-              curcmd++;
-              if (curcmd <= commands.length - 1) {
-                for (var i = curcmd, l = commands.length; i < l; i++) {
-                  commands[i] = null;
-                }
-              }
-              commands[curcmd] = new rotateWidgetCommand();
-              i = len;
-            }
-          }
-        }
-      }
-      //picking objects
-      else {
-        if (objectSelected) {
-          var oldSelected = objectSelected;
-          objectSelected.model.setRenderObb(false);
-          objectSelected = null;
-        }
-        for (var i = 0, len = objectsPicked.length; i < len; i++) {
-          for (var j = 0, len2 = objects.length; j < len2; j++) {
-            if (objectsPicked[i] === objects[j].model) {
-              objectSelected = objects[j];
-            }
-          }
-        }
-        if (objectSelected) {
-          objectSelected.model.setRenderObb(true);
         }
       }
     }
+    
+    //check scale widget selection
+    else if (sWidget.getVisible()) {
+      objectSelected.model.setRenderObb(true);
+      for (var i = 0, len = objectsPicked.length; i < len; i++) {
+        for (var j = 0; j < 3; j++) {
+          if (objectsPicked[i] === sWidget.model[j]) {
+            selectedAxis = sWidget.model[j];
+            sWidget.model[j].setEffect(selectedEffect);
+            sWidget.selected();
+            curcmd++;
+            if (curcmd <= commands.length - 1) {
+              for (var i = curcmd, l = commands.length; i < l; i++) {
+                commands[i] = null;
+              }
+            }
+            commands[curcmd] = new scaleCommand(objectSelected.model.getLength(), objectSelected.model.getWidth(), objectSelected.model.getHeight());
+            i = len;
+          }
+        }
+      }
+    }
+    
+    //check rotate widget selection
+    else if (rWidget.getVisible()) {
+      objectSelected.model.setRenderObb(true);
+      for (var i = 0, len = objectsPicked.length; i < len; i++) {
+        for (var j = 0; j < 3; j++) {
+          if (objectsPicked[i] === rWidget.model[j]) {
+            selectedAxis = rWidget.model[j];
+            rWidget.model[j].setEffect(selectedEffect);
+            rWidget.selected();
+            curcmd++;
+            if (curcmd <= commands.length - 1) {
+              for (var i = curcmd, l = commands.length; i < l; i++) {
+                commands[i] = null;
+              }
+            }
+            commands[curcmd] = new rotateWidgetCommand();
+            i = len;
+          }
+        }
+      }
+    }
+    
+    //picking scene objects
+    else {
+      if (objectSelected) {
+        var oldSelected = objectSelected;
+        objectSelected.model.setRenderObb(false);
+        objectSelected = null;
+      }
+      for (var i = 0, len = objectsPicked.length; i < len; i++) {
+        for (var j = 0, len2 = objects.length; j < len2; j++) {
+          if (objectsPicked[i] === objects[j].model) {
+            objectSelected = objects[j];
+          }
+        }
+      }
+      if (objectSelected) {
+        objectSelected.model.setRenderObb(true);
+      }
+    }
+    
+    //clicking the same object turns moving on and activates the move command
     if (objectSelected === oldSelected && !moveObject) {
       curcmd++;
       if (curcmd <= commands.length - 1) {
@@ -2927,7 +2900,7 @@
     }
   }
   //calculates world coordinates 
-  var currNode = this.currNode = function (mmx, mmy, origin, norm) {
+  var getIntersectionOnPlane = this.getIntersectionOnPlane = function (mmx, mmy, origin, norm) {
     if (mmx != null && mmy != null) {
       // NDC
       var normalizedDeviceCoords = [(2 * mmx / CANVAS_WIDTH) - 1, -((2 * mmy / CANVAS_HEIGHT) - 1), 1, 1];
@@ -3230,7 +3203,7 @@
   var moveWall = this.moveWall = function (wallnum, posStart, posEnd) {
     scn.removeObjectFromScene(walls[wallnum].model);
     var oldWallPos = c3dl.copyObj(walls[wallnum].model.getPosition());
-    var wallObjList = c3dl.copyObj(walls[wallnum].objectOnTop);
+    var wallObjList = c3dl.copyObj(walls[wallnum].childObjectList);
     var oldLength = walls[wallnum].model.getLength();
     walls[wallnum] = new SceneObject();
     walls[wallnum].init(WALL_PATH, "wall", "none", false);
@@ -3300,7 +3273,7 @@
     }
     //add object to scene
     scn.addObjectToScene(walls[wallnum].model);
-    if (wallObjList[0]) {
+    if (wallObjList.length) {
       walls[wallnum].updateWallObjects(oldWallPos, wallObjList, oldLength);
     }
   }
