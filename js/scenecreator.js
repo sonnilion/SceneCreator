@@ -28,16 +28,16 @@
   const CUSTOMVIDEO_PATH = "./models/customvideo.dae";
   const CLOCK_PATH = "./models/clock.dae";
   const TV_PATH = "./models/tv.dae";
-  const SC1_PATH = "./models/sc/810/810OpenCollada.dae";
-  const SC2_PATH = "./models/sc/868/868OpenCollada.dae";
-  const SC3_PATH = "./models/sc/k-108-3/K-108-3OpenCollada.dae";
-  const SC4_PATH = "./models/sc/k-110-3/K-110-3OpenCollada.dae";
-  const SC5_PATH = "./models/sc/k-839/k-839OpenCollada.dae";
-  const SC6_PATH = "./models/sc/k-1454/K-1454OpenCollada.dae";
-  const SC7_PATH = "./models/sc/k-2200/k-2200OpenCollada.dae";
-  const SC8_PATH = "./models/sc/k-2314/k-2314OpenCollada.dae";
-  const SC9_PATH = "./models/sc/k-2605/k-2605OpenCollada.dae";
-  const SC10_PATH = "./models/sc/k-15136/k-15136OpenCollada.dae";
+  const SC1_PATH = "./models/sc/810/810OpenCollada.DAE";
+  const SC2_PATH = "./models/sc/868/868OpenCollada.DAE";
+  const SC3_PATH = "./models/sc/K-108-3/K-108-3OpenCollada.DAE";
+  const SC4_PATH = "./models/sc/K-110-3/K-110-3OpenCollada.DAE";
+  const SC5_PATH = "./models/sc/k-839/k-839OpenCollada.DAE";
+  const SC6_PATH = "./models/sc/K-1454/K-1454OpenCollada.DAE";
+  const SC7_PATH = "./models/sc/k-2200/k-2200OpenCollada.DAE";
+  const SC8_PATH = "./models/sc/k-2314/k-2314OpenCollada.DAE";
+  const SC9_PATH = "./models/sc/k-2605/k-2605OpenCollada.DAE";
+  const SC10_PATH = "./models/sc/k-15136/k-15136OpenCollada.DAE";
 
   //Adding Models
   c3dl.addModel("./models/sky/skysphere.dae");
@@ -1716,17 +1716,47 @@
       }
     }
     var serial = JSON.stringify(serial);
-    this.localStorage.setItem(sceneName, serial);
+    //save using HTML5 localStorage
+    //this.localStorage.setItem(sceneName, serial);
+    
+    //save using PHP
+    var options = {
+      type: "POST", url: "saver.php?location=scenes/"+sceneName+".scn",
+      data:  serial, 
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      async: false
+    };
+    jQuery.ajax(options);
   }
   var load = this.load = function () {
-
+    //fill dialog from LocalStorage
+    /*
     for (i = 0; i < localStorage.length; i++) {
       theSel = document.getElementById('selectedname');
       var key = localStorage.key(i);
       var newOpt = new Option(key, key);
       theSel.options[i] = newOpt;
     }
-    $("#dialog-load").dialog("open");
+    $("#dialog-load").dialog("open"); */
+    
+    //fill dialog from file list
+    //loadScene("scenes/test.scn");
+    var options = {
+      type: "GET", 
+      url: "fileList.php",
+      success: function(data){
+        var list = data.split(",");
+        var theSel = document.getElementById('selectedname');
+        for (i = 0; i < list.length; i++) {
+          var newOpt = new Option(list[i], list[i]);
+          theSel.options[i] = newOpt;
+        }
+        $("#dialog-load").dialog("open");
+      }
+    };
+    $.ajax(options);
+   
   }
 
   function loadScene(name) {
@@ -1743,7 +1773,16 @@
     numLights = 0;
     numWalls = 0;
     numObjects = 0;
-    var serial = JSON.parse(localStorage.getItem(name));
+    //load from LocalStorage
+    //var serial = JSON.parse(localStorage.getItem(name));
+    
+    //load from file
+    var oRequest = new XMLHttpRequest();
+    oRequest.open("GET","scenes/"+name,false);
+    oRequest.setRequestHeader("User-Agent",navigator.userAgent);
+    oRequest.send(null);
+    var serial = JSON.parse(oRequest.responseText);
+
     currentCam = serial.currentCam;
     numWalls = serial.numWalls;
     numLights = serial.numLights;
