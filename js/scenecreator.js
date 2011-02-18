@@ -1758,7 +1758,7 @@
     $.ajax(options);
    
   }
-
+  
   function loadScene(name) {
     for (i = 0; i < numObjects; i++) {
       scn.removeObjectFromScene(objects[i].model);
@@ -1778,7 +1778,7 @@
     
     //load from file
     var oRequest = new XMLHttpRequest();
-    oRequest.open("GET","scenes/"+name,false);
+    oRequest.open("GET","scenes/"+name+".scn",false);
     oRequest.setRequestHeader("User-Agent",navigator.userAgent);
     oRequest.send(null);
     var serial = JSON.parse(oRequest.responseText);
@@ -1944,8 +1944,18 @@
       document.getElementById('objects').value = document.getElementById('objects').value + objPos + ",";
     }
   }
+  
+  //open Create Primitive diologs
+  var createSphere = this.createSphere = function () {
+    $("#dialog-create-sphere").dialog("open");
+  }
+  var createSphere = this.createCube = function () {
+    $("#dialog-create-cube").dialog("open");
+  }
+  var createSphere = this.createPlane = function () {
+    $("#dialog-create-plane").dialog("open");
+  }
   //checks a regular expression
-
   function checkRegexp(o, regexp, n) {
     if (!(regexp.test(o.val()))) {
       return false;
@@ -3678,8 +3688,45 @@
       buttons: {
         'Load': function () {
           sceneName = document.getElementById('selectedname').value;
+          sceneName = sceneName.split(".")[0];
           $(this).dialog('close');
           loadScene(sceneName);
+        },
+        Cancel: function () {
+          $(this).dialog('close');
+        }
+      }
+    });
+    $("#dialog-create-sphere").dialog({
+      autoOpen: false,
+      modal: true,
+      buttons: {
+        'OK': function () {
+          $(this).dialog('close');
+        },
+        Cancel: function () {
+          $(this).dialog('close');
+        }
+      }
+    });
+    $("#dialog-create-cube").dialog({
+      autoOpen: false,
+      modal: true,
+      buttons: {
+        'OK': function () {
+          $(this).dialog('close');
+        },
+        Cancel: function () {
+          $(this).dialog('close');
+        }
+      }
+    });
+    $("#dialog-create-plane").dialog({
+      autoOpen: false,
+      modal: true,
+      buttons: {
+        'OK': function () {
+          $(this).dialog('close');
         },
         Cancel: function () {
           $(this).dialog('close');

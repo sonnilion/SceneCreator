@@ -97,6 +97,42 @@
           </fieldset>
 	      </form>
       </div>
+      <div id="dialog-create-sphere" title="Sphere Primitive">
+	      <form>
+          <fieldset>
+            <label for="name">Raduis:</label> 
+             <input type="text" id="sRaduis" class="ui-widget-content ui-corner-all" />
+            <label for="name">Detail U:</label>
+            <input type="text" id="sDetailU" class="ui-widget-content ui-corner-all" />
+            <label for="name">Detail V:</label>
+            <input type="text" id="sDetailV" class="ui-widget-content ui-corner-all" />
+          </fieldset>
+	      </form>
+      </div>
+      <div id="dialog-create-cube" title="Cube Primitive">
+	      <form>
+          <fieldset>
+            <label for="name">Legth:</label>
+            <input type="text" name="cubeLength" id="cubeLength" class="ui-widget-content ui-corner-all" />
+            <label for="name">Width:</label>
+            <input type="text" name="cubeWidth" id="cubeWidth" class="ui-widget-content ui-corner-all" />
+            <label for="name">Height:</label>
+            <input type="text" name="cubeHeight" id="cubeHeight" class="ui-widget-content ui-corner-all" />
+          </fieldset>
+	      </form>
+      </div>
+      <div id="dialog-create-plane" title="Cube Primitive">
+	      <form>
+          <fieldset>
+            <label for="name">Legth:</label>
+            <input type="text" name="planeLength" id="planeLength" class="ui-widget-content ui-corner-all" />
+            <label for="name">Width:</label>
+            <input type="text" name="planeWidth" id="planeWidth" class="ui-widget-content ui-corner-all" />
+            <label for="name">Height:</label>
+            <input type="text" name="planeHeight" id="planeHeight" class="ui-widget-content ui-corner-all" />
+          </fieldset>
+	      </form>
+      </div>
       <table> 
         <tr>
           <td valign=top rowspan="3" id="sidebar"> 
@@ -110,6 +146,14 @@
                   <button onclick="createObject(9)"><img src="images/sidebar/lamp.jpg" width="25px" height="25px"/></button> 
                   <button onclick="createObject(10)"><img src="images/sidebar/ceilinglamp.jpg" width="25px" height="25px"/></button> 
                   <button onclick="createObject(11)"><img src="images/sidebar/picture.jpg" width="25px" height="25px"/></button> 					
+                </div>
+              </div>
+              <div>
+                <h3><a href="#">Primitives</a></h3>
+                <div>
+                  <button onclick="createSphere()">Sphere</button>
+                  <button onclick="createCube()">Cube</button> 
+                  <button onclick="createPlane()">Plane</button>
                 </div>
               </div>
               <div>
