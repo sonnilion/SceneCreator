@@ -13,8 +13,14 @@
   </head>
   <body>
     <div id="viewerMain">
-      <input type="button" value="Back" onclick="show3d();" />
-      <canvas id="objectViewer" style="" width="800" height="600"></canvas>
+      <div id="viewer-buttons"><input type="button" value="Back" onclick="show3d();" /> </div>
+      <div id="updateTexture-buttons">
+        <input type="button" value="OK" onclick="show3d();" /> 
+        <input type="button" value="Cancel" onclick="show3d();" /> 
+      </div>
+      <canvas id="objectViewer" width="800" height="600"></canvas>
+      <div id="object-textures">
+      </div>
     </div>
     <div id="mainImages">
       <div id="tool-tabs">
@@ -84,52 +90,73 @@
       <div id="dialog-saveAs" title="Save As">
 	      <form>
           <fieldset>
-            <label for="name">File Name:</label>
+            <label>File Name:</label>
             <input type="text" name="name" id="name" class="ui-widget-content ui-corner-all" />
           </fieldset>
 	      </form>
+        <p class="validateTips"></p>
       </div>
       <div id="dialog-load" title="Load">
 	      <form>
           <fieldset>
-            <label for="selectedname">Select file name:</label> <br />
+            <label>Select file name:</label> <br />
             <select id="selectedname" name="selectedname"></select>
           </fieldset>
 	      </form>
+        <p class="validateTips"></p>
       </div>
       <div id="dialog-create-sphere" title="Sphere Primitive">
 	      <form>
           <fieldset>
-            <label for="name">Raduis:</label> 
-             <input type="text" id="sRaduis" class="ui-widget-content ui-corner-all" />
-            <label for="name">Detail U:</label>
-            <input type="text" id="sDetailU" class="ui-widget-content ui-corner-all" />
-            <label for="name">Detail V:</label>
-            <input type="text" id="sDetailV" class="ui-widget-content ui-corner-all" />
+            <label>Raduis:</label> 
+             <input type="text" id="sRaduis" class="ui-widget-content ui-corner-all" /><br/>
+            <label>Detail U:</label>
+            <input type="text" id="sDetailU" class="ui-widget-content ui-corner-all" value="32"/><br/>
+            <label>Detail V:</label>
+            <input type="text" id="sDetailV" class="ui-widget-content ui-corner-all" value="32"/>
           </fieldset>
 	      </form>
+        <p class="validateTips"></p>
       </div>
       <div id="dialog-create-cube" title="Cube Primitive">
 	      <form>
           <fieldset>
-            <label for="name">Legth:</label>
-            <input type="text" name="cubeLength" id="cubeLength" class="ui-widget-content ui-corner-all" />
-            <label for="name">Width:</label>
-            <input type="text" name="cubeWidth" id="cubeWidth" class="ui-widget-content ui-corner-all" />
-            <label for="name">Height:</label>
+            <label>Legth:</label>
+            <input type="text" name="cubeLength" id="cubeLength" class="ui-widget-content ui-corner-all" /><br/>
+            <label>Width:</label>
+            <input type="text" name="cubeWidth" id="cubeWidth" class="ui-widget-content ui-corner-all" /><br/>
+            <label>Height:</label>
             <input type="text" name="cubeHeight" id="cubeHeight" class="ui-widget-content ui-corner-all" />
           </fieldset>
 	      </form>
+        <p class="validateTips"></p>
       </div>
       <div id="dialog-create-plane" title="Cube Primitive">
 	      <form>
           <fieldset>
-            <label for="name">Legth:</label>
-            <input type="text" name="planeLength" id="planeLength" class="ui-widget-content ui-corner-all" />
-            <label for="name">Width:</label>
-            <input type="text" name="planeWidth" id="planeWidth" class="ui-widget-content ui-corner-all" />
-            <label for="name">Height:</label>
-            <input type="text" name="planeHeight" id="planeHeight" class="ui-widget-content ui-corner-all" />
+            <label>Legth:</label>
+            <input type="text" name="planeLength" id="planeLength" class="ui-widget-content ui-corner-all" /><br/>
+            <label>Width:</label>
+            <input type="text" name="planeWidth" id="planeWidth" class="ui-widget-content ui-corner-all" /><br/>
+          </fieldset>
+	      </form>
+        <p class="validateTips"></p>
+      </div>
+      <div id="dialog-object-properties" title="Cube Primitive">
+	      <form>
+          <fieldset>
+            <label>Object will be placed on:</label>
+            <select id="placement" name="placement">
+              <option value="floor">Floor</option>
+              <option value="object">Floor or other objects</option>
+              <option value="wall">Wall</option>
+              <option value="ceiling">Ceiling</option>
+            </select> <br/>
+            <label>Can other objects rest on top?</label>
+            <select id="stand" name="stand">
+              <option value=true>Yes</option>
+              <option value=false>No</option>
+            </select>
           </fieldset>
 	      </form>
       </div>
@@ -141,31 +168,61 @@
               <div>
                 <h3><a href="#">House</a></h3>
                 <div>        
-                  <button onclick="createObject(0)"><img src="images/sidebar/chair.jpg" width="25px" height="25px"/></button>
-                  <button onclick="createObject(1)"><img src="images/sidebar/table.jpg" width="25px" height="25px"/></button>
-                  <button onclick="createObject(9)"><img src="images/sidebar/lamp.jpg" width="25px" height="25px"/></button> 
-                  <button onclick="createObject(10)"><img src="images/sidebar/ceilinglamp.jpg" width="25px" height="25px"/></button> 
-                  <button onclick="createObject(11)"><img src="images/sidebar/picture.jpg" width="25px" height="25px"/></button> 					
+                  <button onclick="createObject(CHAIR_PATH, 'object', 'floor', false, [0.08, 0.08, 0.08], 'Modern Chair', 'Stuff', 'images/sidebar/chair.jpg')"><img src="images/sidebar/chair.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(TABLE_PATH, 'object', 'floor', true, [0.25, 0.25, 0.25], 'Table', 'Stuff', 'images/sidebar/table.jpg')"><img src="images/sidebar/table.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(LAMP_PATH, 'object', 'object', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/lamp.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(CEILINGLAMP_PATH, 'object', 'ceiling', false, [0.08, 0.08, 0.08])"><img src="images/sidebar/ceilinglamp.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(PICTURE_PATH, 'object', 'wall', false, [0.06, 0.06, 0.06])"><img src="images/sidebar/picture.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(CEILINGLIGHT_PATH, 'object', 'ceiling', false,[0.05, 0.05, 0.05])"><img src="images/sidebar/ceilinglight.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(CEILINGLIGHT2_PATH, 'object', 'ceiling', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/ceilinglight2.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(COMPCHAIR_PATH, 'object', 'floor', false, [0.007, 0.007, 0.007])"><img src="images/sidebar/compchair.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(CEILINGFAN_PATH, 'object', 'ceiling', false, [0.05, 0.05, 0.05])"><img src="images/sidebar/ceilingfan.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(COFFEETABLE_PATH, 'object', 'floor', true, [0.2, 0.2, 0.2])"><img src="images/sidebar/coffeetable.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(SIDETABLE_PATH, 'object', 'floor', true, [0.1, 0.1, 0.1])"><img src="images/sidebar/sidetable.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(TABLE2_PATH, 'object', 'floor', true, [0.03, 0.03, 0.03])"><img src="images/sidebar/woodtable.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(CHAIR2_PATH, 'object', 'floor', false, [6, 6, 6])"><img src="images/sidebar/woodchair.jpg" width="25px" height="25px"/></button>      
+                  <button onclick="createObject(SOFA_PATH, 'object', 'floor', false, [0.007, 0.007, 0.007])"><img src="images/sidebar/sofa.jpg" width="25px" height="25px"/></button>      
+                  <button onclick="createObject(SOFA2_PATH, 'object', 'floor', false, [0.15, 0.15, 0.15])"><img src="images/sidebar/sofa2.jpg" width="25px" height="25px"/></button>                     
+                </div>
+              </div>
+              <div>
+                <h3><a href="#">Tech</a></h3>
+                <div>
+                  <button onclick="createObject(LEXMARKPRINTER_PATH, 'object', 'object', false, [0.01, 0.01, 0.01])"><img src="images/sidebar/printer.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(ALIENWAREPC_PATH, 'object', 'object', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/pc.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(APLLEMACPRO_PATH, 'object', 'object', false, [0.005, 0.005, 0.005])"><img src="images/sidebar/mac.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(HPMONITOR_PATH, 'object', 'object', false, [0.2, 0.2, 0.2])"><img src="images/sidebar/monitor.jpg" width="25px" height="25px"/></button>
+                </div>
+              </div>
+              <div>
+                <h3><a href="#">Servers and Racks</a></h3>
+                <div>
+                  <button onclick="createObject(SERVERRACK_PATH, 'object', 'floor', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/APC3100.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(SERVERRACK2_PATH, 'object', 'floor', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/ServerRackwithKeypad.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(SERVERRACK3_PATH, 'object', 'floor', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/panduitCS1.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(RACKMOUNTSERVER2_PATH, 'object', 'floor', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/barracuda350.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(RACKMOUNTSERVER3_PATH, 'object', 'floor', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/RackMountServer-1U.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(RACKMOUNTSERVER_PATH, 'object', 'floor', false, [0.1, 0.1, 0.1])"><img src="images/sidebar/RackMountServer-2U.jpg" width="25px" height="25px"/></button>
                 </div>
               </div>
               <div>
                 <h3><a href="#">Primitives</a></h3>
                 <div>
-                  <button onclick="createSphere()">Sphere</button>
-                  <button onclick="createCube()">Cube</button> 
-                  <button onclick="createPlane()">Plane</button>
+                  <button onclick="setObjectProperties(createSphere)">Sphere</button>
+                  <button onclick="setObjectProperties(createCube)">Cube</button> 
+                  <button onclick="setObjectProperties(createPlane)">Plane</button>
                 </div>
               </div>
               <div>
                 <h3><a href="#">PacMan</a></h3>
                 <div>
-                  <button onclick="createObject(2)"><img src="images/sidebar/pacman.jpg" width="25px" height="25px"/></button>
-                  <button onclick="createObject(3)"><img src="images/sidebar/redghost.jpg" width="25px" height="25px"/></button> 
-                  <button onclick="createObject(4)"><img src="images/sidebar/blueghost.jpg" width="25px" height="25px"/></button>
-                  <button onclick="createObject(5)"><img src="images/sidebar/orangeghost.jpg" width="25px" height="25px"/></button> 
-                  <button onclick="createObject(6)"><img src="images/sidebar/pinkghost.jpg" width="25px" height="25px"/></button>
-                  <button onclick="createObject(7)"><img src="images/sidebar/bigball.jpg" width="25px" height="25px"/></button> 
-                  <button onclick="createObject(8)"><img src="images/sidebar/smallball.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(PACMAN_PATH, 'object', 'floor', false, [0.005, 0.005, 0.005])"><img src="images/sidebar/pacman.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(REDGHOST_PATH, 'object', 'floor', false, [5, 5, 5])"><img src="images/sidebar/redghost.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(BLUEGHOST_PATH, 'object', 'floor', false, [5, 5, 5])"><img src="images/sidebar/blueghost.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(ORANGEGHOST_PATH, 'object', 'floor', false, [5, 5, 5])"><img src="images/sidebar/orangeghost.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(PINKGHOST_PATH, 'object', 'floor', false, [5, 5, 5])"><img src="images/sidebar/pinkghost.jpg" width="25px" height="25px"/></button>
+                  <button onclick="createObject(PACMANBALL_PATH, 'object', 'floor', false, [0.04, 0.04, 0.04])"><img src="images/sidebar/bigball.jpg" width="25px" height="25px"/></button> 
+                  <button onclick="createObject(PACMANBALL_PATH, 'object', 'floor', false, [0.02, 0.02, 0.02])"><img src="images/sidebar/smallball.jpg" width="25px" height="25px"/></button> 
                 </div>
               </div>
               <div>
@@ -182,16 +239,16 @@
               <div>
                 <h3><a href="#">SceneCaster Tester Items</a></h3>
                 <div>
-                  <button onclick="createObject(19)">810</button> 			
-                  <button onclick="createObject(20)">868</button> 	
-                  <button onclick="createObject(21)">k-108-3</button> 	
-                  <button onclick="createObject(22)">k-110-3</button> 	
-                  <button onclick="createObject(23)">k-839</button> 	
-                  <button onclick="createObject(24)">k-1454</button> 	
-                  <button onclick="createObject(25)">k-2200</button> 	
-                  <button onclick="createObject(26)">k-2314</button> 	
-                  <button onclick="createObject(27)">k-2605</button> 	
-                  <button onclick="createObject(28)">k-15136</button> 	
+                  <button onclick="createObject(SC1_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">810</button> 			
+                  <button onclick="createObject(SC2_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">868</button> 	
+                  <button onclick="createObject(SC3_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-108-3</button> 	
+                  <button onclick="createObject(SC4_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-110-3</button> 	
+                  <button onclick="createObject(SC5_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-839</button> 	
+                  <button onclick="createObject(SC6_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-1454</button> 	
+                  <button onclick="createObject(SC7_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-2200</button> 	
+                  <button onclick="createObject(SC8_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-2314</button> 	
+                  <button onclick="createObject(SC9_PATH, 'object', 'floor', false,[0.2, 0.2, 0.2])">k-2605</button> 	
+                  <button onclick="createObject(SC10_PATH, 'object', 'floor', false,[0.02, 0.02, 0.02])">k-15136</button> 	
                 </div>
               </div>
             </div>
@@ -396,7 +453,8 @@
                 <div id="volumeSlider"></div> 
               </span>
               <span id="edit">
-                <input type="button" value="Edit" onclick="editObject();" /> 
+                <input type="button" value="Edit Texture" onclick="editObjectTextures();" /> 
+                <input id="edit-button" type="button" value="Edit" onclick="editObject();" /> 
               </span>
             </div>
           </td>

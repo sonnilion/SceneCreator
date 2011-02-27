@@ -1,18 +1,11 @@
-(function () {
-  c3dl.addMainCallBack(canvasViewer, "objectViewer");
-  c3dl.addMainCallBack(canvasMain, "SceneCaster3d");
-
-  ////////////////////////////////////////////////////////////////////////////
-  // Model Used
-  ////////////////////////////////////////////////////////////////////////////  
   //Paths
   const WALL_PATH = "./models/wall/cube.dae";
   //Objects
-  const CHAIR_PATH = "./models/chair.dae";
-  const TABLE_PATH = "./models/table.dae";
-  const LAMP_PATH = "./models/lamp.dae";
-  const CEILINGLAMP_PATH = "./models/ceilinglamp.dae";
-  const PICTURE_PATH = "./models/picture.dae";
+  const CHAIR_PATH = "./models/chair-modern/models/chair.dae";
+  const TABLE_PATH = "./models/wood-table/models/table.dae";
+  const LAMP_PATH = "./models/table-lamp/models/lamp.dae";
+  const CEILINGLAMP_PATH = "./models/ceiling-lamp/models/ceilinglamp.dae";
+  const PICTURE_PATH = "./models/wall-picture/models/picture.dae";
   const FLOOR_PATH = "./models/plane/plane.dae";
   const DUCK_PATH = "./models/duck.dae";
   const PACMAN_PATH = "./models/pacman.dae";
@@ -27,7 +20,7 @@
   const CUSTOMIMG_PATH = "./models/customimage.dae";
   const CUSTOMVIDEO_PATH = "./models/customvideo.dae";
   const CLOCK_PATH = "./models/clock.dae";
-  const TV_PATH = "./models/tv.dae";
+  const TV_PATH = "./models/tv/models/tv.dae";
   const SC1_PATH = "./models/sc/810/810OpenCollada.DAE";
   const SC2_PATH = "./models/sc/868/868OpenCollada.DAE";
   const SC3_PATH = "./models/sc/K-108-3/K-108-3OpenCollada.DAE";
@@ -38,7 +31,34 @@
   const SC8_PATH = "./models/sc/k-2314/k-2314OpenCollada.DAE";
   const SC9_PATH = "./models/sc/k-2605/k-2605OpenCollada.DAE";
   const SC10_PATH = "./models/sc/k-15136/k-15136OpenCollada.DAE";
+  const CEILINGLIGHT_PATH = "./models/ceiling-light.dae";
+  const CEILINGLIGHT2_PATH = "./models/ceiling-light2.dae";
+  const COMPCHAIR_PATH = "./models/computer-chair.dae";
+  const LEXMARKPRINTER_PATH = "./models/lexmark-printer.dae";
+  const ALIENWAREPC_PATH = "./models/AlienwareArea51Case/models/AlienwareArea51Case.dae";
+  const APLLEMACPRO_PATH = "./models/AppleMacPro/models/AppleMacPro.dae";
+  const HPMONITOR_PATH = "./models/HP-monitor/models/hp-monitor.dae";
+  const CEILINGFAN_PATH = "./models/ceiling-fan/models/fan.dae";
+  const COFFEETABLE_PATH = "./models/coffee-table/models/coffee-table.dae";
+  const SIDETABLE_PATH = "./models/side-table/models/side-table.dae";
+  const TABLE2_PATH = "./models/table2.dae";
+  const CHAIR2_PATH = "./models/wood-dinner-chair/models/chair.dae";
+  const RACKMOUNTSERVER_PATH = "./models/rack-mount-server-2U.dae";
+  const RACKMOUNTSERVER2_PATH = "./models/rack-mount-server-1U.dae";
+  const RACKMOUNTSERVER3_PATH = "./models/barracuda350.dae";
+  const SERVERRACK_PATH = "./models/APC3100-Cabinet/models/APC3100-Cabinet.dae";
+  const SERVERRACK2_PATH = "./models/Server-Rack-with-Keypad/models/Server-Rack-with-Keypad.dae";
+  const SERVERRACK3_PATH = "./models/panduit-CS1-server-rack/models/panduit-cn1.dae";
+  const SOFA_PATH = "./models/sofa/models/sofa.dae";
+  const SOFA2_PATH = "./models/sofa2.dae";
+  
+(function () {
+  c3dl.addMainCallBack(canvasViewer, "objectViewer");
+  c3dl.addMainCallBack(canvasMain, "SceneCaster3d");
 
+  ////////////////////////////////////////////////////////////////////////////
+  // Model Used
+  ////////////////////////////////////////////////////////////////////////////  
   //Adding Models
   c3dl.addModel("./models/sky/skysphere.dae");
   c3dl.addModel(WALL_PATH);
@@ -71,8 +91,26 @@
   c3dl.addModel(SC8_PATH);
   c3dl.addModel(SC9_PATH);
   c3dl.addModel(SC10_PATH);
-
-  
+  c3dl.addModel(CEILINGLIGHT_PATH);
+  c3dl.addModel(CEILINGLIGHT2_PATH);
+  c3dl.addModel(COMPCHAIR_PATH);
+  c3dl.addModel(LEXMARKPRINTER_PATH);
+  c3dl.addModel(ALIENWAREPC_PATH);
+  c3dl.addModel(APLLEMACPRO_PATH);
+  c3dl.addModel(HPMONITOR_PATH);
+  c3dl.addModel(CEILINGFAN_PATH);
+  c3dl.addModel(COFFEETABLE_PATH);
+  c3dl.addModel(SIDETABLE_PATH);
+  c3dl.addModel(CHAIR2_PATH);
+  c3dl.addModel(TABLE2_PATH);
+  c3dl.addModel(RACKMOUNTSERVER_PATH);
+  c3dl.addModel(RACKMOUNTSERVER2_PATH);
+  c3dl.addModel(RACKMOUNTSERVER3_PATH);
+  c3dl.addModel(SERVERRACK_PATH);
+  c3dl.addModel(SERVERRACK2_PATH);
+  c3dl.addModel(SERVERRACK3_PATH);
+  c3dl.addModel(SOFA_PATH);
+  c3dl.addModel(SOFA2_PATH);
   //Widgets
   const MoveX = "./models/movewidget/x.dae";
   const MoveY = "./models/movewidget/y.dae";
@@ -102,93 +140,13 @@
 
   ////////////////////////////////////////////////////////////////////////////
   //SceneCreator Objects  
-  ////////////////////////////////////////////////////////////////////////////  
-  var SceneObjectList = function () {
-    this.list = [];
-    this.init = function () {
-      //models created so clone can be used
-      for (var i = 0; i < 29; i++) {
-        this.list[i] = new SceneObject();
-      }
-      this.list[0].init(CHAIR_PATH, "object", "floor", false);
-      this.list[0].model.scale([0.08, 0.08, 0.08]);
-      this.list[1].init(TABLE_PATH, "object", "floor", true);
-      this.list[1].model.scale([0.25, 0.25, 0.25]);
-      this.list[2].init(PACMAN_PATH, "object", "floor", false);
-      this.list[2].model.scale([0.005, 0.005, 0.005]);
-      this.list[3].init(REDGHOST_PATH, "object", "floor", false);
-      this.list[3].model.scale([5, 5, 5]);
-      this.list[4].init(BLUEGHOST_PATH, "object", "floor", false);
-      this.list[4].model.scale([5, 5, 5]);
-      this.list[5].init(ORANGEGHOST_PATH, "object", "floor", false);
-      this.list[5].model.scale([5, 5, 5]);
-      this.list[6].init(PINKGHOST_PATH, "object", "floor", false);
-      this.list[6].model.scale([5, 5, 5]);
-      this.list[7].init(PACMANBALL_PATH, "object", "floor", false);
-      this.list[7].model.scale([0.04, 0.04, 0.04]);
-      this.list[8].init(PACMANBALL_PATH, "object", "floor", false);
-      this.list[8].model.scale([0.02, 0.02, 0.02]);
-      this.list[9].init(LAMP_PATH, "object", "object", false);
-      this.list[9].model.scale([0.1, 0.1, 0.1]);
-      this.list[10].init(CEILINGLAMP_PATH, "object", "ceiling", false);
-      this.list[10].model.scale([0.08, 0.08, 0.08]);
-      this.list[11].init(PICTURE_PATH, "object", "wall", false);
-      this.list[11].model.scale([0.06, 0.06, 0.06]);
-      this.list[12].init(PLAY_PATH, "object", "floor", false);
-      this.list[12].model.scale([0.8, 0.8, 0.8]);
-      this.list[13].init(TWITTER_PATH, "object", "wall", false, "Twitter", "Displays a twitter feed", "images/sidebar/twitter.jpg");
-      this.list[13].model.scale([2, 4, 0.25]);
-      this.list[14].init(CLOCK_PATH, "object", "wall", false);
-      this.list[14].model.scale([0.1, 0.1, 0.1]);
-      this.list[15].init(FLICKR_PATH, "object", "wall", false, "Flickr", "Displays a flickr album", "images/sidebar/flickr.jpg");
-      this.list[15].model.scale([2, 2, 0.25]);
-      this.list[16].init(CUSTOMIMG_PATH, "object", "wall", false, "CustomImage", "Displays a custom image from a selected url");
-      this.list[16].model.scale([2, 2, 0.25]);
-      this.list[17].init(CUSTOMVIDEO_PATH, "object", "wall", false, "CustomVideo", "Displays a custom video from a selected url");
-      this.list[17].model.scale([2, 2, 0.25]);
-      this.list[18].init(TV_PATH, "object", "object", false, "TV", "Displays a custom video from a selected url on the screen");
-      this.list[18].model.scale([0.01, 0.01, 0.01]);
-      this.list[19].init(SC1_PATH, "object", "floor", false);
-      this.list[19].model.scale([0.2, 0.2, 0.2]);
-      this.list[20].init(SC2_PATH, "object", "floor", false);
-      this.list[20].model.scale([0.2, 0.2, 0.2]);
-      this.list[21].init(SC3_PATH, "object", "floor", false);
-      this.list[21].model.scale([0.2, 0.2, 0.2]);
-      this.list[22].init(SC4_PATH, "object", "floor", false);
-      this.list[22].model.scale([0.2, 0.2, 0.2]);
-      this.list[23].init(SC5_PATH, "object", "floor", false);
-      this.list[23].model.scale([0.2, 0.2, 0.2]);
-      this.list[24].init(SC6_PATH, "object", "floor", false);
-      this.list[24].model.scale([0.2, 0.2, 0.2]);
-      this.list[25].init(SC7_PATH, "object", "floor", false);
-      this.list[25].model.scale([0.2, 0.2, 0.2]);
-      this.list[26].init(SC8_PATH, "object", "floor", false);
-      this.list[26].model.scale([0.2, 0.2, 0.2]);
-      this.list[27].init(SC9_PATH, "object", "floor", false);
-      this.list[27].model.scale([0.2, 0.2, 0.2]);
-      this.list[28].init(SC10_PATH, "object", "floor", false);
-      this.list[28].model.scale([0.02, 0.02, 0.02]);
-    };
-    this.getSceneObject = function (num) {
-      closeAllWidgets();
-      return this.list[num].getCopy();
-    };
-    this.getSceneObjectbyPath = function (path) {
-      closeAllWidgets();
-      for (var i = 0; i < this.list.length;i++) {
-        if (this.list[i].path === path) {
-          return this.list[i].getCopy();
-        }
-      }
-    };
-  }
-
+  //////////////////////////////////////////////////////////////////////////// 
   var SceneObject = function () {
     this.model = new c3dl.Collada();
     //types: wall, floor, ceiling, object
     this.type = null;
     //hang on wall or ceiling. Sit on floor or object
-    this.snapTo = null;
+    this.placement = null;
     //Allow objects to sit on object
     this.stand = false;
     //reference to object siting on it
@@ -209,25 +167,56 @@
     this.query = null; 
     //holds flickrImgs
     this.flickrImgs = null;
+    //holds initalScale
+    this.initalScale = null;
     //file path to model
     this.path = null;
+    //file path to editable
+    this.editable = false;
+    
     this.init = function () {
       if (arguments.length >= 4) {
         this.model.init(arguments[0]);
         this.path=arguments[0];
         this.model.centerObject();
         this.type = arguments[1];
-        this.snapTo = arguments[2];
+        this.placement = arguments[2];
         this.stand = arguments[3];
       }
+      if (arguments[4]) {
+        this.initalScale = arguments[4];
+        this.model.scale(this.initalScale);
+      }
+      if (arguments[5]) {
+        this.name = arguments[5];
+      }
+      if (arguments[6]) {
+        this.description = arguments[6];
+      }
+      if (arguments[7]) {
+        this.picture = arguments[7];
+      }
+      if (arguments[8]) {
+        this.editable = arguments[8];
+      }
+      this.model.setStatic(true);
+    }
+    this.initPrimitive = function () {
       if (arguments.length >= 5) {
-        this.name = arguments[4];
+        this.model = arguments[0];
+        this.path= arguments[1];
+        this.type = arguments[2];
+        this.placement = arguments[3];
+        this.stand = arguments[4];
       }
       if (arguments.length >= 6) {
-        this.description = arguments[5];
+        this.name = arguments[7];
       }
       if (arguments.length >= 7) {
-        this.picture = arguments[6];
+        this.description = arguments[6];
+      }
+      if (arguments.length >= 8) {
+        this.picture = arguments[7];
       }
       this.model.setStatic(true);
     }
@@ -240,7 +229,7 @@
       this.model = new c3dl.Collada();
       this.model.clone(other.model);
       this.type = other.type;
-      this.snapTo = other.snapTo;
+      this.placement = other.placement;
       this.stand = other.stand;
       this.picture = other.picture;
       this.description = other.description;
@@ -259,7 +248,7 @@
       this.link = link;
     };
     this.moveObject = function (mouseX, mouseY) {
-      if (this.snapTo === "wall") {
+      if (this.placement === "wall") {
         this.oldpos = this.model.getPosition();
         var worldCoords = getIntersectionOnPlane(mouseX, mouseY, this.model.getPosition(), this.model.getDirection());
         var wallCenter = this.parentObject.model.getPosition();
@@ -273,7 +262,7 @@
           this.model.setPosition(worldCoords)
         }
       }
-      else if (this.snapTo === "ceiling") {
+      else if (this.placement === "ceiling") {
         this.oldpos = this.model.getPosition();
         var worldCoords = getworldCoords(mouseX, mouseY, 15);
         this.model.setPosition([worldCoords[0], 15 - (this.model.getHeight() / 2), worldCoords[2]]);
@@ -287,7 +276,7 @@
       }
     };
     this.handleCollision = function (objectCollided) {
-      if (this.snapTo === "object" && objectCollided.type === "object" && objectCollided.stand) {
+      if (this.placement === "object" && objectCollided.type === "object" && objectCollided.stand) {
         if (objectCollided !== this.parentObject) {
           this.placeObjectOnObject(objectCollided);
           commands[curcmd].execute();
@@ -295,7 +284,7 @@
           holding = false;
         }
       }
-      else if (this.snapTo === "wall" && objectCollided.type === "wall") {
+      else if (this.placement === "wall" && objectCollided.type === "wall") {
         if (objectCollided !== this.parentObject) {
           this.model.rotateOnAxis([0,1,0], -this.angle);
           this.placeObjectOnWall(objectCollided);
@@ -966,7 +955,6 @@
       objectViewing = null,
       viewer = false,
       holding = false,
-      sceneObjectList = new SceneObjectList,
       wallSelected = null,
       mWidget = null,
       sWidget = null,
@@ -976,7 +964,9 @@
       fCounter = 0,
 	    tweets = [],
       roofs = [],
-      floors = [];
+      floors = [],
+      dialogOpen = false,
+      nextDialog;
   //Command
   var commands = [],
       curcmd = -1;
@@ -1081,88 +1071,92 @@
   //When a key is pressed down
 
   function onKeyDown(event) {
-    switch (event.keyCode) {
-    case KEY_UP:
-      keysDown.KEY_UP = true;
-      break;
-    case KEY_DOWN:
-      keysDown.KEY_DOWN = true;
-      break;
-    case KEY_RIGHT:
-      keysDown.KEY_RIGHT = true;
-      break;
-    case KEY_LEFT:
-      keysDown.KEY_LEFT = true;
-      break;
-    case KEY_W:
-      keysDown.KEY_W = true;
-      break;
-    case KEY_A:
-      keysDown.KEY_A = true;
-      break;
-    case KEY_S:
-      keysDown.KEY_S = true;
-      break;
-    case KEY_D:
-      keysDown.KEY_D = true;
-      break;
-    case KEY_SHIFT:
-      keysDown.KEY_SHIFT = true;
-      break;
-    default:
-      break;
+    if (!dialogOpen) {
+      switch (event.keyCode) {
+      case KEY_UP:
+        keysDown.KEY_UP = true;
+        break;
+      case KEY_DOWN:
+        keysDown.KEY_DOWN = true;
+        break;
+      case KEY_RIGHT:
+        keysDown.KEY_RIGHT = true;
+        break;
+      case KEY_LEFT:
+        keysDown.KEY_LEFT = true;
+        break;
+      case KEY_W:
+        keysDown.KEY_W = true;
+        break;
+      case KEY_A:
+        keysDown.KEY_A = true;
+        break;
+      case KEY_S:
+        keysDown.KEY_S = true;
+        break;
+      case KEY_D:
+        keysDown.KEY_D = true;
+        break;
+      case KEY_SHIFT:
+        keysDown.KEY_SHIFT = true;
+        break;
+      default:
+        break;
+      }
     }
   }
 
   //When a key is released down
 
   function onKeyUp(event) {
-    switch (event.keyCode) {
-    case KEY_UP:
-      keysDown.KEY_UP = false;
-      break;
-    case KEY_DOWN:
-      keysDown.KEY_DOWN = false;
-      break;
-    case KEY_RIGHT:
-      keysDown.KEY_RIGHT = false;
-      break;
-    case KEY_LEFT:
-      keysDown.KEY_LEFT = false;
-      break;
-    case KEY_E:
-      heightZoomHotKey = (heightZoomHotKey) ? false : true;
-      break;
-    case KEY_W:
-      keysDown.KEY_W = false;
-      break;
-    case KEY_A:
-      keysDown.KEY_A = false;
-      break;
-    case KEY_S:
-      keysDown.KEY_S = false;
-      break;
-    case KEY_D:
-      keysDown.KEY_D = false;
-      break;
-    case KEY_Q:
-      tiltHotKey = (tiltHotKey) ? false : true;
-      break;
-    case KEY_SHIFT:
-      keysDown.KEY_SHIFT = false;
-      break;
-    case KEY_Del:
-      deleteSelected();
-      break;
-    case KEY_P:
-      if (keysDown.KEY_SHIFT) { 
-        var img = document.createElement('img');
-        document.getElementById('mainImages').appendChild(img);
-        img.src = getPNG();
+    if (!dialogOpen) {
+      switch (event.keyCode) {
+      case KEY_UP:
+        keysDown.KEY_UP = false;
+        break;
+      case KEY_DOWN:
+        keysDown.KEY_DOWN = false;
+        break;
+      case KEY_RIGHT:
+        keysDown.KEY_RIGHT = false;
+        break;
+      case KEY_LEFT:
+        keysDown.KEY_LEFT = false;
+        break;
+      case KEY_E:
+        heightZoomHotKey = (heightZoomHotKey) ? false : true;
+        break;
+      case KEY_W:
+        keysDown.KEY_W = false;
+        break;
+      case KEY_A:
+        keysDown.KEY_A = false;
+        break;
+      case KEY_S:
+        keysDown.KEY_S = false;
+        break;
+      case KEY_D:
+        keysDown.KEY_D = false;
+        break;
+      case KEY_Q:
+        tiltHotKey = (tiltHotKey) ? false : true;
+        break;
+      case KEY_SHIFT:
+        keysDown.KEY_SHIFT = false;
+        break;
+      case KEY_Del:
+        deleteSelected();
+        break;
+      case KEY_P:
+        if (keysDown.KEY_SHIFT) { 
+          var img = document.createElement('img');
+          document.getElementById('mainImages').appendChild(img);
+          img.src = getPNG();
+        }
+        break;
+      default:
+        break;
       }
-      break;
-    default:
-      break;
     }
   }
 
@@ -1368,86 +1362,138 @@
 
   //Shows the desired feild and pauses hidden
   var show2d = this.show2d = function () {
+    hideAll();
     document.getElementById("main2d").setAttribute("style", "display:inline;");
-    document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("mainImages").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-    document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-    document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-    pause3d();
     unpause2d();
-    viewer = false;
   }
   var show3d = this.show3d = function () {
+    hideAll();
     document.getElementById("main3d").setAttribute("style", "display:inline;");
-    document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("mainImages").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-    document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-    document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
     unpause3d();
-    pause2d();
-    viewer = false;
   }
   var showImages = this.showImages = function () {
+    hideAll();
     document.getElementById("mainImages").setAttribute("style", "display:inline;");
-    document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-    document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-    document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-    pause3d();
-    pause2d();
-    viewer = false;
   }
   var showTwitter = this.showTwitter = function () {
+    hideAll();
     document.getElementById("TwitterDiv").setAttribute("style", "display:inline;");
-    document.getElementById("mainImages").setAttribute("style", "display:none;");
-    document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-    document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-    pause3d();
-    pause2d();
-    viewer = false;
   }
   var showFlickr = this.showFlickr = function () {
+    hideAll();
     document.getElementById("FlickrDiv").setAttribute("style", "display:inline;");
-    document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-    document.getElementById("mainImages").setAttribute("style", "display:none;");
-    document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-    pause3d();
-    pause2d();
-    viewer = false;
   }
   var showImageSrcDiv = this.showImageSrcDiv = function () {
+    hideAll();
     document.getElementById("ImageSrcDiv").setAttribute("style", "display:inline;");
-    document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-    document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-    document.getElementById("mainImages").setAttribute("style", "display:none;");
-    document.getElementById("main2d").setAttribute("style", "display:none;");
-    document.getElementById("main3d").setAttribute("style", "display:none;");
-    document.getElementById("viewerMain").setAttribute("style", "display:none;");
-    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-    pause3d();
-    pause2d();
-    viewer = false;
   }
  
    var showVideoSrcDiv = this.showVideoSrcDiv = function () {
+    hideAll();
     document.getElementById("VideoSrcDiv").setAttribute("style", "display:inline;");
+  }
+  
+  var editObjectTextures = this.editObjectTextures = function () {
+    if (objectSelected) {
+      if (objectViewing) {
+        scnViewer.removeObjectFromScene(objectViewing);
+      }
+      objectViewing = new c3dl.Collada();
+      objectViewing.clone(objectSelected.model);
+      scnViewer.addObjectToScene(objectViewing);
+      objectViewing.setPosition([0, 0, 0]);
+      camViewer.setPosition([0, 0, 30]);
+      hideAll();
+      document.getElementById("viewerMain").setAttribute("style", "display:inline;");
+      document.getElementById("viewer-buttons").setAttribute("style", "display:none;");
+      document.getElementById("object-textures").setAttribute("style", "display:inline;");
+      //document.getElementById("object-textures").removeChild(document.getElementById("texture-table"));
+      document.getElementById("updateTexture-buttons").setAttribute("style", "display:inline;");
+      var table = document.createElement("table");
+      table.setAttribute("id","texture-table");
+      table.setAttribute("border","1");
+      var row = document.createElement("tr");
+      var col1 = document.createElement("th");
+      var col2 = document.createElement("th");
+      col1.innerHTML = "Current Texture";
+      col2.innerHTML = "Edit";
+      row.appendChild(col1);
+      row.appendChild(col2);
+      table.appendChild(row);
+      var primitiveList = objectViewing.getPrimitiveSets();
+      var imgs = [];
+      for (var i = 0; i < primitiveList.length; i++) {
+        imgs[i] = new Image();
+        if (primitiveList[i].getTexture()) {
+          imgs[i].src = primitiveList[i].getTexture();
+        }
+        else {
+          imgs[i].src = "./images/none.jpg";
+        }
+        imgs[i].width = 128;
+        imgs[i].height = 128;
+        row = document.createElement("tr");
+        col1 = document.createElement("td");
+        col2 = document.createElement("td");
+        var url = document.createElement("input");
+        var urlButton = document.createElement("input");
+        urlButton.type = 'button';
+        urlButton.value = "Update";
+        urlButton.onclick = function(url, primitive) {
+          return function(){
+            var img = new Image();
+            img.src = url.value;
+            primitive.texture = img;
+          }; 
+        }(url, primitiveList[i]);
+        
+        var ColourButton = document.createElement("input");
+        ColourButton.type = 'button';
+        ColourButton.value = "Colour";
+        ColourButton.onclick = function(primitive) {
+          return function(){
+            
+          }; 
+        }(primitiveList[i]);
+        
+        col1.appendChild(imgs[i]);
+        col2.innerHTML = "Colour: ";
+        col2.appendChild(ColourButton);
+        col2.innerHTML += "<br/>Enter image URL:";
+        col2.appendChild(url);
+        col2.appendChild(urlButton);
+        row.appendChild(col1);
+        row.appendChild(col2);
+        table.appendChild(row);
+      }
+      document.getElementById("object-textures").appendChild(table);
+      scnViewer.unpauseScene();
+      viewer = true;
+    }
+  }
+
+  var viewObject = this.viewObject = function () {
+    if (objectSelected) {
+      if (objectViewing) {
+        scnViewer.removeObjectFromScene(objectViewing);
+      }
+      objectViewing = new c3dl.Collada();
+      objectViewing.clone(objectSelected.model);
+      scnViewer.addObjectToScene(objectViewing);
+      objectViewing.setPosition([0, 0, 0]);
+      camViewer.setPosition([0, 0, 30]);
+      hideAll();
+      document.getElementById("viewerMain").setAttribute("style", "display:inline;");
+      document.getElementById("viewer-buttons").setAttribute("style", "display:inline;");
+      document.getElementById("object-textures").setAttribute("style", "display:none;");
+      document.getElementById("updateTexture-buttons").setAttribute("style", "display:none;");
+      scnViewer.unpauseScene();
+      viewer = true;
+    }
+  }
+  
+  var hideAll = function () {
+    document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
     document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
     document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
     document.getElementById("mainImages").setAttribute("style", "display:none;");
@@ -1460,7 +1506,7 @@
     viewer = false;
   }
   var createClock = this.createClock = function () {
-    createObject(14); 
+    createObject(CLOCK_PATH, "object", "wall", false,[0.1, 0.1, 0.1]); 
     objectSelected.canvas = document.createElement('CANVAS');  
     objectSelected.canvas.setAttribute('id',"Clock");  
     objectSelected.canvas.setAttribute('width',256);  
@@ -1478,7 +1524,7 @@
       objectSelected.editing = null;
     }
     else {
-      createObject(13); 
+      createObject(TWITTER_PATH, "object", "wall", false, [2, 4, 0.25], "Twitter", "Displays a twitter feed", "images/sidebar/twitter.jpg", true); 
     }
     objectSelected.canvas = document.createElement('CANVAS');  
     objectSelected.canvas.setAttribute('id',"Twitter");  
@@ -1499,7 +1545,7 @@
       objectSelected.editing = null;
     }
     else {
-    createObject(15); 
+    createObject(FLICKR_PATH, "object", "wall", false, [2, 2, 0.25], "Flickr", "Displays a flickr album", "images/sidebar/flickr.jpg", true); 
     }
     objectSelected.canvas = document.createElement('CANVAS'); 
     objectSelected.canvasImage = new Image();
@@ -1521,7 +1567,7 @@
       objectSelected.editing = null;
     }
     else {
-      createObject(16); 
+      createObject(CUSTOMIMG_PATH, "object", "wall", false, [2, 2, 0.25], "CustomImage", "Displays a custom image from a selected url", true); 
     }
     objectSelected.canvasImage = new Image();
     objectSelected.canvasImage.obj = objectSelected;
@@ -1536,7 +1582,7 @@
       objectSelected.editing = null;
     }
     else {
-      createObject(17); 
+      createObject(CUSTOMVIDEO_PATH, "object", "wall", false,[2, 2, 0.25], "CustomVideo", "Displays a custom video from a selected url", true); 
     }
     document.getElementById('vUrl').value = "";
     objectSelected.video = document.createElement('video');
@@ -1549,7 +1595,7 @@
   } 
   
   var createTV = this.createTV = function () {
-    createObject(18); 
+    createObject(TV_PATH, "object", "object", false, [0.01, 0.01, 0.01], "TV", "Displays a custom video from a selected url on the screen"); 
     var src = "http://code.bocoup.com/audio-data-api/flash-vs-html5/mj-dontstop2.ogv"
     objectSelected.video = document.createElement('video');
     objectSelected.video.setAttribute('id',"video");  
@@ -1558,27 +1604,6 @@
     objectSelected.video.setAttribute('loop',"loop");
     objectSelected.model.updateTextureByName("updatingTexture",objectSelected.video);  
   } 
-  var viewObject = this.viewObject = function () {
-    if (objectSelected) {
-      if (objectViewing) {
-        scnViewer.removeObjectFromScene(objectViewing);
-      }
-      objectViewing = new c3dl.Collada();
-      objectViewing.clone(objectSelected.model);
-      scnViewer.addObjectToScene(objectViewing);
-      objectViewing.setPosition([0, 0, 0]);
-      camViewer.setPosition([0, 0, 30]);
-      document.getElementById("viewerMain").setAttribute("style", "display:inline;");
-      document.getElementById("main2d").setAttribute("style", "display:none;");
-      document.getElementById("main3d").setAttribute("style", "display:none;");
-      document.getElementById("mainImages").setAttribute("style", "display:none;");
-      pause3d();
-      pause2d();
-      scnViewer.unpauseScene();
-      viewer = true;
-    }
-  }
-
   //pausing and unpausing the 2d and 3d to increase speed
 
   function pause3d() {
@@ -1730,18 +1755,18 @@
     jQuery.ajax(options);
   }
   var load = this.load = function () {
-    //fill dialog from LocalStorage
     /*
+    //fill dialog from LocalStorage
     for (i = 0; i < localStorage.length; i++) {
       theSel = document.getElementById('selectedname');
       var key = localStorage.key(i);
       var newOpt = new Option(key, key);
       theSel.options[i] = newOpt;
     }
-    $("#dialog-load").dialog("open"); */
+    $("#dialog-load").dialog("open");
     
     //fill dialog from file list
-    //loadScene("scenes/test.scn");
+    loadScene("scenes/test.scn"); */
     var options = {
       type: "GET", 
       url: "fileList.php",
@@ -1790,8 +1815,23 @@
     Processing.getInstanceById("SceneCaster2d").setVars(serial.allVars);
     objects = [];
     for (var i = 0; i < serial.numObjects; i++) {
-      objects[i]= sceneObjectList.getSceneObjectbyPath(serial.objects[i].path);
-      objects[i].model.setSize(serial.objects[i].length, serial.objects[i].width,serial.objects[i].height);
+      objects[i] = new SceneObject(); 
+      if (serial.objects[i].path === "Sphere") {   
+        var tempShape = new c3dl.Sphere(serial.objects[i].length/2, serial.objects[i].model.sphereDetailU, serial.objects[i].model.sphereDetailV);
+        objects[i].initPrimitive(tempShape, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+      }
+      else if (serial.objects[i].path === "Cube") {   
+        var tempShape = new c3dl.Cube(serial.objects[i].length,serial.objects[i].width,serial.objects[i].height);
+        objects[i].initPrimitive(tempShape, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+      }
+      else if (serial.objects[i].path === "Plane") {  
+        var tempShape = new c3dl.Plane(serial.objects[i].length,serial.objects[i].width);      
+        objects[i].initPrimitive(tempShape, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+      }
+      else {
+        objects[i].init(serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+        objects[i].model.setSize(serial.objects[i].length, serial.objects[i].width,serial.objects[i].height);  
+      }
       objects[i].model.setPosition(c3dl.makeVector(serial.objects[i].pos[0],serial.objects[i].pos[1],serial.objects[i].pos[2]));
       objects[i].model.setRenderObb(false);
       objects[i].model.sceneGraph.dir = c3dl.makeVector(serial.objects[i].dir[0],serial.objects[i].dir[1],serial.objects[i].dir[2]);
@@ -1945,34 +1985,19 @@
     }
   }
   
-  //open Create Primitive diologs
+  //open Create Primitive dialogs
   var createSphere = this.createSphere = function () {
     $("#dialog-create-sphere").dialog("open");
   }
-  var createSphere = this.createCube = function () {
+  var createCube = this.createCube = function () {
     $("#dialog-create-cube").dialog("open");
   }
-  var createSphere = this.createPlane = function () {
+  var createPlane = this.createPlane = function () {
     $("#dialog-create-plane").dialog("open");
   }
-  //checks a regular expression
-  function checkRegexp(o, regexp, n) {
-    if (!(regexp.test(o.val()))) {
-      return false;
-    }
-    else {
-      return true;
-    }
-  }
-  //checks the length
-
-  function checkLength(o, n, min, max) {
-    if (o.val().length > max || o.val().length < min) {
-      return false;
-    }
-    else {
-      return true;
-    }
+  var setObjectProperties = this.setObjectProperties = function (func) {
+    nextDialog = func;
+    $("#dialog-object-properties").dialog("open");
   }
   
   var starupdateTimer = this.starupdateTimer = function () {
@@ -1981,20 +2006,19 @@
   
   var DisplayObjectInfo = function () {
     if (objectSelected) {
+      document.getElementById("objInfo").setAttribute("style", "display:inline;");
       document.getElementById('objPic').src = objectSelected.getPicture();
       document.getElementById('objName').innerHTML = objectSelected.getName();
       document.getElementById('objDes').innerHTML = objectSelected.getDescription();
       var pos = objectSelected.model.getPosition();
       document.getElementById('objPos').innerHTML = "x=" +  pos[0].toFixed(2) + " " +"y=" + pos[1].toFixed(2) +  " " +"z=" + pos[2].toFixed(2) +  " ";
-      if (objectSelected.processor) {
-        document.getElementById("videoControls").setAttribute("style", "display:inline;");
-        $("#volumeSlider").slider("value", objectSelected.video.volume*100);
-        $("#seekSlider").slider("value", objectSelected.video.currentTime);
-        if (objectSelected.video.duration >0) {
-          $("#seekSlider").slider("option","max", objectSelected.video.duration);
-        }
+      if (objectSelected.editable) {
+        document.getElementById("edit-button").setAttribute("style", "display:inline;");
       }
-      else if (objectSelected.video) {
+      else {
+          document.getElementById("edit-button").setAttribute("style", "display:none;");
+      }
+      if (objectSelected.video) {
         document.getElementById("videoControls").setAttribute("style", "display:inline;");
         $("#volumeSlider").slider("value", objectSelected.video.volume*100);
         $("#seekSlider").slider("value", objectSelected.video.currentTime);
@@ -2012,6 +2036,7 @@
       document.getElementById('objDes').innerHTML = "";
       document.getElementById('objPos').innerHTML = "";    
       document.getElementById("videoControls").setAttribute("style", "display:none;");
+      document.getElementById("objInfo").setAttribute("style", "display:none;");
     }
   }
   
@@ -2094,15 +2119,15 @@
   };
 
   //Create Command
-  var createObjectCommand = function (objID) {
+  var createObjectCommand = function () {
     Command.call();
     this.objects = objects;
     this.objectSelected = objectSelected;
-    this.objID = objID;
     this.newobject;
-    this.execute = function () {
+    this.execute = function (path, type, placement, stand, initalScale, name, description, picture, editable) {
       if (!this.newobject) {
-        objects[numObjects] = sceneObjectList.getSceneObject([objID]);
+        objects[numObjects] = new SceneObject()        
+        objects[numObjects].init(path, type, placement, stand, initalScale, name, description, picture, editable);
         scn.addObjectToScene(objects[numObjects].model);
         if (objectSelected) {
           objectSelected.model.setRenderObb(false);
@@ -2110,10 +2135,10 @@
         this.newobject = objectSelected = objects[numObjects];
         objectSelected.model.setRenderObb(true);
         moveObject = true;
-        if (objectSelected.snapTo === "ceiling") {
+        if (objectSelected.placement === "ceiling") {
           objectSelected.model.setPosition([0, 15 - (objectSelected.model.getHeight() / 2), 0]);
         }
-        if (objectSelected.snapTo === "wall") {
+        if (objectSelected.placement === "wall") {
           var wallHit = [];
           for (var i = 0, len = walls.length; i < len; i++) {
             var currObj = walls[i];
@@ -2149,7 +2174,65 @@
       objects = this.objects;
     };
   };
-
+  
+ //Create Command for Primitives
+  var createPrimitiveCommand = function () {
+    Command.call();
+    this.objects = objects;
+    this.objectSelected = objectSelected;
+    this.newobject;
+    this.execute = function (shape, path, type, placement, stand) {
+      if (!this.newobject) {
+        objects[numObjects] = new SceneObject();
+        objects[numObjects].initPrimitive(shape, path, type, placement, stand);
+        scn.addObjectToScene(objects[numObjects].model);
+        if (objectSelected) {
+          objectSelected.model.setRenderObb(false);
+        }
+        this.newobject = objectSelected = objects[numObjects];
+        objectSelected.model.setRenderObb(true);
+        moveObject = true;
+        if (objectSelected.placement === "ceiling") {
+          objectSelected.model.setPosition([0, 15 - (objectSelected.model.getHeight() / 2), 0]);
+        }
+        if (objectSelected.placement === "wall") {
+          var wallHit = [];
+          for (var i = 0, len = walls.length; i < len; i++) {
+            var currObj = walls[i];
+            if (currObj.model.isVisible() && currObj.model.isInsideFrustum()) {
+              if (currObj.model.rayIntersectsEnclosures(zcam[currentCam].getPosition(), zcam[currentCam].dir)) {
+                wallHit.push(currObj);
+              }
+            }
+          }
+          if (wallHit.length) {
+            objectSelected.placeObjectOnWall(wallHit[0]);
+          }
+          moveObject = false;
+        }
+        else {
+          objectSelected.model.setPosition([0, objectSelected.model.getHeight() / 2, 0]);
+        }
+      }
+      else {
+        scn.addObjectToScene(this.newobject.model);
+        if (objectSelected) {
+          objectSelected.model.setRenderObb(false);
+        }
+        objectSelected = objects[numObjects] = this.newobject;
+        objectSelected.model.setRenderObb(true);
+      }
+      numObjects++;
+    };
+    
+    this.unexecute = function () {
+      numObjects--;
+      scn.removeObjectFromScene(this.newobject.model);
+      objectSelected = this.objectSelected;
+      objects = this.objects;
+    };
+  };
+  
   //Copy Command
   var copySelectedCommand = function () {
     Command.call();
@@ -2167,7 +2250,7 @@
         objectSelected.model.setRenderObb(true);
         numObjects++;
         moveObject = true;
-        if (objectSelected.snapTo === "ceiling") {
+        if (objectSelected.placement === "ceiling") {
           objectSelected.model.setPosition([0, 15 - (objectSelected.model.getHeight() / 2), 0]);
         }
         else {
@@ -2352,14 +2435,14 @@
         objectSelected.model.rotateOnAxis([0, 0, 1], -this.angleZ);
         this.first = false;
       }
-     objectSelected.model.rotateOnAxis([1, 0, 0], this.angleX);
-     objectSelected.model.rotateOnAxis([0, 1, 0], this.angleY);
-     objectSelected.model.rotateOnAxis([0, 0, 1], this.angleZ);
+      objectSelected.model.rotateOnAxis([1, 0, 0], this.angleX);
+      objectSelected.model.rotateOnAxis([0, 1, 0], this.angleY);
+      objectSelected.model.rotateOnAxis([0, 0, 1], this.angleZ);
     };
     this.unexecute = function () {
-     objectSelected.model.rotateOnAxis([1, 0, 0], -this.angleX);
+      objectSelected.model.rotateOnAxis([1, 0, 0], -this.angleX);
       objectSelected.model.rotateOnAxis([0, 1, 0], -this.angleY);
-     objectSelected.model.rotateOnAxis([0, 0, 1], -this.angleZ);
+      objectSelected.model.rotateOnAxis([0, 0, 1], -this.angleZ);
     };
   };
 
@@ -2399,14 +2482,11 @@
       sm.init("./models/sky/skysphere.dae");
       sm.setTexture("./models/sky/sky.jpg");
 
-      //create all objects that will be used
-      sceneObjectList.init();
-
-      // Effect used when game objects are selected
+      // Effect used when widget objects are selected
       selectedEffect = new c3dl.Effect();
       selectedEffect.init(c3dl.effects.SEPIA);
       selectedEffect.setParameter("color", [10, 10, 0]);
-      scn.setAmbientLight([0.2, 0.2, 0.2, 0.2]);
+      scn.setAmbientLight([0, 0, 0, 0]);
       
       createLight(0, 0);
       
@@ -2696,7 +2776,7 @@
           }
         }
         else {
-          if (objectSelected.parentObject && objectSelected.snapTo !== "wall") {
+          if (objectSelected.parentObject && objectSelected.placement !== "wall") {
             var curpos = objectSelected.model.getPosition();
             objectSelected.model.setPosition([curpos[0], objectSelected.model.getHeight() / 2, curpos[2]]);
             objectSelected.parentObject.removeChildFromChildObjectList(objectSelected);
@@ -3007,15 +3087,28 @@
   }
 
   //create objects using a factory pattern
-  var createObject = this.createObject = function (objID) {
+  var createObject = this.createObject = function (path, type, placement, stand, initalScale, name, description, picture, editable) {
     curcmd++;
     if (curcmd <= commands.length - 1) {
       for (var i = curcmd, l = commands.length; i < l; i++) {
         commands[i] = null;
       }
     }
-    commands[curcmd] = new createObjectCommand(objID);
-    commands[curcmd].execute();
+    commands[curcmd] = new createObjectCommand();    
+    commands[curcmd].execute(path, type, placement, stand, initalScale, name, description, picture, editable, editable);
+
+  }
+  
+  //create objects using a factory pattern
+  var createPrimitive = this.createPrimitive = function (shape, path, type, placement, stand) {
+    curcmd++;
+    if (curcmd <= commands.length - 1) {
+      for (var i = curcmd, l = commands.length; i < l; i++) {
+        commands[i] = null;
+      }
+    }
+    commands[curcmd] = new createPrimitiveCommand();
+    commands[curcmd].execute(shape, path, type, placement, stand);
   }
 
   //removes seleted object from scene
@@ -3614,6 +3707,21 @@
 
   //sliders
   $(function () {
+    //jQuery vars
+    var name = $( "#name" ),
+        sRaduis = $( "#sRaduis" ),
+        sDetailU = $( "#sDetailU" ),
+        sDetailV = $( "#sDetailV" ),
+        cubeLength = $( "#cubeLength" ),
+        cubeWidth = $( "#cubeWidth" ),
+        cubeHeight = $( "#cubeHeight" ),
+        planeLength = $( "#planeLength" ),
+        planeWidth = $( "#planeWidth" ),
+        allFields,
+        tips = $( ".validateTips" ),
+        stand,
+        placement;
+  
     // zoom slider
     $('#zoomslider').slider({
       min: 0,
@@ -3680,7 +3788,17 @@
         Cancel: function () {
           $(this).dialog('close');
         }
-      }
+      },
+      open: function() {
+        dialogOpen = true;
+        allFields = $( [] ).add( name );
+			},
+      close: function() {
+        dialogOpen = false;
+        allFields.val( "" ).removeClass( "ui-state-error" );
+        tips.text( "" );
+        tips.removeClass( "ui-state-highlight");
+			}
     });
     $("#dialog-load").dialog({
       autoOpen: false,
@@ -3695,45 +3813,144 @@
         Cancel: function () {
           $(this).dialog('close');
         }
-      }
+      },
+      open: function() {
+        dialogOpen = true;
+			},
+      close: function() {
+        dialogOpen = false;
+			}
     });
     $("#dialog-create-sphere").dialog({
       autoOpen: false,
       modal: true,
       buttons: {
         'OK': function () {
-          $(this).dialog('close');
+          var bValid = true; 
+          allFields.removeClass( "ui-state-error" );
+					bValid = bValid && checkRegexp( sRaduis, /^([0-9])+$/, "Radius must be a number");
+          bValid = bValid && checkNumberRange( sRaduis, "Raduis", 1, 25 );
+          bValid = bValid && checkRegexp( sDetailU, /^([0-9])+$/, "Detail Longitudinally must be a number");
+          bValid = bValid && checkNumberRange( sDetailU, "Detail Longitudinally", 3, 360 );
+          bValid = bValid && checkRegexp( sDetailV, /^([0-9])+$/, "Detail latitudinally must be a number");
+          bValid = bValid && checkNumberRange( sDetailV, "Detail latitudinally", 3, 360 );
+          if (bValid) {
+            var tempShape = new c3dl.Sphere(sRaduis.val(), sDetailU.val(), sDetailV.val());       
+            createPrimitive(tempShape, 'Sphere', 'object', placement, stand);
+            $(this).dialog('close');
+          }
         },
         Cancel: function () {
           $(this).dialog('close');
         }
-      }
+      },
+      open: function() {
+        dialogOpen = true;
+        allFields = $( [] ).add( sRaduis ).add( sDetailU ).add( sDetailV );
+			},
+      close: function() {
+        stand = null;
+        placement = null;
+        dialogOpen = false;
+        allFields.val( "" ).removeClass( "ui-state-error" );
+        tips.text( "" );
+        tips.removeClass( "ui-state-highlight");
+			}
     });
     $("#dialog-create-cube").dialog({
       autoOpen: false,
       modal: true,
       buttons: {
         'OK': function () {
-          $(this).dialog('close');
+          var bValid = true; 
+          allFields.removeClass( "ui-state-error" );
+					bValid = bValid && checkRegexp( cubeLength, /^([0-9])+$/, "Length must be a number");
+          bValid = bValid && checkNumberRange( cubeLength, "Length", 1, 25 );
+          bValid = bValid && checkRegexp( cubeWidth, /^([0-9])+$/, "Width must be a number");
+          bValid = bValid && checkNumberRange( cubeWidth, "Width", 1, 25 );
+          bValid = bValid && checkRegexp( cubeHeight, /^([0-9])+$/, "Height must be a number");
+          bValid = bValid && checkNumberRange( cubeHeight, "Height", 1, 25 );
+          if (bValid) {
+            var tempShape = new c3dl.Cube(cubeLength.val(),cubeWidth.val(), cubeHeight.val());      
+            createPrimitive(tempShape, "Cube", 'object', placement, stand);
+            $(this).dialog('close');
+          }
         },
         Cancel: function () {
           $(this).dialog('close');
         }
-      }
+      },
+      open: function() {
+        dialogOpen = true;
+        allFields = $( [] ).add( cubeLength ).add( cubeWidth ).add( cubeHeight );
+			},
+      close: function() {
+        stand = null;
+        placement = null;
+        dialogOpen = false;
+        allFields.val( "" ).removeClass( "ui-state-error" );
+        tips.text( "" );
+        tips.removeClass( "ui-state-highlight");
+			}
     });
     $("#dialog-create-plane").dialog({
       autoOpen: false,
       modal: true,
       buttons: {
         'OK': function () {
+          var bValid = true; 
+          allFields.removeClass( "ui-state-error" );
+					bValid = bValid && checkRegexp( planeLength, /^([0-9])+$/, "Length must be a number");
+          bValid = bValid && checkNumberRange( planeLength, "Length", 1, 25 );
+          bValid = bValid && checkRegexp( planeWidth, /^([0-9])+$/, "Width must be a number");
+          bValid = bValid && checkNumberRange( planeWidth, "Width", 1, 25 );
+          if (bValid) {
+            var tempShape = new c3dl.Plane(planeLength.val(),planeWidth.val());      
+            createPrimitive(tempShape, "Plane", 'object', placement, stand);
+            $(this).dialog('close');
+          }
+        },
+        Cancel: function () {
+          $(this).dialog('close');
+        }
+      },
+      open: function() {
+        dialogOpen = true;
+        allFields = $( [] ).add( planeLength ).add( planeWidth );
+			},
+      close: function() {
+        stand = null;
+        placement = null;
+        dialogOpen = false;
+        allFields.val( "" ).removeClass( "ui-state-error" );
+        tips.text( "" );
+        tips.removeClass( "ui-state-highlight");
+			}
+    });
+    
+    $("#dialog-object-properties").dialog({
+      autoOpen: false,
+      modal: true,
+      buttons: {
+        'OK': function () {
+          placement = document.getElementById('placement').value;
+          stand = document.getElementById('stand').value;
+          nextDialog();
           $(this).dialog('close');
         },
         Cancel: function () {
           $(this).dialog('close');
         }
-      }
+      },
+      open: function() {
+        dialogOpen = true;
+			},
+      close: function() {
+        nextDialog = null;
+        dialogOpen = false;
+			}
     });
-    var name = $("#name");
+   
     // Accordion
     $("#accordion").accordion({
       fillSpace: true,
@@ -3744,6 +3961,48 @@
 		$( "#3d-tool-tabs" ).tabs();
 		$( "#2d-tool-tabs" ).tabs();
 		$( "#tool-tabs" ).tabs();
+    
+    //checks a regular expression
+    function checkRegexp(o, regexp, n) {
+      if (!(regexp.test(o.val()))) {
+        o.addClass( "ui-state-error" );
+        updateTips( n );
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+    //checks the length
+
+    function checkLength(o, n, min, max) {
+      if (o.val().length > max || o.val().length < min) {
+        o.addClass( "ui-state-error" );
+        updateTips( "Length of " + n + " must be between " +
+        min + " and " + max + "." );      
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+    
+    function checkNumberRange(o, n, min, max) {
+      if (o.val() > max || o.val() < min) {
+        o.addClass( "ui-state-error" );
+        updateTips(n + " must be between " +
+        min + " and " + max + "." );      
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+    function updateTips( t ) {
+      tips
+        .text( t )
+        .addClass( "ui-state-highlight" );
+    }
   });
   //run the currently selected effect
   var scaleEffect = this.scaleEffect = function () {
@@ -3761,6 +4020,5 @@
     else {
       document.getElementById("rotateDiv").setAttribute("style", "display:none;");
     }
-  };
-  
+  }; 
 })();

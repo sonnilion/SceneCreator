@@ -13,7 +13,7 @@ c3dl.Sphere = c3dl.inherit(c3dl.Shape, function (radius, sphereDetailU, sphereDe
     this.cosLUT[i] = Math.cos(i * (Math.PI / 180) * 0.5);
   }
   if (arguments.length == 3) {
-    this.sphereDetail(sphereDetailU,sphereDetailV);
+    this.sphereDetail(parseInt(sphereDetailU),parseInt(sphereDetailV));
   }
   else {
     this.sphereDetail(32,32);
@@ -147,10 +147,6 @@ c3dl.Sphere.prototype.sphereDetail = function sphereDetail(ures, vres) {
       if (vres < 2) {
         vres = 2;
       } // force a minimum res
-      // if it hasn't changed do nothing
-      if ((ures === this.sphereDetailU) && (vres === this.sphereDetailV)) {
-        return;
-      }
 
       var delta = c3dl.SINCOS_LENGTH / ures;
       var cx = new Array(ures);
