@@ -5,8 +5,10 @@
       SceneCreator
     </title>
     <link type="text/css" href="css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
     <script type="text/javascript" src="js/jquery/jquery-1.4.4.min.js"></script>
     <script type="text/javascript" src="js/jquery/jquery-ui-1.8.9.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery/colorpicker.js"></script>
     <script type="text/javascript" src="js/c3dl/c3dapi.js"></script>
     <script src="js/processing/processing.js"></script>
     <script type="text/javascript" src="js/scenecreator.js"></script>
@@ -15,7 +17,7 @@
     <div id="viewerMain">
       <div id="viewer-buttons"><input type="button" value="Back" onclick="show3d();" /> </div>
       <div id="updateTexture-buttons">
-        <input type="button" value="OK" onclick="show3d();" /> 
+        <input type="button" value="OK" onclick="updateTexturesInScene();" /> 
         <input type="button" value="Cancel" onclick="show3d();" /> 
       </div>
       <canvas id="objectViewer" width="800" height="600"></canvas>

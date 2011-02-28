@@ -1393,6 +1393,17 @@
     document.getElementById("VideoSrcDiv").setAttribute("style", "display:inline;");
   }
   
+  var updateTexturesInScene = this.updateTexturesInScene = function () {
+
+    var primitiveList = objectViewing.getPrimitiveSets();
+    var newPrimitiveList = objectSelected.model.getPrimitiveSets();
+    for (var i = 0; i < primitiveList.length; i++) {
+      newPrimitiveList[i].texture = primitiveList[i].getTexture();
+    }
+    show3d();
+  }
+  
+  
   var editObjectTextures = this.editObjectTextures = function () {
     if (objectSelected) {
       if (objectViewing) {
@@ -1407,7 +1418,9 @@
       document.getElementById("viewerMain").setAttribute("style", "display:inline;");
       document.getElementById("viewer-buttons").setAttribute("style", "display:none;");
       document.getElementById("object-textures").setAttribute("style", "display:inline;");
-      //document.getElementById("object-textures").removeChild(document.getElementById("texture-table"));
+      if (document.getElementById("texture-table")) {
+        document.getElementById("object-textures").removeChild(document.getElementById("texture-table"));
+      }
       document.getElementById("updateTexture-buttons").setAttribute("style", "display:inline;");
       var table = document.createElement("table");
       table.setAttribute("id","texture-table");
@@ -1415,10 +1428,12 @@
       var row = document.createElement("tr");
       var col1 = document.createElement("th");
       var col2 = document.createElement("th");
+      var col3 = document.createElement("th");
       col1.innerHTML = "Current Texture";
       col2.innerHTML = "Edit";
       row.appendChild(col1);
       row.appendChild(col2);
+      row.appendChild(col3);
       table.appendChild(row);
       var primitiveList = objectViewing.getPrimitiveSets();
       var imgs = [];
@@ -1435,35 +1450,47 @@
         row = document.createElement("tr");
         col1 = document.createElement("td");
         col2 = document.createElement("td");
+        col3 = document.createElement("td");
         var url = document.createElement("input");
         var urlButton = document.createElement("input");
         urlButton.type = 'button';
         urlButton.value = "Update";
-        urlButton.onclick = function(url, primitive) {
+        urlButton.onclick = function(url, primitive, img) {
           return function(){
             var img = new Image();
             img.src = url.value;
             primitive.texture = img;
           }; 
-        }(url, primitiveList[i]);
+        }(url, primitiveList[i], imgs[i]);
         
-        var ColourButton = document.createElement("input");
-        ColourButton.type = 'button';
-        ColourButton.value = "Colour";
-        ColourButton.onclick = function(primitive) {
-          return function(){
-            
-          }; 
-        }(primitiveList[i]);
-        
+        //Create ColorPickers
+        var colorPicker = document.createElement("div");
+        $(function () {
+          $(colorPicker).ColorPicker({
+            flat: true, 			
+            onSubmit: function(col3, primitive, img) {
+              return function (hsb, hex, rgb) {
+                var canvas = document.createElement('canvas');
+                canvas.width = 128;
+                canvas.height = 128;
+                var canvasContext = canvas.getContext('2d');
+                canvasContext.fillStyle = "#"+hex;
+                canvasContext.fillRect(0, 0, 128, 128);
+                img.src = canvas.toDataURL('image/png');
+                primitive.texture = img;
+              }
+            }(col3, primitiveList[i], imgs[i])
+          });
+        });
+
         col1.appendChild(imgs[i]);
-        col2.innerHTML = "Colour: ";
-        col2.appendChild(ColourButton);
-        col2.innerHTML += "<br/>Enter image URL:";
+        col2.innerHTML = "Enter image URL:";
         col2.appendChild(url);
         col2.appendChild(urlButton);
+        col3.appendChild(colorPicker);
         row.appendChild(col1);
         row.appendChild(col2);
+        row.appendChild(col3);
         table.appendChild(row);
       }
       document.getElementById("object-textures").appendChild(table);
@@ -4004,6 +4031,7 @@
         .addClass( "ui-state-highlight" );
     }
   });
+  
   //run the currently selected effect
   var scaleEffect = this.scaleEffect = function () {
     if (document.getElementById("scaleDiv").style.display === "none") {
