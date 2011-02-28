@@ -1451,13 +1451,26 @@
         col1 = document.createElement("td");
         col2 = document.createElement("td");
         col3 = document.createElement("td");
+        
+        //Create reset to default
+        var resetButton = document.createElement("input");
+        resetButton.type = 'button';
+        resetButton.value = "Reset";
+        resetButton.onclick = function(primitive, img) {
+        var originalTexture = primitive.getTexture();
+          return function(){
+            img.src = originalTexture;
+            primitive.texture = img;
+          }; 
+        }(primitiveList[i], imgs[i]);
+        
+        //Create update by URL Button
         var url = document.createElement("input");
         var urlButton = document.createElement("input");
         urlButton.type = 'button';
         urlButton.value = "Update";
         urlButton.onclick = function(url, primitive, img) {
           return function(){
-            var img = new Image();
             img.src = url.value;
             primitive.texture = img;
           }; 
@@ -1484,6 +1497,7 @@
         });
 
         col1.appendChild(imgs[i]);
+        col1.appendChild(resetButton);
         col2.innerHTML = "Enter image URL:";
         col2.appendChild(url);
         col2.appendChild(urlButton);
@@ -1717,6 +1731,17 @@
       serial.objects[i].dir = objects[i].model.sceneGraph.dir;
       serial.objects[i].left = objects[i].model.sceneGraph.left;
       serial.objects[i].up = objects[i].model.sceneGraph.up;
+      serial.objects[i].textureList = objects[i].model.getTextures();
+      for (var j = 0; j < serial.objects[i].textureList.length; j++) {
+        if (serial.objects[i].textureList[j] instanceof HTMLImageElement) {
+          var canvastest = document.createElement('CANVAS');  
+          canvastest.setAttribute('width',128);  
+          canvastest.setAttribute('height',128); 
+          canContext = canvastest.getContext('2d');
+          canContext.drawImage(serial.objects[i].textureList[j], 0, 0, 128, 128);
+          serial.objects[i].textureList[j] = canvastest.toDataURL();
+        }
+      }
       if (objects[i].childObjectList.length) {
         serial.objects[i].childObjectList = [];
         for (var j = 0; j < objects[i].childObjectList.length; j++) {
@@ -1770,7 +1795,6 @@
     var serial = JSON.stringify(serial);
     //save using HTML5 localStorage
     //this.localStorage.setItem(sceneName, serial);
-    
     //save using PHP
     var options = {
       type: "POST", url: "saver.php?location=scenes/"+sceneName+".scn",
@@ -1859,6 +1883,11 @@
         objects[i].init(serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
         objects[i].model.setSize(serial.objects[i].length, serial.objects[i].width,serial.objects[i].height);  
       }
+      var newPrimitiveList = objects[i].model.getPrimitiveSets();
+      for (var j = 0; j < serial.objects[i].textureList.length; j++) {
+        newPrimitiveList[j].texture = serial.objects[i].textureList[j];
+      }
+
       objects[i].model.setPosition(c3dl.makeVector(serial.objects[i].pos[0],serial.objects[i].pos[1],serial.objects[i].pos[2]));
       objects[i].model.setRenderObb(false);
       objects[i].model.sceneGraph.dir = c3dl.makeVector(serial.objects[i].dir[0],serial.objects[i].dir[1],serial.objects[i].dir[2]);
