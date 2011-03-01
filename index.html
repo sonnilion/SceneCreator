@@ -15,14 +15,17 @@
   </head>
   <body>
     <div id="viewerMain">
-      <div id="viewer-buttons"><input type="button" value="Back" onclick="show3d();" /> </div>
+      <div id="viewer-buttons">
+        <input type="button" value="Back" onclick="show3d();" /> 
+        <br/>
+      </div>
       <div id="updateTexture-buttons">
         <input type="button" value="OK" onclick="updateTexturesInScene();" /> 
         <input type="button" value="Cancel" onclick="show3d();" /> 
+        <br/>
       </div>
       <canvas id="objectViewer" width="800" height="600"></canvas>
-      <div id="object-textures">
-      </div>
+      <div id="object-textures"></div>
     </div>
     <div id="mainImages">
       <div id="tool-tabs">

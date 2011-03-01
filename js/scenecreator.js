@@ -173,6 +173,8 @@
     this.path = null;
     //file path to editable
     this.editable = false;
+    //file path to editable
+    this.light = null;
     
     this.init = function () {
       if (arguments.length >= 4) {
@@ -198,6 +200,13 @@
       }
       if (arguments[8]) {
         this.editable = arguments[8];
+      }
+      if (arguments[9]) {
+        this.light = new c3dl.PositionalLight();
+        this.light.setPosition(c3dl.makeVector(0,0,0));
+        this.light.setDiffuse(c3dl.makeVector(1,1,1));
+        this.light.setOn(true);
+        scn.addLight(this.light);
       }
       this.model.setStatic(true);
     }
@@ -1430,7 +1439,8 @@
       var col2 = document.createElement("th");
       var col3 = document.createElement("th");
       col1.innerHTML = "Current Texture";
-      col2.innerHTML = "Edit";
+      col2.innerHTML = "Edit With Picture URL";
+      col3.innerHTML = "Colour Picker";
       row.appendChild(col1);
       row.appendChild(col2);
       row.appendChild(col3);
@@ -3297,26 +3307,29 @@
   ////////////////////////////////////////////////////////////////////////////
   //creates a positional light at specified position 
   var createLight = this.createLight = function (posX, posZ) {
+    /*
     lights[numLights] = new c3dl.PositionalLight();
     lights[numLights].setPosition([posX, 14, posZ]);
     lights[numLights].setDiffuse([1, 1, 1, 1]);
     lights[numLights].setOn(true);
     scn.addLight(lights[numLights]);
     numLights++;
+    */
   }
 
   //deletes seleted positional light
   var deleteLight = this.deleteLight = function (lightnum) {
+    /*
     scn.removeLight(lights[lightnum]);
     for (var k = lightnum; k < numLights - 1; k++) {
       lights[k] = lights[k + 1];
     }
-    numLights--;
+    numLights--;*/
   }
 
   //moves seleted positional light
   var moveLight = this.moveLight = function (lightnum, posX, posZ) {
-    lights[lightnum].setPosition([posX, 14, posZ])
+    //lights[lightnum].setPosition([posX, 14, posZ])
   }
 
   //creates a wall from one specified position to another 
