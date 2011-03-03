@@ -167,8 +167,6 @@
     this.query = null; 
     //holds flickrImgs
     this.flickrImgs = null;
-    //holds initalScale
-    this.initalScale = null;
     //file path to model
     this.path = null;
     //file path to editable
@@ -176,37 +174,27 @@
     //file path to editable
     this.light = null;
     
-    this.init = function () {
-      if (arguments.length >= 4) {
-        this.model.init(arguments[0]);
-        this.path=arguments[0];
-        this.model.centerObject();
-        this.type = arguments[1];
-        this.placement = arguments[2];
-        this.stand = arguments[3];
-      }
-      if (arguments[4]) {
-        this.initalScale = arguments[4];
-        this.model.scale(this.initalScale);
-      }
-      if (arguments[5]) {
-        this.name = arguments[5];
-      }
-      if (arguments[6]) {
-        this.description = arguments[6];
-      }
-      if (arguments[7]) {
-        this.picture = arguments[7];
-      }
-      if (arguments[8]) {
-        this.editable = arguments[8];
-      }
-      if (arguments[9]) {
+    this.init = function (path, type, placement, stand, name, description, picture, editable, light, initalScale) {
+      this.model.init(path);
+      this.path = path;
+      this.model.centerObject();
+      this.type = type;
+      this.placement = placement;
+      this.stand = stand;
+      this.name =  name;
+      this.description = description;
+      this.picture = picture;
+      this.editable = editable;
+      if (light) {
         this.light = new c3dl.PositionalLight();
         this.light.setPosition(c3dl.makeVector(0,0,0));
         this.light.setDiffuse(c3dl.makeVector(1,1,1));
         this.light.setOn(true);
         scn.addLight(this.light);
+      }
+      if (initalScale) {
+        this.initalScale = initalScale;
+        this.model.scale(this.initalScale);
       }
       this.model.setStatic(true);
     }
@@ -268,13 +256,17 @@
         difLen = difLen - this.parentObject.model.getWidth() / 2 - this.model.getWidth() / 2;
         var difHeight = worldCoords[1] - wallCenter[1];
         if (difHeight + this.model.getHeight() / 2 < height && difLen + this.model.getLength() / 2 + 1 < length && difLen - this.model.getLength() / 2 - 1 > -length && difHeight - this.model.getHeight() / 2 > -height) {
-          this.model.setPosition(worldCoords)
+          this.model.setPosition(worldCoords);
         }
       }
       else if (this.placement === "ceiling") {
         this.oldpos = this.model.getPosition();
         var worldCoords = getworldCoords(mouseX, mouseY, 15);
         this.model.setPosition([worldCoords[0], 15 - (this.model.getHeight() / 2), worldCoords[2]]);
+        if (this.light) {
+          var pos = this.model.getPosition()
+          this.light.setPosition([pos[0],pos[1]-this.model.getHeight()/2,pos[2]]);
+        }
       }
       else {
         this.oldpos = this.model.getPosition();
@@ -282,6 +274,10 @@
         var x = this.oldpos[0] - worldCoords[0];
         var z = this.oldpos[2] - worldCoords[2];
         this.moveTopObjects(x, z);
+        if (this.light) {
+          var pos = this.model.getPosition()
+          this.light.setPosition([pos[0],pos[1]+this.model.getHeight()/2,pos[2]]);
+        }
       }
     };
     this.handleCollision = function (objectCollided) {
@@ -327,7 +323,8 @@
       }
       this.model.setPosition(c3dl.addVectors(wallPos, c3dl.multiplyVector(this.wallNorm, width)));
       this.model.rotateOnAxis([0,1,0],wall.angle);
-      if (Math.round(this.model.sceneGraph.dir[0]*100)/100 != Math.round(this.wallNorm[0]*100)/100 || Math.round(this.model.sceneGraph.dir[1]*100)/100 != Math.round(this.wallNorm[1]*100)/100 || 
+      if (Math.round(this.model.sceneGraph.dir[0]*100)/100 != Math.round(this.wallNorm[0]*100)/100 || 
+          Math.round(this.model.sceneGraph.dir[1]*100)/100 != Math.round(this.wallNorm[1]*100)/100 || 
           Math.round(this.model.sceneGraph.dir[2]*100)/100 != Math.round(this.wallNorm[2]*100)/100) {
         this.model.rotateOnAxis([0,1,0],Math.PI);
       }
@@ -2170,6 +2167,10 @@
           objectSelected.video.pause();
         }
       }
+      if (objectSelected.light) {
+        scn.removeLight(objectSelected.light);
+      }
+      
       objectSelected = null;
       numObjects--;
     };
@@ -2178,6 +2179,9 @@
       objectSelected = this.objectSelected;
       if (objectSelected.video) {
         objectSelected.video.play();
+      }
+      if (objectSelected.light) {
+        scn.addLight(objectSelected.light);
       }
       objects = this.objects;
       numObjects++;
@@ -2190,10 +2194,10 @@
     this.objects = objects;
     this.objectSelected = objectSelected;
     this.newobject;
-    this.execute = function (path, type, placement, stand, initalScale, name, description, picture, editable) {
+    this.execute = function (path, type, placement, stand, name, description, picture, editable, light, initalScale) {
       if (!this.newobject) {
         objects[numObjects] = new SceneObject()        
-        objects[numObjects].init(path, type, placement, stand, initalScale, name, description, picture, editable);
+        objects[numObjects].init(path, type, placement, stand, name, description, picture, editable, light, initalScale);
         scn.addObjectToScene(objects[numObjects].model);
         if (objectSelected) {
           objectSelected.model.setRenderObb(false);
@@ -2552,7 +2556,7 @@
       selectedEffect = new c3dl.Effect();
       selectedEffect.init(c3dl.effects.SEPIA);
       selectedEffect.setParameter("color", [10, 10, 0]);
-      scn.setAmbientLight([0, 0, 0, 0]);
+      scn.setAmbientLight([0.1, 0.1, 0.1, 0]);
       
       createLight(0, 0);
       
@@ -3153,7 +3157,7 @@
   }
 
   //create objects using a factory pattern
-  var createObject = this.createObject = function (path, type, placement, stand, initalScale, name, description, picture, editable) {
+  var createObject = this.createObject = function (path, type, placement, stand, name, description, picture, editable, light, initalScale) {
     curcmd++;
     if (curcmd <= commands.length - 1) {
       for (var i = curcmd, l = commands.length; i < l; i++) {
@@ -3161,7 +3165,7 @@
       }
     }
     commands[curcmd] = new createObjectCommand();    
-    commands[curcmd].execute(path, type, placement, stand, initalScale, name, description, picture, editable, editable);
+    commands[curcmd].execute(path, type, placement, stand, name, description, picture, editable, light, initalScale);
 
   }
   
