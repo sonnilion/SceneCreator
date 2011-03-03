@@ -591,6 +591,16 @@ c3dl.WebGL = c3dl.inherit(c3dl.Renderer, function () {
     c3dl.effects.GOOCH.addParameter("outline", Boolean, true);
     c3dl.effects.GOOCH.init();
 
+    // Light Source
+    c3dl.effects.LIGHTSOURCE = new c3dl.EffectTemplate();
+    c3dl.effects.LIGHTSOURCE.addVertexShader(c3dl.material_vs + c3dl.light_vs + c3dl.light_source_vs);
+    c3dl.effects.LIGHTSOURCE.addFragmentShader(c3dl.model_fs);
+    c3dl.effects.LIGHTSOURCE.setRenderingCallback(c3dl.std_callback);
+    c3dl.effects.LIGHTSOURCE.init();
+    var prog = this.createProgram(c3dl.material_vs + c3dl.light_vs + c3dl.light_source_vs, c3dl.model_fs);
+    c3dl.effects.LIGHTSOURCE.addProgramObject(prog);
+    this.programsWithLights.push(c3dl.effects.LIGHTSOURCE.getProgramID(this.ID));
+    
     this.texManager = new c3dl.TextureManager(glCanvas3D);
 
     // iterate over all the textures the user added before the renderer

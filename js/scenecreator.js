@@ -191,6 +191,7 @@
         this.light.setDiffuse(c3dl.makeVector(1,1,1));
         this.light.setOn(true);
         scn.addLight(this.light);
+        this.model.setEffect(lightEffect);
       }
       if (initalScale) {
         this.initalScale = initalScale;
@@ -263,10 +264,6 @@
         this.oldpos = this.model.getPosition();
         var worldCoords = getworldCoords(mouseX, mouseY, 15);
         this.model.setPosition([worldCoords[0], 15 - (this.model.getHeight() / 2), worldCoords[2]]);
-        if (this.light) {
-          var pos = this.model.getPosition()
-          this.light.setPosition([pos[0],pos[1]-this.model.getHeight()/2,pos[2]]);
-        }
       }
       else {
         this.oldpos = this.model.getPosition();
@@ -274,10 +271,9 @@
         var x = this.oldpos[0] - worldCoords[0];
         var z = this.oldpos[2] - worldCoords[2];
         this.moveTopObjects(x, z);
-        if (this.light) {
-          var pos = this.model.getPosition()
-          this.light.setPosition([pos[0],pos[1]+this.model.getHeight()/2,pos[2]]);
-        }
+      }
+      if (this.light) {
+        this.light.setPosition(this.model.getPosition());
       }
     };
     this.handleCollision = function (objectCollided) {
@@ -302,7 +298,13 @@
         this.model.setPosition(this.oldpos);
         for (var i = 0, len = this.childObjectList.length; i < len; i++) {
           this.childObjectList[i].model.setPosition(this.childObjectList[i].oldpos);
+          if (childObjectList[i].light) {
+            childObjectList[i].light.setPosition(childObjectList[i].model.getPosition());
+          }
         }
+      }
+      if (this.light) {
+        this.light.setPosition(this.model.getPosition());
       }
     };
     this.placeObjectOnWall = function (wall) {
@@ -972,7 +974,9 @@
       roofs = [],
       floors = [],
       dialogOpen = false,
-      nextDialog;
+      nextDialog,
+      lightEffect;
+      
   //Command
   var commands = [],
       curcmd = -1;
@@ -2546,6 +2550,8 @@
     scn.setRenderer(renderer);
     drawRoofandFloor();
     if (scn.init(canvasName)) {
+      lightEffect = new c3dl.Effect();
+      lightEffect.init(c3dl.effects.LIGHTSOURCE);
       scn.setCulling("All");
       //skybox
       sm = new c3dl.Collada();
@@ -2556,10 +2562,16 @@
       selectedEffect = new c3dl.Effect();
       selectedEffect.init(c3dl.effects.SEPIA);
       selectedEffect.setParameter("color", [10, 10, 0]);
-      scn.setAmbientLight([0.1, 0.1, 0.1, 0]);
+      scn.setAmbientLight([0, 0, 0, 0]);
       
       createLight(0, 0);
-      
+
+      objects[numObjects] = new SceneObject()        
+      objects[numObjects].init(CEILINGLIGHT_PATH, 'object', 'ceiling', false, 'Name', 'Description', 'images/sidebar/ceilinglight.jpg', false, true, [0.05, 0.05, 0.05]);
+      objects[numObjects].model.setPosition([0, 15 - (objects[numObjects].model.getHeight() / 2), 0]);
+      objects[numObjects].light.setPosition(objects[numObjects].model.getPosition());
+      scn.addObjectToScene(objects[numObjects++]);
+
       var floor = [];
       var xOffset = -150,
           zOffset = -150;
@@ -2804,6 +2816,9 @@
       }
       else if (selectedAxis && mWidget.getVisible()) {
         mWidget.moveObject(objectSelected, selectedAxis);
+        if (objectSelected.light) {
+          objectSelected.light.setPosition(objectSelected.model.getPosition());
+        }
       }
       else if (selectedAxis && sWidget.getVisible()) {
         sWidget.scaleObject(objectSelected, selectedAxis);
@@ -2814,7 +2829,7 @@
       //collision   
       sceneObjectsCollided = [];
       var SceneCreatorCD = new c3dl.CollisionDetection();
-      if (objectSelected) {
+      if (objectSelected && !mWidget.getVisible()) {
         for (var k = 0, len = objects.length; k < len; k++) {
           if (objectSelected.model !== objects[k].model) {
             if (SceneCreatorCD.checkObjectCollision(objectSelected.model, objects[k].model, null, "Geometry")) {
@@ -2898,7 +2913,7 @@
     scnViewer.setRenderer(renderer2);
     scnViewer.init(canvasName);
     if (renderer2.isReady()) {
-      scnViewer.setAmbientLight([0, 0, 0, 0]);
+      scnViewer.setAmbientLight([0.1, 0.1, 0.1, 0]);
       var light = new c3dl.PositionalLight();
       light.setPosition([0, 10, 35]);
       light.setDiffuse([1, 1, 1, 1]);

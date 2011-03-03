@@ -36,8 +36,8 @@ c3dl.light_source_vs =
 "	vec3 transformNormal = -normalize(normalMatrix3x3 * Normal);" + 
 
 //
-"	vec3 ambient  = vec3(0.0, 0.0, 0.0);" + 
-"	vec3 diffuse  = vec3(0.0, 0.0, 0.0);" + 
+"	vec3 ambient  = vec3(0.1, 0.1, 0.1);" +
+"	vec3 diffuse  = vec3(0.1, 0.1, 0.1);" + 
 "	vec3 specular = vec3(0.0, 0.0, 0.0);" +
 
 	// place the current vertex into view space
@@ -73,6 +73,7 @@ c3dl.light_source_vs =
 "				else if(lights[i].type == 2) " +
 "				{" +
 "					c3dl_PointLight(lights[i], transformNormal, eye, ecPos, ambient, diffuse, specular, shine);" +
+"					c3dl_PointLight(lights[i], -transformNormal, eye, ecPos, ambient, diffuse, specular, shine);" +
 "				}" +
 
 "				else if(lights[i].type == 3)" +
