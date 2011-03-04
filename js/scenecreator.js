@@ -2563,14 +2563,13 @@
       selectedEffect.init(c3dl.effects.SEPIA);
       selectedEffect.setParameter("color", [10, 10, 0]);
       scn.setAmbientLight([0, 0, 0, 0]);
-      
       createLight(0, 0);
-
       objects[numObjects] = new SceneObject()        
       objects[numObjects].init(CEILINGLIGHT_PATH, 'object', 'ceiling', false, 'Name', 'Description', 'images/sidebar/ceilinglight.jpg', false, true, [0.05, 0.05, 0.05]);
       objects[numObjects].model.setPosition([0, 15 - (objects[numObjects].model.getHeight() / 2), 0]);
       objects[numObjects].light.setPosition(objects[numObjects].model.getPosition());
-      scn.addObjectToScene(objects[numObjects++]);
+      scn.addObjectToScene(objects[numObjects++].model);
+
 
       var floor = [];
       var xOffset = -150,
@@ -2890,9 +2889,6 @@
     //repositioning the camera after rotating it
     zoomInDir = c3dl.multiplyVector(zcam[currentCam].getDir(), zoom);
     cam[currentCam].setPosition(c3dl.subtractVectors(zcam[currentCam].getPosition(), zoomInDir))
-    for (i = 0; i < numObjects; i++) {
-      document.getElementById('objects').value = document.getElementById('objects').value + objects[i].model.getBoundingVolume().aabb.getCorners() + ",";
-    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -3324,6 +3320,20 @@
   ////////////////////////////////////////////////////////////////////////////
   // 2d Functions 
   ////////////////////////////////////////////////////////////////////////////
+  //Get Object List
+  var getObject2dCoordinates = this.getObject2dCoordinates = function (posX, posZ) {
+    var objectList = []; 
+    for (i = 0; i < numObjects; i++) {
+      objectList[i] = objects[i].model.getBoundingVolume().aabb.getCorners();
+    }
+    return objectList;
+  }
+  
+  var getWalls = this.getWalls = function () {
+    return walls;
+  }
+  
+  
   //creates a positional light at specified position 
   var createLight = this.createLight = function (posX, posZ) {
     /*
@@ -3358,6 +3368,7 @@
     walls[numWalls].model.centerObject();
     walls[numWalls].model.setTexture("./models/wall/wall-texture.jpg");
     walls[numWalls].model.setStatic(true);
+
     //calc length
     var triA = (posStart[0] + 100) - (posEnd[0] + 100);
     var triB = (posStart[2] + 100) - (posEnd[2] + 100);

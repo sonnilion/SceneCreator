@@ -1,10 +1,10 @@
 ﻿int startx, starty, endx, endy,snapX,snapY;
-int[] walls= {((-25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((-25+100)*2.5)+23,
-((25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((25+100)*2.5)+23,((25+100)*2.5)+23,
-((25+100)*2.5)+23,((-25+100)*2.5)+23,((25+100)*2.5)+23,((-25+100)*2.5)+23,
-((25+100)*2.5)+23,((-25+100)*2.5)+23,((-25+100)*2.5)+23};
+int[] walls= {((-25+100)*2.5)+25,((-25+100)*2.5)+25,((25+100)*2.5)+25,((-25+100)*2.5)+25,
+((25+100)*2.5)+25,((-25+100)*2.5)+25,((25+100)*2.5)+25,((25+100)*2.5)+25,((25+100)*2.5)+25,
+((25+100)*2.5)+25,((-25+100)*2.5)+25,((25+100)*2.5)+25,((-25+100)*2.5)+25,
+((25+100)*2.5)+25,((-25+100)*2.5)+25,((-25+100)*2.5)+25};
 int numberwalls = 4;
-int[] lights= {(0+100)*2.5+23,(0+100)*2.5+23};
+int[] lights= {(0+100)*2.5+25,(0+100)*2.5+25};
 int numberlights=1;
 int selectednum;
 int mdifX, mdifY;
@@ -18,8 +18,12 @@ var commands = [];
 var curcmd = -1;
 var enclosures = [];
 bool first = true;
-void draw() 
-{
+
+int boarder = 25,
+    offset = 25;
+
+
+void draw() {
     if (first) {
       checkEnclosures();
       first = false;
@@ -46,8 +50,7 @@ void draw()
     else if (pressed.value == "10")
       redo();
     strokeWeight(1);
-    int axis = -100;
-    int axis2 = -90;
+    int axis = -90;
     background(255);
     
     //display enclosures 
@@ -62,27 +65,28 @@ void draw()
       }
     }
     
-    for(int i=0; i<=height-50; i+=25) {
-      fill(0);
-      if (axis2 <= 100) {
-      if (i == 225)
-        text(axis2,i+43,20);
-      else
-        text(axis2,i+38,20);
+    // Creates the grid map
+    fill(0);
+    text("-100", 0, boarder);
+    for(int i=0; i< 21; i++) {
+      if (i > 0) {
+        textAlign(CENTER);
+        text(axis,i*offset+boarder,20);
+        textAlign(LEFT);
+        text(axis,0,i*offset+boarder);
+        axis += 10;
       }
-      text(axis,0,i+25);
-      axis += 10;
-      axis2 += 10;
-      if (i == 250) {
+      if (i*offset == 250) {
         stroke(0);
       }
-      line(23, i+23, width-27, i+23);
-      line(i+23, 23, i+23, height-27);
+      line(boarder, i*offset+boarder, width-boarder, i*offset+boarder);
+      line(i*offset+boarder, boarder, i*offset+boarder, height-boarder);
       stroke(150);
     }
+    
     if (drawwall || insertlight) {
       cursor( "crosshair");  
-      for(int i=23; i<=height-50; i+=25) {
+      for(int i=25; i<=height-50; i+=25) {
        if (mouseX >= i && mouseX <= i+8)
           snapX = i;
        else if (mouseX > i+8 && mouseX <= i+16)
@@ -103,29 +107,40 @@ void draw()
         fill(255,255,0);
       ellipse(snapX, snapY, 5, 5);
     }
-    else 
+    else {
       cursor( "default"); 
-   
-    //displaying objects         
-    var objs= [];
-    objs = document.getElementById("objects").value;
-    objs = objs.split(",");
+    }
+
+    //get object list from 3D scene and draw
+    var objectList = getObject2dCoordinates();
     strokeWeight(1); 
     stroke(0); 
     fill(255,0,0);
-    for (var i = 0; i < objs.length-1; i+=8) {
-     beginShape();
-      vertex(((parseFloat(objs[i+0])+100)*2.5)+23,((parseFloat(objs[i+1])+100)*2.5)+23);
-      vertex(((parseFloat(objs[i+4])+100)*2.5)+23,((parseFloat(objs[i+5])+100)*2.5)+23);
-      vertex(((parseFloat(objs[i+6])+100)*2.5)+23,((parseFloat(objs[i+7])+100)*2.5)+23);
-      vertex(((parseFloat(objs[i+2])+100)*2.5)+23,((parseFloat(objs[i+3])+100)*2.5)+23);
-     endShape(CLOSE);
+    
+    for (var i = 0; i < objectList.length; i++) {
+      beginShape();
+        vertex(get2dCoordinates(objectList[i][0][0]), get2dCoordinates(objectList[i][0][1]));
+        vertex(get2dCoordinates(objectList[i][1][0]), get2dCoordinates(objectList[i][1][1]));
+        vertex(get2dCoordinates(objectList[i][2][0]), get2dCoordinates(objectList[i][2][1]));
+        vertex(get2dCoordinates(objectList[i][3][0]), get2dCoordinates(objectList[i][3][1]));
+      endShape(CLOSE);
     }  
+
     
     for (int j = 0;j < numberwalls;j++) {
-      strokeWeight(3);  
-      stroke(0);            
-      line(walls[j*4], walls[j*4+1], walls[j*4+2], walls[j*4+3]); 
+      strokeWeight(0); 
+      stroke(0);   
+      fill(0);
+      temp = getWalls();   
+      for (var i = 0; i < temp.length; i++) {
+        var currWall = temp[i].model.getBoundingVolume().obb.getCorners();
+        beginShape();
+          vertex(get2dCoordinates(currWall[0][0]), get2dCoordinates(currWall[0][1]));
+          vertex(get2dCoordinates(currWall[1][0]), get2dCoordinates(currWall[1][1]));
+          vertex(get2dCoordinates(currWall[2][0]), get2dCoordinates(currWall[2][1]));
+          vertex(get2dCoordinates(currWall[3][0]), get2dCoordinates(currWall[3][1]));
+        endShape(CLOSE);
+      }      
     }
     for (int k = 0;k < numberlights;k++) {
       strokeWeight(1);  
@@ -141,7 +156,23 @@ void draw()
           if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
           cursor("pointer");
           }
-       }
+       } 
+       temp = getWalls();
+
+        var currWall = temp[0].model.getBoundingVolume().obb.getCorners();
+        for (var j = 0; j < 3; j++) {
+          var A = -(get2dCoordinates(currWall[j+1][1]) - get2dCoordinates(currWall[j][1]));
+          var B = get2dCoordinates(currWall[j+1][0])  - get2dCoordinates(currWall[j][0]);
+          var C = -(A * get2dCoordinates(currWall[j][0]) + B * get2dCoordinates(currWall[j][1]));
+          var D = A * mouseX + B * mouseY + C;
+          document.getElementById('testingg').innerHTML = D;
+          if (D == 0) {
+            cursor("pointer");
+          }
+        }
+      
+       
+       /*
         for (int j = 0;j < numberwalls;j++) {    
           if (walls[j*4+2] == walls[j*4]) {
             if (walls[j*4+3]-walls[j*4+1] > 0) {
@@ -192,10 +223,11 @@ void draw()
             cursor("pointer");
             ellipse(walls[j*4+2], walls[j*4+3], 5, 5);
           }
-        }
+        }*/
     } 
   
 }
+
 void mousePressed() {
   if (drawwall== true) {
     startx = snapX;
@@ -306,7 +338,7 @@ void mouseDragged() {
   }
 //moving a light
   if (selected == "light" || moving == "light") {
-    for(int i=23; i<=height-50; i+=25) {
+    for(int i=25; i<=height-50; i+=25) {
       if (mouseX >= i && mouseX <= i+8)
           snapX = i;
       else if (mouseX > i+8 && mouseX <= i+16)
@@ -326,7 +358,7 @@ void mouseDragged() {
   }
   //moving a wallcorners
   else if (selected == "wallcornerend" || moving == "wallcornerend") {
-    for(int i=23; i<=height-50; i+=25) {
+    for(int i=25; i<=height-50; i+=25) {
       if (mouseX >= i && mouseX <= i+8)
           snapX = i;
       else if (mouseX > i+8 && mouseX <= i+16)
@@ -352,7 +384,7 @@ void mouseDragged() {
     checkEnclosures();
   }
   else if (selected == "wallcornerstart" || moving == "wallcornerstart") {
-    for(int i=23; i<=height-50; i+=25) {
+    for(int i=25; i<=height-50; i+=25) {
       if (mouseX >= i && mouseX <= i+8)
           snapX = i;
       else if (mouseX > i+8 && mouseX <= i+16)
@@ -380,7 +412,7 @@ void mouseDragged() {
   //moving a wall
   else if (selected == "wall" || moving == "wall") {
    //snape wall 
-     for(int i=23; i<=height-50; i+=25) {
+     for(int i=25; i<=height-50; i+=25) {
       if (mouseX >= i && mouseX <= i+8)
           snapX = i;
       else if (mouseX > i+8 && mouseX <= i+16)
@@ -401,7 +433,7 @@ void mouseDragged() {
     var checkX2= walls[selectednum*4+2]+mdifX;
     var checkY2= walls[selectednum*4+3]+mdifY;
     
-    for(int i=23; i<=height-50; i+=25) {
+    for(int i=25; i<=height-50; i+=25) {
       if (checkX1 >= i && checkX1 <= i+8) {
        if (walls[selectednum*4] != i)
         mdifX = 0;
@@ -433,7 +465,7 @@ void mouseDragged() {
         walls[selectednum*4+1] = i+25;
       }
     } 
-    for(int i=23; i<=height-50; i+=25) {
+    for(int i=25; i<=height-50; i+=25) {
       if (checkX2 >= i && checkX2 <= i+8)
           walls[selectednum*4+2] = i;
       else if (checkX2 > i+8 && checkX2 <= i+16)
@@ -447,7 +479,7 @@ void mouseDragged() {
       else if (checkY2 > i+16 && checkY2 < i+25)
           walls[selectednum*4+3] = i+25;
     } 
-    for(int i=23; i<=height-50; i+=25) {
+    for(int i=25; i<=height-50; i+=25) {
       if (mouseX >= i && mouseX <= i+8)
           snapX = i;
       else if (mouseX > i+8 && mouseX <= i+16)
@@ -625,7 +657,7 @@ var deleteSelectedCommand = function deleteSelectedCommand() {
         walls[j*4+1]= this.walls[j*4+1];
         walls[j*4+2]= this.walls[j*4+2];
         walls[j*4+3]= this.walls[j*4+3];
-        createWall([(walls[j*4]-23)/2.5-100,0,(walls[j*4+1]-23)/2.5-100], [(walls[j*4+2]-23)/2.5-100, 0, (walls[j*4+3]-23)/2.5-100]); 
+        createWall([(walls[j*4]-25)/2.5-100,0,(walls[j*4+1]-25)/2.5-100], [(walls[j*4+2]-25)/2.5-100, 0, (walls[j*4+3]-25)/2.5-100]); 
       }
       
     }
@@ -636,7 +668,7 @@ var deleteSelectedCommand = function deleteSelectedCommand() {
       for (int k = 0;k < numberlights;k++) {
         lights[k*2] = this.lights[k*2];
         lights[k*2+1] = this.lights[k*2+1];
-        createLight(k, (lights[k*2]-23)/2.5-100,(lights[k*2+1]-23)/2.5-100);
+        createLight(k, (lights[k*2]-25)/2.5-100,(lights[k*2+1]-25)/2.5-100);
       }
     }
     checkEnclosures();
@@ -680,7 +712,7 @@ var createWallCommand = function createWallCommand(startx, starty, endx, endy) {
    this.walls[j*4+3]= walls[j*4+3];
   }
   this.execute = function() {
-    createWall([(this.startx-23)/2.5-100,0,(this.starty-23)/2.5-100], [(this.endx-23)/2.5-100, 0, (this.endy-23)/2.5-100]); 
+    createWall([(this.startx-25)/2.5-100,0,(this.starty-25)/2.5-100], [(this.endx-25)/2.5-100, 0, (this.endy-25)/2.5-100]); 
     walls[numberwalls*4]=this.startx;  
     walls[numberwalls*4+1]=this.starty; 
     walls[numberwalls*4+2]=this.endx; 
@@ -712,7 +744,7 @@ var createLightCommand = function createLightCommand(snapX, snapY) {
     this.lights[k*2+1] = lights[k*2+1];
   }
   this.execute = function() {
-     createLight((this.snapX-23)/2.5-100,(this.snapY-23)/2.5-100);
+     createLight((this.snapX-25)/2.5-100,(this.snapY-25)/2.5-100);
      lights[numberlights*2] = this.snapX;
      lights[numberlights*2+1] = this.snapY;
      numberlights++;
@@ -754,7 +786,7 @@ var moveWallCommand = function moveWallCommand() {
     walls[j*4+1]= this.newWalls[j*4+1];
     walls[j*4+2]= this.newWalls[j*4+2];
     walls[j*4+3]= this.newWalls[j*4+3];
-    moveWall(j,[(walls[j*4]-23)/2.5-100,0,(walls[j*4+1]-23)/2.5-100], [(walls[j*4+2]-23)/2.5-100, 0, (walls[j*4+3]-23)/2.5-100]);
+    moveWall(j,[(walls[j*4]-25)/2.5-100,0,(walls[j*4+1]-25)/2.5-100], [(walls[j*4+2]-25)/2.5-100, 0, (walls[j*4+3]-25)/2.5-100]);
    }
   };
   this.unexecute = function() {
@@ -763,7 +795,7 @@ var moveWallCommand = function moveWallCommand() {
       walls[j*4+1]= this.walls[j*4+1];
       walls[j*4+2]= this.walls[j*4+2];
       walls[j*4+3]= this.walls[j*4+3];
-      moveWall(j,[(walls[j*4]-23)/2.5-100,0,(walls[j*4+1]-23)/2.5-100], [(walls[j*4+2]-23)/2.5-100, 0, (walls[j*4+3]-23)/2.5-100]);
+      moveWall(j,[(walls[j*4]-25)/2.5-100,0,(walls[j*4+1]-25)/2.5-100], [(walls[j*4+2]-25)/2.5-100, 0, (walls[j*4+3]-25)/2.5-100]);
     }
   };
 };
@@ -789,14 +821,14 @@ var moveLightCommand = function moveLightCommand() {
     for (int k = 0;k < numberlights;k++) {
       lights[k*2] = this.newLights[k*2];
       lights[k*2+1] = this.newLights[k*2+1];
-      moveLight(k, (lights[k*2]-23)/2.5-100,(lights[k*2+1]-23)/2.5-100);
+      moveLight(k, (lights[k*2]-25)/2.5-100,(lights[k*2+1]-25)/2.5-100);
     }
   };
   this.unexecute = function() {
     for (int k = 0;k < numberlights;k++) {
       lights[k*2] = this.lights[k*2];
       lights[k*2+1] = this.lights[k*2+1];
-      moveLight(k, (lights[k*2]-23)/2.5-100,(lights[k*2+1]-23)/2.5-100);
+      moveLight(k, (lights[k*2]-25)/2.5-100,(lights[k*2+1]-25)/2.5-100);
     }
   };
 };
@@ -809,6 +841,7 @@ void getVars () {
   allVars.push(numberlights);
   return allVars;
 }
+
 void setVars (allVars) {
   walls = allVars[0];
   numberwalls= allVars[1];
@@ -835,4 +868,15 @@ var usedWalls = [];
       usedWalls[j*4+3]= walls[j*4+3];
     }
   return usedWalls;
+}
+
+
+void get2dCoordinates (coordinates) {
+  coordinates = parseFloat(coordinates);
+  return (coordinates +100)*2.5+25;
+}
+
+void get3dCoordinates (coordinates) {
+  coordinates = parseFloat(coordinates);
+  return (coordinates-25)/2.5-100;
 }
