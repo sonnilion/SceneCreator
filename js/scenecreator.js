@@ -3321,12 +3321,8 @@
   // 2d Functions 
   ////////////////////////////////////////////////////////////////////////////
   //Get Object List
-  var getObject2dCoordinates = this.getObject2dCoordinates = function (posX, posZ) {
-    var objectList = []; 
-    for (i = 0; i < numObjects; i++) {
-      objectList[i] = objects[i].model.getBoundingVolume().aabb.getCorners();
-    }
-    return objectList;
+  var getObjectList = this.getObjectList = function (posX, posZ) {
+    return objects;
   }
   
   var getWalls = this.getWalls = function () {
@@ -3368,7 +3364,7 @@
     walls[numWalls].model.centerObject();
     walls[numWalls].model.setTexture("./models/wall/wall-texture.jpg");
     walls[numWalls].model.setStatic(true);
-
+  
     //calc length
     var triA = (posStart[0] + 100) - (posEnd[0] + 100);
     var triB = (posStart[2] + 100) - (posEnd[2] + 100);
