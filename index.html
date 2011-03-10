@@ -68,13 +68,6 @@
           <a style="cursor: pointer" onclick="show2d();">2D</a><br/>
           <a style="cursor: pointer" onclick="showImages();">Veiw Saved Images</a><br/>
           <a style="cursor: pointer" onclick="var img = document.createElement('img'); document.getElementById('mainImages').appendChild(img); img.src = getPNG();">Save Image</a><br/>
-          <table>
-            <tr>
-              <td width="100px"><a>Lighting</a></td>
-              <td width="200px"><div id="lightSlider"></div></td>
-            </tr>
-          </table>  
-          
         </div>
         <div id="ObjectOptions">
           <a style="cursor: pointer" onclick="viewObject();">View Object</a><br/>
@@ -478,35 +471,27 @@
           <a style="cursor: pointer" onclick="load();">Load</a><br/>
           <a style="cursor: pointer" onclick="save();">Save</a><br/>
           <a style="cursor: pointer" onclick="saveAs();">SaveAs</a><br/>
-          <a style="cursor: pointer" onclick="Pressed(9);">Undo</a><br/>
-          <a style="cursor: pointer" onclick="Pressed(10);">Redo</a>
+          <a style="cursor: pointer" onclick="Processing.getInstanceById('SceneCaster2d').undo();">Undo</a><br/>
+          <a style="cursor: pointer" onclick="Processing.getInstanceById('SceneCaster2d').redo();">Redo</a>
         </div>
         <div id="SceneOptions" >
           <a style="cursor: pointer" onclick="show3d();">3D</a><br/>
           <a style="cursor: pointer" onclick="showImages();">Veiw Saved Images</a><br/>
         </div>
         <div id="2dOptions">
-          <a style="cursor: pointer" onclick="Pressed(1);">New Scene</a><br/>
-          <a style="cursor: pointer" onclick="Pressed(2);">Clone</a><br/>
-          <a style="cursor: pointer" onclick="Pressed(3);">Delete</a><br/>
-          <a style="cursor: pointer" onclick="Pressed(4);">Draw walls</a><br/>
-          <a style="cursor: pointer" onclick="Pressed(5);">Insert lights</a><br/>
+          <a style="cursor: pointer" onclick="Processing.getInstanceById('SceneCaster2d').newPage();">New Scene</a><br/>
+          <a style="cursor: pointer" onclick="Processing.getInstanceById('SceneCaster2d').deleteSeletected();">Delete</a><br/>
+          <a style="cursor: pointer" onclick="Processing.getInstanceById('SceneCaster2d').drawWallPress();">Draw walls</a><br/>
         </div>
         <div id="Help">
           <a style="text-decoration:none" href="http://zenit.senecac.on.ca/wiki/index.php/SceneCreator" target="_blank">About SceneCreator</a> 
         </div>
       </div>
-      <input type="hidden" id="pressed" value="0">
-      <input type="hidden" id="objects" value="">
       <canvas id="SceneCaster2d" data-processing-sources="js/scenecreator2d.pjs" width="550" height="550"></canvas>
       <span id="testingg"></span>
       <script>
         scaleEffect();
         rotateEffect();
-        var Pressed = function Pressed(bvalue) {
-          var bpressed = document.getElementById('pressed');
-          bpressed.value = bvalue;
-        }
        </script>
     </div>
     <div id="TwitterDiv">

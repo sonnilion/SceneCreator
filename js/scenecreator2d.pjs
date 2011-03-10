@@ -1,62 +1,34 @@
-﻿int startx, starty, endx, endy,snapX,snapY;
-int[] walls= {((-25+100)*2.5)+25,((-25+100)*2.5)+25,((25+100)*2.5)+25,((-25+100)*2.5)+25,
-((25+100)*2.5)+25,((-25+100)*2.5)+25,((25+100)*2.5)+25,((25+100)*2.5)+25,((25+100)*2.5)+25,
-((25+100)*2.5)+25,((-25+100)*2.5)+25,((25+100)*2.5)+25,((-25+100)*2.5)+25,
-((25+100)*2.5)+25,((-25+100)*2.5)+25,((-25+100)*2.5)+25};
-int numberwalls = 4;
-int[] lights= {(0+100)*2.5+25,(0+100)*2.5+25};
-int numberlights=1;
-int selectednum;
-int mdifX, mdifY;
-string selected;
-bool drawwall = false;
-string moving;
-bool insertlight = false;
-size(550, 550);
-int oldmX, oldmY;
-var commands = [];
-var curcmd = -1;
-var enclosures = [];
-bool first = true;
-
-int boarder = 25,
+﻿var startx, 
+    starty, 
+    endx, 
+    endy,
+    snapX,
+    snapY,
+    selectednum,
+    mdifX, mdifY
+    walls,
+    selected,
+    drawwall = false,
+    moving,
+    insertlight = false,
+    oldmX, 
+    oldmY,
+    commands = [],
+    curcmd = -1,
+    enclosures = [],
+    boarder = 25,
     offset = 25;
 
+size(550, 550);
 
 void draw() {
-  if (first) {
-    checkEnclosures();
-    first = false;
-  }
-  var pressed = document.getElementById("pressed");
-  if (pressed.value == "1")
-    newPage();
-  else if (pressed.value == "2")
-    copy2d();
-  else if (pressed.value == "3")
-    deleteseletected();
-  else if (pressed.value == "4")
-    drawWallPress();
-  else if (pressed.value == "5")
-    insertLightPress();
-  else if (pressed.value == "6")
-    zoomIn();
-  else if (pressed.value == "7")
-    zoomOut();
-  else if (pressed.value == "8")
-    viewAll();
-  else if (pressed.value == "9")
-    undo();
-  else if (pressed.value == "10")
-    redo();
-  strokeWeight(1);
-  int axis = -90;
   background(255);
   
   //display enclosures 
   if (enclosures) {
+    strokeWeight(1);
+    fill(200);
     for (var i = 0; i < enclosures.length; i++) {
-      fill(200);
       beginShape();
       for (var j = 0; j < enclosures[i].length; j+=2) {
         vertex(enclosures[i][j],enclosures[i][j+1]);
@@ -68,7 +40,8 @@ void draw() {
   // Creates the grid map
   fill(0);
   text("-100", 0, boarder);
-  for(int i=0; i< 21; i++) {
+  var axis = -90;
+  for(var i=0; i< 21; i++) {
     if (i > 0) {
       textAlign(CENTER);
       text(axis,i*offset+boarder,20);
@@ -87,7 +60,7 @@ void draw() {
   //Check to see if use is drawing walls
   if (drawwall) {
     cursor( "crosshair");  
-    for(int i=1; i<21; i++) {
+    for(var i=1; i<21; i++) {
       if (mouseX >= i*offset && mouseX <= i*offset+offset*0.33) {
         snapX = i*offset;
       }
@@ -133,9 +106,9 @@ void draw() {
   strokeWeight(0); 
   stroke(0);   
   fill(0);
-  tempWalls = getWalls();
-  for (var i = 0; i < tempWalls.length; i++) {
-    var currWall = tempWalls[i].model.getBoundingVolume().obb.getCorners();
+  walls = getWalls();
+  for (var i = 0; i < walls.length; i++) {
+    var currWall = walls[i].model.getBoundingVolume().obb.getCorners();
     beginShape();
       vertex(get2dCoordinates(currWall[0][0]), get2dCoordinates(currWall[0][1]));
       vertex(get2dCoordinates(currWall[1][0]), get2dCoordinates(currWall[1][1]));
@@ -146,8 +119,8 @@ void draw() {
 
   //change mouse for seletion 
   if  (!drawwall) {
-    for (int k = 0;k < tempWalls.length ;k++) {
-      var currWall = tempWalls[k].model;    
+    for (var i = 0;i < walls.length ;i++) {
+      var currWall = walls[i].model;    
       var origin = [get3dCoordinates(mouseX),100,get3dCoordinates(mouseY)];
       var dir = [0,-1,0];
       if (c3dl.rayIntersectsSphere(origin, dir, currWall.boundingVolume.getPosition(), currWall.boundingVolume.getRadius()) && 
@@ -165,11 +138,11 @@ void mousePressed() {
     starty = snapY;
   }    
   else if (!drawwall) {
-    tempWalls = getWalls();
+    walls = getWalls();
     //change mouse for seletion 
     if  (!drawwall) {
-      for (int j = 0;j < tempWalls.length ;j++) {
-        var currWall = tempWalls[j];    
+      for (var i = 0;i < walls.length ;i++) {
+        var currWall = walls[i];    
         var origin = [get3dCoordinates(mouseX),100,get3dCoordinates(mouseY)];
         var dir = [0,-1,0];
         //check to see if a wall is selected
@@ -178,24 +151,24 @@ void mousePressed() {
             c3dl.rayOBBIntersect(origin, dir, currWall.model.boundingVolume.obb.boxVerts, currWall.model.boundingVolume.getAxis())) { 
           
           //check if the wall corners is selected  
-          int difX = get3dCoordinates(mouseX) - currWall.startPoint[0];
-          int difY= get3dCoordinates(mouseY) - currWall.startPoint[2];
-          int difX2 = get3dCoordinates(mouseX) - currWall.endPoint[0];
-          int difY2= get3dCoordinates(mouseY) - currWall.endPoint[2];
+          var difX = get3dCoordinates(mouseX) - currWall.startPoint[0];
+          var difY= get3dCoordinates(mouseY) - currWall.startPoint[2];
+          var difX2 = get3dCoordinates(mouseX) - currWall.endPoint[0];
+          var difY2= get3dCoordinates(mouseY) - currWall.endPoint[2];
           if (difX < 10 && difX > -10 && difY < 10 && difY > -10) { 
-            selectednum =j;
+            selectednum =i;
             selected = "wallcornerstart";
             oldmX = mouseX;
             oldmY = mouseY;
           }
           else if (difX2 < 10 && difX2 > -10 && difY2 < 10 && difY2 > -10) { 
-            selectednum =j;
+            selectednum =i;
             selected = "wallcornerend";
             oldmX = mouseX;
             oldmY = mouseY;
           }
           else {
-            selectednum =j;
+            selectednum =i;
             selected = "wall";
             oldmX = mouseX;
             oldmY = mouseY;
@@ -208,15 +181,13 @@ void mousePressed() {
  	
 void mouseDragged() {
   if (selected == "wall" || selected == "wallcornerstart" || selected == "wallcornerend") {
-  curcmd++;
-    if (curcmd <= commands.length - 1) {
-        for (var i = curcmd;i < commands.length;i++)
-          commands[i] = null;
-      }
-      commands[curcmd] =new moveWallCommand();
+    walls = getWalls();
+    curcmd++;
+    commands = commands.slice(0,curcmd);
+    commands[curcmd] = new moveWallCommand();
   }
   
-  for(int i=1; i<21; i++) {
+  for(var i=1; i<21; i++) {
     if (mouseX >= i*offset && mouseX <= i*offset+offset*0.33) {
       snapX = i*offset;
     }
@@ -236,41 +207,39 @@ void mouseDragged() {
       snapY = i*offset+offset;
     }
   } 
+  
   //moving a wallcorners
   if (selected == "wallcornerend" || moving == "wallcornerend") {
     //moves all wall with same corner position
-    tempWalls = getWalls();
-
-    for (int j = 0; j < tempWalls.length; j++) { 
-      if (j != selectednum && tempWalls[selectednum].endPoint[0] == tempWalls[j].startPoint[0] && tempWalls[selectednum].endPoint[1] == tempWalls[j].startPoint[1] && tempWalls[selectednum].endPoint[2] == tempWalls[j].startPoint[2]) {
-        moveWall(j,[get3dCoordinates(snapX),0,get3dCoordinates(snapY)], tempWalls[j].endPoint);
+    for (var i = 0; i < walls.length; i++) { 
+      if (i != selectednum && walls[selectednum].endPoint[0] == walls[i].startPoint[0] && walls[selectednum].endPoint[1] == walls[i].startPoint[1] && walls[selectednum].endPoint[2] == walls[i].startPoint[2]) {
+        moveWall(i,[get3dCoordinates(snapX),0,get3dCoordinates(snapY)], walls[i].endPoint);
       }
-      else if (j != selectednum && tempWalls[selectednum].endPoint[0] == tempWalls[j].endPoint[0] && tempWalls[selectednum].endPoint[1] == tempWalls[j].endPoint[1] && tempWalls[selectednum].endPoint[2] == tempWalls[j].endPoint[2]) {
-        moveWall(j, tempWalls[j].startPoint, [get3dCoordinates(snapX),0,get3dCoordinates(snapY)]);
+      else if (i != selectednum && walls[selectednum].endPoint[0] == walls[i].endPoint[0] && walls[selectednum].endPoint[1] == walls[i].endPoint[1] && walls[selectednum].endPoint[2] == walls[i].endPoint[2]) {
+        moveWall(i, walls[i].startPoint, [get3dCoordinates(snapX),0,get3dCoordinates(snapY)]);
       }
     }
     moving = "wallcornerend";
-    moveWall(selectednum, tempWalls[selectednum].startPoint, [get3dCoordinates(snapX),0,get3dCoordinates(snapY)]);
-   
+    moveWall(selectednum, walls[selectednum].startPoint, [get3dCoordinates(snapX),0,get3dCoordinates(snapY)]);
   }
+  
   else if (selected == "wallcornerstart" || moving == "wallcornerstart") {
     //moves all wall with same corner position
-    tempWalls = getWalls();
-
-    for (int j = 0; j < tempWalls.length; j++) { 
-      if (j != selectednum && tempWalls[selectednum].startPoint[0] == tempWalls[j].startPoint[0] && tempWalls[selectednum].startPoint[1] == tempWalls[j].startPoint[1] && tempWalls[selectednum].startPoint[2] == tempWalls[j].startPoint[2]) {
-        moveWall(j,[get3dCoordinates(snapX),0,get3dCoordinates(snapY)], tempWalls[j].endPoint);
+    for (var i = 0; i < walls.length; i++) { 
+      if (i != selectednum && walls[selectednum].startPoint[0] == walls[i].startPoint[0] && walls[selectednum].startPoint[1] == walls[i].startPoint[1] && walls[selectednum].startPoint[2] == walls[i].startPoint[2]) {
+        moveWall(i,[get3dCoordinates(snapX),0,get3dCoordinates(snapY)], walls[i].endPoint);
       }
-      else if (j != selectednum && tempWalls[selectednum].startPoint[0] == tempWalls[j].endPoint[0] && tempWalls[selectednum].startPoint[1] == tempWalls[j].endPoint[1] && tempWalls[selectednum].startPoint[2] == tempWalls[j].endPoint[2]) {
-        moveWall(j, tempWalls[j].startPoint, [get3dCoordinates(snapX),0,get3dCoordinates(snapY)]);
+      else if (i != selectednum && walls[selectednum].startPoint[0] == walls[i].endPoint[0] && walls[selectednum].startPoint[1] == walls[i].endPoint[1] && walls[selectednum].startPoint[2] == walls[i].endPoint[2]) {
+        moveWall(i, walls[i].startPoint, [get3dCoordinates(snapX),0,get3dCoordinates(snapY)]);
       }
     }
     moving = "wallcornerstart";
-    moveWall(selectednum,[get3dCoordinates(snapX),0,get3dCoordinates(snapY)], tempWalls[selectednum].endPoint);
+    moveWall(selectednum,[get3dCoordinates(snapX),0,get3dCoordinates(snapY)], walls[selectednum].endPoint);
   }
+  
   //moving a wall
   else if (selected == "wall" || moving == "wall") {
-    for(int i=1; i<21; i++) {
+    for(var i=1; i<21; i++) {
       if (oldmX >= i*offset && oldmX <= i*offset+offset*0.33) {
         oldmX = i*offset;
       }
@@ -293,19 +262,17 @@ void mouseDragged() {
     
     mdifX = snapX - oldmX;
     mdifY = snapY - oldmY;
-    tempWalls = getWalls();
      
-    var checkX1= get2dCoordinates(tempWalls[selectednum].startPoint[0])+mdifX;
-    var checkY1= get2dCoordinates(tempWalls[selectednum].startPoint[2])+mdifY;
-    var checkX2= get2dCoordinates(tempWalls[selectednum].endPoint[0])+mdifX;
-    var checkY2= get2dCoordinates(tempWalls[selectednum].endPoint[2])+mdifY;
+    var checkX1= get2dCoordinates(walls[selectednum].startPoint[0])+mdifX;
+    var checkY1= get2dCoordinates(walls[selectednum].startPoint[2])+mdifY;
+    var checkX2= get2dCoordinates(walls[selectednum].endPoint[0])+mdifX;
+    var checkY2= get2dCoordinates(walls[selectednum].endPoint[2])+mdifY;
     
     if (checkX1 >= boarder && checkX1 <= 525 && checkX2 >= boarder && checkX2 <= 525 && checkY1 >= boarder && checkY1 <= 525 && checkY2 >= boarder && checkY2 <= 525) {
       oldmX = snapX;
       oldmY = snapY;
       moving =  "wall";
       moveWall(selectednum,[get3dCoordinates(checkX1),0,get3dCoordinates(checkY1)], [get3dCoordinates(checkX2),0,get3dCoordinates(checkY2)]);
-      checkEnclosures();
     }
   }
   selected = "";
@@ -316,88 +283,46 @@ void mouseReleased() {
     endx = snapX;
     endy = snapY;
     curcmd++;
-    if (curcmd <= commands.length - 1) {
-      for (var i = curcmd;i < commands.length;i++)
-        commands[i] = null;
-  
-    }
+    commands = commands.slice(0,curcmd);
     commands[curcmd] =new createWallCommand(startx, starty, endx, endy);
     commands[curcmd].execute();
   }  
-  if (moving == "light")
+  if (moving == "wall" || moving == "wallcornerstart" || moving == "wallcornerend") {
     commands[curcmd].execute();
-  else if (moving == "wall" || moving == "wallcornerstart" || moving == "wallcornerend")
-    commands[curcmd].execute();
+  }
   moving =  ""
 }
+
 void newPage() {
   curcmd++;
-  if (curcmd <= commands.length - 1) {
-    for (var i = curcmd;i < commands.length;i++)
-      commands[i] = null;
-
-  }
+  commands = commands.slice(0,curcmd);
   commands[curcmd] =new newPageCommand();
   commands[curcmd].execute();
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
 }
-void copy2d() {
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
-}
-void deleteseletected() {
-  curcmd++;
-  if (curcmd <= commands.length - 1) {
-    for (var i = curcmd;i < commands.length;i++)
-      commands[i] = null;
 
-  }
+void deleteSeletected() {
+  curcmd++;
+  commands = commands.slice(0,curcmd);
   commands[curcmd] =new deleteSelectedCommand();
   commands[curcmd].execute();
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
 }
+
 void drawWallPress() {     
-  drawwall =  (drawwall)? false : true;;
-  insertlight = false;
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
+  drawwall =  (drawwall)? false : true;
 }
-void insertLightPress() {
-  insertlight = (insertlight)? false : true;
-  drawwall = false;
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
-}
-void zoomIn() {
-  var pressed = document.getElementById("pressed"); 
-  pressed.value = "0";
-}
-void zoomOut() {
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
-}
-void viewall() {
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
-}
+
 void undo() {
   if (curcmd >= 0) {
     commands[curcmd--].unexecute();
   }
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
-  checkEnclosures();
 }
+
 void redo() {
   if (commands[curcmd+1]) {
     commands[++curcmd].execute();
   }
-  var pressed = document.getElementById("pressed");
-  pressed.value = "0";
-  checkEnclosures();
 }
+
 var Command = function() {
   this.execute = function() {};
   this.unexecute = function() {}; 
@@ -406,70 +331,13 @@ var Command = function() {
 //delete Command
 var deleteSelectedCommand = function deleteSelectedCommand() {
   Command.call();
-  this.walls = [];
-  this.lights = [];
-    for (int j = 0;j < numberwalls;j++) {
-        this.walls[j*4]= walls[j*4];
-        this.walls[j*4+1]= walls[j*4+1];
-        this.walls[j*4+2]= walls[j*4+2];
-        this.walls[j*4+3]= walls[j*4+3];
-    }
-    for (int k = 0;k < numberlights;k++) {
-        this.lights[k*2] = lights[k*2];
-        this.lights[k*2+1] = lights[k*2+1];
-    }
+  this.walls = getWalls();
   this.selectednum = selectednum;
-  this.selected = selected
   this.execute = function() {
-    if (this.selected == "light") {
-      for (int k = this.selectednum;k < numberlights-1;k++) {
-        lights[k*2] = lights[k*2+2];
-        lights[k*2+1] = lights[k*2+3];
-      }
-      deleteLight(this.selectednum);
-      numberlights--;
-    }
-    else if (this.selected == "wall") {
-      for (int j = this.selectednum;j < numberwalls-1;j++) {
-        walls[j*4]= walls[j*4+4];
-        walls[j*4+1]= walls[j*4+5];
-        walls[j*4+2]= walls[j*4+6];
-        walls[j*4+3]= walls[j*4+7];
-      }
-      deleteWall(this.selectednum);
-      numberwalls--;
-    }
-    checkEnclosures();
-    selectednum=null;
-    selected = "";
+    deleteWall(this.selectednum);
   };
   this.unexecute = function() {
-    if (this.selected === "wall" || this.selected === "wallcornerstart" || this.selected === "wallcornerend") {
-      numberwalls++; 
-      for (int j = 0;j < numberwalls-1;j++)
-        deleteWall(j);
-      for (int j = 0;j < numberwalls;j++) {
-        walls[j*4]= this.walls[j*4];
-        walls[j*4+1]= this.walls[j*4+1];
-        walls[j*4+2]= this.walls[j*4+2];
-        walls[j*4+3]= this.walls[j*4+3];
-        createWall([(walls[j*4]-25)/2.5-100,0,(walls[j*4+1]-25)/2.5-100], [(walls[j*4+2]-25)/2.5-100, 0, (walls[j*4+3]-25)/2.5-100]); 
-      }
-      
-    }
-    else if (this.selected == "light") { 
-      numberlights++;
-      for (int k = 0;k < numberlights-1;k++)
-          deleteLight(k);
-      for (int k = 0;k < numberlights;k++) {
-        lights[k*2] = this.lights[k*2];
-        lights[k*2+1] = this.lights[k*2+1];
-        createLight(k, (lights[k*2]-25)/2.5-100,(lights[k*2+1]-25)/2.5-100);
-      }
-    }
-    checkEnclosures();
-    selectednum = this.selectednum;
-    selected = this.selected
+    setWalls(this.walls);
   };
 };
 
@@ -477,19 +345,11 @@ var deleteSelectedCommand = function deleteSelectedCommand() {
 var newPageCommand = function newPageCommand() {
   Command.call();
   this.deleteSceneC = new deleteSceneCommand();
-  this.numberwalls = numberwalls;
-  this.numberlights = numberlights;
   this.execute = function() {
-    numberwalls=0;
-    numberlights=0;
     this.deleteSceneC.execute();
-    checkEnclosures();
   };
   this.unexecute = function() {
-    numberwalls=this.numberwalls;
-    numberlights=this.numberlights;
     this.deleteSceneC.unexecute();
-    checkEnclosures();
   };
 };
 
@@ -497,175 +357,61 @@ var newPageCommand = function newPageCommand() {
 var createWallCommand = function createWallCommand(startx, starty, endx, endy) {
   Command.call();
   this.startx = startx;
-  this.starty = starty;
-  this.endx = endx;
+  this.starty = starty; 
+  this.endx = endx; 
   this.endy = endy;
-  this.walls = [];
-  for (int j = 0;j < numberwalls;j++) {
-   this.walls[j*4]= walls[j*4];
-   this.walls[j*4+1]= walls[j*4+1];
-   this.walls[j*4+2]= walls[j*4+2];
-   this.walls[j*4+3]= walls[j*4+3];
-  }
   this.execute = function() {
-    createWall([(this.startx-25)/2.5-100,0,(this.starty-25)/2.5-100], [(this.endx-25)/2.5-100, 0, (this.endy-25)/2.5-100]); 
-    walls[numberwalls*4]=this.startx;  
-    walls[numberwalls*4+1]=this.starty; 
-    walls[numberwalls*4+2]=this.endx; 
-    walls[numberwalls*4+3]=this.endy;
-    numberwalls++;
-    checkEnclosures();
+    this.curWall = createWall([get3dCoordinates(this.startx),0,get3dCoordinates(this.starty)], [get3dCoordinates(this.endx), 0, get3dCoordinates(this.endy)]);
   };
   this.unexecute = function() {
-    deleteWall(numberwalls-1);
-    numberwalls--;
-    for (int j = 0;j < numberwalls;j++) {
-      walls[j*4]= this.walls[j*4];
-      walls[j*4+1]= this.walls[j*4+1];
-      walls[j*4+2]= this.walls[j*4+2];
-      walls[j*4+3]= this.walls[j*4+3];
-    }
-    checkEnclosures();
-  };
-};
-
-//create light Command
-var createLightCommand = function createLightCommand(snapX, snapY) {
-  Command.call();
-  this.snapX = snapX;
-  this.snapY = snapY;
-  this.lights = [];
-  for (int k = 0;k < numberlights;k++) {
-    this.lights[k*2] = lights[k*2];
-    this.lights[k*2+1] = lights[k*2+1];
-  }
-  this.execute = function() {
-     createLight((this.snapX-25)/2.5-100,(this.snapY-25)/2.5-100);
-     lights[numberlights*2] = this.snapX;
-     lights[numberlights*2+1] = this.snapY;
-     numberlights++;
-  };
-  this.unexecute = function() {
-    deleteLight(numberlights-1);
-    numberlights--;
-    for (int k = 0;k < numberlights;k++) {
-      lights[k*2] = this.lights[k*2];
-      lights[k*2+1] = this.lights[k*2+1];
-    }
+    deleteWall(this.curWall);
+    walls = getWalls();
   };
 };
 
 //move wall Command
 var moveWallCommand = function moveWallCommand() {
   Command.call();
-  this.newWalls=[];
-  this.walls = [];
-  var firstflag = true;
-  for (int j = 0;j < numberwalls;j++) {
-   this.walls[j*4]= walls[j*4];
-   this.walls[j*4+1]= walls[j*4+1];
-   this.walls[j*4+2]= walls[j*4+2];
-   this.walls[j*4+3]= walls[j*4+3];
+  this.walls = getWalls();
+  this.startPoints = [];
+  this.endPoints = [];
+  this.newStartPoints = [];
+  this.newEndPoints = [];
+  for (var i = 0; i < this.walls.length; i++) { 
+    this.startPoints[i] = this.walls[i].startPoint;
+    this.endPoints[i] = this.walls[i].endPoint;
   }
   this.execute = function() {
-   if (firstflag) {
-     for (int j = 0;j < numberwalls;j++) {
-       this.newWalls[j*4]= walls[j*4];
-       this.newWalls[j*4+1]= walls[j*4+1];
-       this.newWalls[j*4+2]= walls[j*4+2];
-       this.newWalls[j*4+3]= walls[j*4+3];
-     }
-     firstflag = false;
-   }
-   for (int j = 0;j < numberwalls;j++) {
-    walls[j*4]= this.newWalls[j*4];
-    walls[j*4+1]= this.newWalls[j*4+1];
-    walls[j*4+2]= this.newWalls[j*4+2];
-    walls[j*4+3]= this.newWalls[j*4+3];
-    //moveWall(j,[(walls[j*4]-25)/2.5-100,0,(walls[j*4+1]-25)/2.5-100], [(walls[j*4+2]-25)/2.5-100, 0, (walls[j*4+3]-25)/2.5-100]);
-   }
-  };
-  this.unexecute = function() {
-    for (int j = 0;j < numberwalls;j++) {
-      walls[j*4]= this.walls[j*4];
-      walls[j*4+1]= this.walls[j*4+1];
-      walls[j*4+2]= this.walls[j*4+2];
-      walls[j*4+3]= this.walls[j*4+3];
-      //moveWall(j,[(walls[j*4]-25)/2.5-100,0,(walls[j*4+1]-25)/2.5-100], [(walls[j*4+2]-25)/2.5-100, 0, (walls[j*4+3]-25)/2.5-100]);
-    }
-  };
-};
-
-//move Light Command
-var moveLightCommand = function moveLightCommand() {
-  Command.call();
-  this.newLights = [];
-  var firstflag = true;
-  this.lights = [];
-  for (int k = 0;k < numberlights;k++) {
-    this.lights[k*2] = lights[k*2];
-    this.lights[k*2+1] = lights[k*2+1];
-  }
-  this.execute = function() {
-    if (firstflag) {
-      for (int k = 0;k < numberlights;k++) {
-        this.newLights[k*2] = lights[k*2];
-        this.newLights[k*2+1] = lights[k*2+1];
+    if (!this.newStartPoints[0]) {
+      for (var i = 0; i < this.walls.length; i++) { 
+        this.newStartPoints[i] = this.walls[i].startPoint;
+        this.newEndPoints[i] = this.walls[i].endPoint;
       }
-      firstflag = false;
     }
-    for (int k = 0;k < numberlights;k++) {
-      lights[k*2] = this.newLights[k*2];
-      lights[k*2+1] = this.newLights[k*2+1];
-      moveLight(k, (lights[k*2]-25)/2.5-100,(lights[k*2+1]-25)/2.5-100);
+    else {
+      for (var i = 0; i < this.walls.length; i++) { 
+        moveWall(i, [this.newStartPoints[i][0],0,this.newStartPoints[i][2]], [this.newEndPoints[i][0], 0, this.newEndPoints[i][2]])
+      }
     }
   };
   this.unexecute = function() {
-    for (int k = 0;k < numberlights;k++) {
-      lights[k*2] = this.lights[k*2];
-      lights[k*2+1] = this.lights[k*2+1];
-      moveLight(k, (lights[k*2]-25)/2.5-100,(lights[k*2+1]-25)/2.5-100);
+    for (var i = 0; i < this.walls.length; i++) { 
+      moveWall(i, [this.startPoints[i][0],0,this.startPoints[i][2]], [this.endPoints[i][0], 0, this.endPoints[i][2]])
     }
   };
 };
 
-void getVars () {
-  var allVars= [];
-  allVars.push(walls);
-  allVars.push(numberwalls);
-  allVars.push(lights);
-  allVars.push(numberlights);
-  return allVars;
-}
 
-void setVars (allVars) {
-  walls = allVars[0];
-  numberwalls= allVars[1];
-  lights= allVars[2];
-  numberlights= allVars[3];
-  selectednum =null;
-  selected = "";
-  drawwall = false;
-  moving = "";
-  insertlight = false;
-  commands = [];
-  curcmd = -1;
-}
 void setEnclosures (newEnclosures) {
-  enclosures = newEnclosures;
-}
-
-void get2dWalls () {
-var usedWalls = [];
-    for (int j = 0;j < numberwalls;j++) {
-      usedWalls[j*4]= walls[j*4];
-      usedWalls[j*4+1]= walls[j*4+1];
-      usedWalls[j*4+2]= walls[j*4+2];
-      usedWalls[j*4+3]= walls[j*4+3];
+  enclosures = [];
+  for (var i = 0; i < newEnclosures.length; i++) {
+    enclosures[i] = [];
+    for (var j = 0; j < newEnclosures[i].length; j++) {
+      enclosures[i][j] = get2dCoordinates(newEnclosures[i][j]);
     }
-  return usedWalls;
-}
+  }
 
+}
 
 void get2dCoordinates (coordinates) {
   coordinates = parseFloat(coordinates);

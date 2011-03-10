@@ -950,7 +950,6 @@
       rotatingObject = null,
       wallPos2d = [],
       enclosures = [],
-      usedWalls = [],
       objLocalTree = null,
       eTree = new ETree,
       pointsUsed = [],
@@ -1702,7 +1701,6 @@
   var saveFile = function saveFile() {
     var allVars = Processing.getInstanceById("SceneCaster2d").getVars();
     serial = {
-      lights: lights,
       numLights: numLights,
       walls: [],
       numWalls: numWalls,
@@ -1852,9 +1850,6 @@
     }
     for (i = 0; i < numWalls; i++) {
       scn.removeObjectFromScene(walls[i].model);
-    }
-    for (i = 0; i < numLights; i++) {
-      scn.removeLight(lights[i]);
     }
     var fobj = [];
     numLights = 0;
@@ -2020,14 +2015,7 @@
         }
       }
     }
-    for (var i = 0; i < numLights; i++) {
-      lights[i] = new c3dl.PositionalLight();
-      lights[i].setPosition(c3dl.makeVector(serial.lights[i].position[0],serial.lights[i].position[1],serial.lights[i].position[2]));
-      lights[i].setDiffuse(c3dl.makeVector(serial.lights[i].diffuse[0],serial.lights[i].diffuse[1],serial.lights[i].diffuse[2]));
-      lights[i].setOn(true);
-      scn.addLight(lights[i]);
-    }
-
+    
     for (var i = 0; i < 5; i++) {
       cam[i].setPosition(c3dl.makeVector(serial.cam[i].pos[0],serial.cam[i].pos[1],serial.cam[i].pos[2]));
       zcam[i].setPosition(c3dl.makeVector(serial.zcam[i].pos[0],serial.zcam[i].pos[1],serial.zcam[i].pos[2]));
@@ -2041,15 +2029,6 @@
     camHeight = cam[currentCam].getPosition()[1];
     newCamHeight = camHeight;
     zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
-    document.getElementById('objects').value = "";
-    for (i = 0; i < numObjects; i++) {
-      var objPos = [];
-      objPos[0] = (objects[i].model.getPosition()[0] - objects[i].model.getLength() / 2).toFixed(2);
-      objPos[1] = (objects[i].model.getPosition()[2] + objects[i].model.getWidth() / 2).toFixed(2);
-      objPos[2] = (objects[i].model.getLength()).toFixed(2);
-      objPos[3] = (objects[i].model.getWidth()).toFixed(2);
-      document.getElementById('objects').value = document.getElementById('objects').value + objPos + ",";
-    }
   }
   
   //open Create Primitive dialogs
@@ -2162,9 +2141,7 @@
           delNum = i;
         }
       }
-      for (i = delNum; i < numObjects - 1; i++) {
-        objects[i] = objects[i + 1];
-      }
+      objects = [].concat(objects.slice(0,delNum), objects.slice(delNum+1));
       scn.removeObjectFromScene(objectSelected.model);
       if (objectSelected.video) {
         if (!objectSelected.video.paused) {
@@ -2364,23 +2341,6 @@
     };
   };
 
-  //Edit Light Command
-  var lightCommand = function () {
-    Command.call();
-    this.sLight = lights[0].getDiffuse();
-    this.eLight = 0;
-    this.execute = function () {
-      if (!this.eLight) this.eLight = lights[0].getDiffuse();
-      for (i = 0; i < numLights; i++)
-      lights[i].setDiffuse(this.eLight);
-    };
-    this.unexecute = function () {
-      this.eLight = lights[0].getDiffuse();
-      for (i = 0; i < numLights; i++)
-      lights[i].setDiffuse(this.sLight);
-    };
-  };
-
   //Scale Command
   var scaleCommand = function (length, width, height) {
     Command.call();
@@ -2444,7 +2404,6 @@
     this.numLights = numLights;
     this.numWalls = numWalls;
     this.numObjects = numObjects;
-    this.lights = lights;
     this.walls = walls;
     this.execute = function (rot) {
       for (i = 0; i < numObjects; i++) {
@@ -2453,14 +2412,12 @@
       for (i = 0; i < numWalls; i++) {
         scn.removeObjectFromScene(walls[i].model);
       }
-      for (i = 0; i < numLights; i++) {
-        scn.removeLight(lights[i]);
-      }
+      walls = [];
+      objects = [];
       numLights = 0;
       numWalls = 0;
       numObjects = 0;
-      //empty hidden feild of objects
-      document.getElementById('objects').value = "";
+      checkEnclosures();
     };
     this.unexecute = function () {
       objects = this.objects;
@@ -2468,14 +2425,12 @@
       numLights = this.numLights;
       numWalls = this.numWalls;
       numObjects = this.numObjects;
-      lights = this.lights;
       walls = this.walls;
       for (i = 0; i < numObjects; i++)
       scn.addObjectToScene(objects[i].model);
       for (i = 0; i < numWalls; i++)
       scn.addObjectToScene(walls[i].model);
-      for (i = 0; i < numLights; i++)
-      scn.addLight(lights[i]);
+      checkEnclosures();
     };
   };
   
@@ -2535,7 +2490,6 @@
     CANVAS_WIDTH = canvas.width = Math.floor(myWidth*0.6);
     CANVAS_HEIGHT = canvas.height = Math.floor(Math.round(9 * canvas.width / 16));
     //empty hidden feild of objects
-    document.getElementById('objects').value = "";
     show2d();
     //set widgets
     mWidget = new MoveWidget;
@@ -2563,7 +2517,6 @@
       selectedEffect.init(c3dl.effects.SEPIA);
       selectedEffect.setParameter("color", [10, 10, 0]);
       scn.setAmbientLight([0, 0, 0, 0]);
-      createLight(0, 0);
       objects[numObjects] = new SceneObject()        
       objects[numObjects].init(CEILINGLIGHT_PATH, 'object', 'ceiling', false, 'Name', 'Description', 'images/sidebar/ceilinglight.jpg', false, true, [0.05, 0.05, 0.05]);
       objects[numObjects].model.setPosition([0, 15 - (objects[numObjects].model.getHeight() / 2), 0]);
@@ -2716,8 +2669,6 @@
     //update slider position
     $("#updownslider").slider("value", camHeight);
     $("#zoomslider").slider("value", zoom);
-    //empty hidden feild of objects
-    document.getElementById('objects').value = "";
     //check topview to disable rotation 
     if (currentCam == 0) {
       document.getElementById('topview').value = "true";
@@ -2962,11 +2913,7 @@
             mWidget.model[j].setEffect(selectedEffect);
             mWidget.selected();
             curcmd++;
-            if (curcmd <= commands.length - 1) {
-              for (var i = curcmd, l = commands.length; i < l; i++) {
-                commands[i] = null;
-              }
-            }
+            commands = commands.slice(0,curcmd);
             commands[curcmd] = new moveObjectCommand(objectSelected.model.getPosition());
             i = len;
           }
@@ -2984,11 +2931,7 @@
             sWidget.model[j].setEffect(selectedEffect);
             sWidget.selected();
             curcmd++;
-            if (curcmd <= commands.length - 1) {
-              for (var i = curcmd, l = commands.length; i < l; i++) {
-                commands[i] = null;
-              }
-            }
+            commands = commands.slice(0,curcmd);
             commands[curcmd] = new scaleCommand(objectSelected.model.getLength(), objectSelected.model.getWidth(), objectSelected.model.getHeight());
             i = len;
           }
@@ -3006,11 +2949,7 @@
             rWidget.model[j].setEffect(selectedEffect);
             rWidget.selected();
             curcmd++;
-            if (curcmd <= commands.length - 1) {
-              for (var i = curcmd, l = commands.length; i < l; i++) {
-                commands[i] = null;
-              }
-            }
+            commands = commands.slice(0,curcmd);
             commands[curcmd] = new rotateWidgetCommand();
             i = len;
           }
@@ -3040,11 +2979,7 @@
     //clicking the same object turns moving on and activates the move command
     if (objectSelected === oldSelected && !moveObject) {
       curcmd++;
-      if (curcmd <= commands.length - 1) {
-        for (var i = curcmd, l = commands.length; i < l; i++) {
-          commands[i] = null;
-        }
-      }
+      commands = commands.slice(0,curcmd);
       commands[curcmd] = new moveObjectCommand(objectSelected.model.getPosition());
       moveObject = true;
     }
@@ -3170,11 +3105,7 @@
   //create objects using a factory pattern
   var createObject = this.createObject = function (path, type, placement, stand, name, description, picture, editable, light, initalScale) {
     curcmd++;
-    if (curcmd <= commands.length - 1) {
-      for (var i = curcmd, l = commands.length; i < l; i++) {
-        commands[i] = null;
-      }
-    }
+    commands = commands.slice(0,curcmd);
     commands[curcmd] = new createObjectCommand();    
     commands[curcmd].execute(path, type, placement, stand, name, description, picture, editable, light, initalScale);
 
@@ -3183,11 +3114,7 @@
   //create objects using a factory pattern
   var createPrimitive = this.createPrimitive = function (shape, path, type, placement, stand) {
     curcmd++;
-    if (curcmd <= commands.length - 1) {
-      for (var i = curcmd, l = commands.length; i < l; i++) {
-        commands[i] = null;
-      }
-    }
+    commands = commands.slice(0,curcmd);
     commands[curcmd] = new createPrimitiveCommand();
     commands[curcmd].execute(shape, path, type, placement, stand);
   }
@@ -3196,11 +3123,7 @@
   var deleteSelected = this.deleteSelected = function () {
     if (objectSelected) {
       curcmd++;
-      if (curcmd <= commands.length - 1) {
-        for (var i = curcmd, l = commands.length; i < l; i++) {
-          commands[i] = null;
-        }
-      }
+      commands = commands.slice(0,curcmd);
       commands[curcmd] = new deleteSelectedCommand();
       commands[curcmd].execute();
     }
@@ -3224,11 +3147,7 @@
   var copySelected = this.copySelected = function () {
     if (objectSelected) {
       curcmd++;
-      if (curcmd <= commands.length - 1) {
-        for (var i = curcmd, l = commands.length; i < l; i++) {
-          commands[i] = null;
-        }
-      }
+      commands = commands.slice(0,curcmd);
       commands[curcmd] = new copySelectedCommand();
       commands[curcmd].execute();
     }
@@ -3262,21 +3181,13 @@
   }
   var setSize = this.setSize = function (length, width, height) {
     curcmd++;
-    if (curcmd <= commands.length - 1) {
-      for (var i = curcmd, l = commands.length; i < l; i++) {
-        commands[i] = null;
-      }
-    }
+    commands = commands.slice(0,curcmd);
     commands[curcmd] = new scaleCommand(length, width, height);
     commands[curcmd].execute();
   }
   var rotateOnAxis = this.rotateOnAxis = function (axis, rot) {
     curcmd++;
-    if (curcmd <= commands.length - 1) {
-      for (var i = curcmd, l = commands.length; i < l; i++) {
-        commands[i] = null;
-      }
-    }
+    commands = commands.slice(0,curcmd);
     commands[curcmd] = new rotateObjectOnAxisCommand(axis, rot);
     commands[curcmd].execute();
   }
@@ -3329,32 +3240,9 @@
     return walls;
   }
   
-  
-  //creates a positional light at specified position 
-  var createLight = this.createLight = function (posX, posZ) {
-    /*
-    lights[numLights] = new c3dl.PositionalLight();
-    lights[numLights].setPosition([posX, 14, posZ]);
-    lights[numLights].setDiffuse([1, 1, 1, 1]);
-    lights[numLights].setOn(true);
-    scn.addLight(lights[numLights]);
-    numLights++;
-    */
-  }
-
-  //deletes seleted positional light
-  var deleteLight = this.deleteLight = function (lightnum) {
-    /*
-    scn.removeLight(lights[lightnum]);
-    for (var k = lightnum; k < numLights - 1; k++) {
-      lights[k] = lights[k + 1];
-    }
-    numLights--;*/
-  }
-
-  //moves seleted positional light
-  var moveLight = this.moveLight = function (lightnum, posX, posZ) {
-    //lights[lightnum].setPosition([posX, 14, posZ])
+  var setWalls = this.setWalls = function (wall) {
+    walls = wall;
+    checkEnclosures();
   }
 
   //creates a wall from one specified position to another 
@@ -3425,15 +3313,16 @@
     //add object to scene
     scn.addObjectToScene(walls[numWalls].model);
     numWalls++;
+    checkEnclosures();
+    return numWalls-1;
   }
 
   //deletes seleted wall
   var deleteWall = this.deleteWall = function (wallnum) {
     scn.removeObjectFromScene(walls[wallnum].model);
-    for (var k = wallnum; k < numWalls - 1; k++) {
-      walls[k] = walls[k + 1];
-    }
+    walls  = [].concat(walls.slice(0,wallnum), walls.slice(wallnum+1));
     numWalls--;
+    checkEnclosures();
   }
 
   //moves seleted wall
@@ -3513,6 +3402,7 @@
     if (wallObjList.length) {
       walls[wallnum].updateWallObjects(oldWallPos, wallObjList, oldLength);
     }
+    checkEnclosures();
   }
   
   
@@ -3528,7 +3418,7 @@
         var verts = [];
         var clock = isClockWise(enclosures[i]);
         for (var j = 0; j < enclosures[i].length; j++) {
-          verts.push((enclosures[i][j]-23)/2.5-100);
+          verts.push(enclosures[i][j]);
         }
         if (clock) {
           var temp = [];
@@ -3592,13 +3482,14 @@
     }
     return true;
   }
+  
   var checkEnclosures = this.checkEnclosures = function () {
     enclosures = [];
     closedNodes = []
-    wallPos2d = Processing.getInstanceById("SceneCaster2d").get2dWalls();
-    for (var j = 0; j < wallPos2d.length; j += 4) {
+    
+    for (var j = 0; j < walls.length; j ++) {
       eTree = new ETree;
-      checking(wallPos2d[j], wallPos2d[j + 1], null, j);
+      checking(walls[j].startPoint[0], walls[j].startPoint[2], null, j);
       getClosedNodes(eTree);
 
     }
@@ -3615,33 +3506,30 @@
   function checking(checkerx, checkery, curnode, curwall) {
     //create the root of the tree if there is none
     if (!curnode) {
-      curnode = eTree.createRoot(checkerx, checkery, parseInt(curwall / 4));
+      curnode = eTree.createRoot(checkerx, checkery, curwall);
     }
     //add child to current node, then set current node to the child
     else {
-      curnode = curnode.addChild(checkerx, checkery, parseInt(curwall / 4));
+      curnode = curnode.addChild(checkerx, checkery, curwall);
     }
     //check all walls to see if they are touching
-    for (var j = 0; j < wallPos2d.length; j += 2) {
+    for (var j = 0; j < walls.length; j++) {
       //check: touching, if the wall was used already, if it is closed
-      if (checkerx === wallPos2d[j] && checkery === wallPos2d[j + 1] && !checkUsed(curnode, parseInt(j / 4)) && !curnode.closed) {
-        //if it is the start position check the end of root node or recurse using start of current wall
-        if ((j / 2) % 2 || j === 0) {
-          if (eTree.checkRoot(wallPos2d[j - 2], wallPos2d[j - 1])) {
-            curnode.closed = true;
-          }
-          else {
-            checking(wallPos2d[j - 2], wallPos2d[j - 1], curnode, j - 2);
-          }
+      if (checkerx === walls[j].startPoint[0] && checkery === walls[j].startPoint[2]  && !checkUsed(curnode, j) && !curnode.closed) {
+        if (eTree.checkRoot(walls[j].endPoint[0], walls[j].endPoint[2])) {
+          curnode.closed = true;
         }
-        //if it is the end position check the start of root node or recurse using end of current wall
         else {
-          if (eTree.checkRoot(wallPos2d[j + 2], wallPos2d[j + 3])) {
-            curnode.closed = true;
-          }
-          else {
-            checking(wallPos2d[j + 2], wallPos2d[j + 3], curnode, j + 2);
-          }
+          checking(walls[j].endPoint[0], walls[j].endPoint[2], curnode, j);
+        }
+      }
+        //if it is the end position check the start of root node or recurse using end of current wall
+      else if (checkerx === walls[j].endPoint[0] && checkery === walls[j].endPoint[2]  && !checkUsed(curnode, j) && !curnode.closed) { 
+        if (eTree.checkRoot(walls[j].startPoint[0], walls[j].startPoint[2])) {
+          curnode.closed = true;
+        }
+        else {
+          checking(walls[j].startPoint[0], walls[j].startPoint[2], curnode, j);
         }
       }
     }
@@ -3845,19 +3733,7 @@
         objectSelected.video.volume = ui.value/100;
       }
     });
-    //scene lighting slider
-    $('#lightSlider').slider({
-      value: 1,
-      min: 0,
-      max: 1,
-      step: 0.01,
-      range: "min",
-      slide: function (event, ui) {
-        for (i = 0; i < numLights; i++) {
-          lights[i].setDiffuse([ui.value, ui.value, ui.value, ui.value]);
-        } 
-      }
-    });
+
     //selected video position slider
     $('#seekSlider').slider({
       min: 0,
