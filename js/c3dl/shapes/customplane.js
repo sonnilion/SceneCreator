@@ -8,7 +8,6 @@ c3dl.CustomPlane = c3dl.inherit(c3dl.Shape, function (vertArry) {
   this.boundingVolume.centered = false;
   this.primitiveSets[0] = new c3dl.PrimitiveSet();
   this.primitiveSets[0].fillType = "TRIANGLE_FAN";
-  alert(arguments.length)
   if (arguments.length == 1) {
     var vertices = new C3DL_FLOAT_ARRAY(vertArry.length/2*3);
     var normals = new C3DL_FLOAT_ARRAY(vertArry.length/2*3);
