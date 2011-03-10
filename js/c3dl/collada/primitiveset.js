@@ -128,6 +128,7 @@ c3dl.PrimitiveSet = function ()
     copy.texture = this.texture;
     copy.lineList = this.lineList;
 	  copy.type = this.type;
+    copy.fillType = this.fillType;
     // get a deep copy of the material since every collada object's primitive set
     // can have its own material.		
     copy.material = this.material ? this.material.getCopy() : null;

@@ -622,7 +622,7 @@ c3dl.Collada.prototype.roll = function (angle) {
  @private
  */
 c3dl.Collada.prototype.getCopy = function () {
-  var collada = new Collada();
+  var collada = new c3dl.Collada();
   collada.clone(this);
   return collada;
 }

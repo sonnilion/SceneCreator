@@ -200,27 +200,10 @@ c3dl.Shape.prototype.roll = function (angle) {
   }
 }
 
-
-c3dl.Shape.prototype.getCopy = function () {
-  var Shape = new Shape();
-  Shape.clone(this);
-  return Shape;
-}
-
 c3dl.Shape.prototype.getTransform = function () {
   if (this.shape) {
     return this.shape.getTransform();
   }
-}
-/**
- @private
- */
-c3dl.Shape.prototype.clone = function (other) {
-  c3dl._super(this, arguments, "clone");
-
-  this.path = other.path;
-  this.shape = other.shape.getCopy();
-  this.boundingVolume = other.boundingVolume.getCopy();
 }
 
 /**
@@ -422,4 +405,7 @@ c3dl.Shape.prototype.getBoundingVolume = function () {
 }
 c3dl.Shape.prototype.getPrimitiveSets = function () {
   return this.primitiveSets;
+}
+c3dl.Shape.prototype.getTextures = function () {
+  return [this.primitiveSets[0].getTexture()];
 }

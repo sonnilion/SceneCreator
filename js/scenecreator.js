@@ -199,23 +199,15 @@
       }
       this.model.setStatic(true);
     }
-    this.initPrimitive = function () {
-      if (arguments.length >= 5) {
-        this.model = arguments[0];
-        this.path= arguments[1];
-        this.type = arguments[2];
-        this.placement = arguments[3];
-        this.stand = arguments[4];
-      }
-      if (arguments.length >= 6) {
-        this.name = arguments[7];
-      }
-      if (arguments.length >= 7) {
-        this.description = arguments[6];
-      }
-      if (arguments.length >= 8) {
-        this.picture = arguments[7];
-      }
+    this.initPrimitive = function (primative, path, type, placement, stand, name, description, picture) {
+      this.model = primative;
+      this.path=  path;
+      this.type = type;
+      this.placement = placement;
+      this.stand = stand;
+      this.name = name;
+      this.description = description;
+      this.picture = picture;
       this.model.setStatic(true);
     }
     this.getCopy = function () {
@@ -224,14 +216,16 @@
       return copy;
     }
     this.clone = function (other) {
-      this.model = new c3dl.Collada();
-      this.model.clone(other.model);
+      this.path=  other.path;
+      this.model= other.model.getCopy();
       this.type = other.type;
       this.placement = other.placement;
       this.stand = other.stand;
       this.picture = other.picture;
       this.description = other.description;
       this.name = other.name;
+      this.editable = other.editable;
+      this.light = other.light.getCopy();
     }
     this.getName = function () {
       return this.name;
@@ -1418,8 +1412,7 @@
       if (objectViewing) {
         scnViewer.removeObjectFromScene(objectViewing);
       }
-      objectViewing = new c3dl.Collada();
-      objectViewing.clone(objectSelected.model);
+      objectViewing = objectSelected.model.getCopy();
       scnViewer.addObjectToScene(objectViewing);
       objectViewing.setPosition([0, 0, 0]);
       camViewer.setPosition([0, 0, 30]);
@@ -1469,8 +1462,14 @@
         resetButton.onclick = function(primitive, img) {
         var originalTexture = primitive.getTexture();
           return function(){
+            if (originalTexture) {
             img.src = originalTexture;
             primitive.texture = img;
+            }
+            else {
+              img.src = "./images/none.jpg";
+              primitive.texture = null;
+            }
           }; 
         }(primitiveList[i], imgs[i]);
         
@@ -1528,8 +1527,7 @@
       if (objectViewing) {
         scnViewer.removeObjectFromScene(objectViewing);
       }
-      objectViewing = new c3dl.Collada();
-      objectViewing.clone(objectSelected.model);
+      objectViewing = objectSelected.model.getCopy();
       scnViewer.addObjectToScene(objectViewing);
       objectViewing.setPosition([0, 0, 0]);
       camViewer.setPosition([0, 0, 30]);
@@ -1699,7 +1697,6 @@
     $("#dialog-saveAs").dialog("open");
   }
   var saveFile = function saveFile() {
-    var allVars = Processing.getInstanceById("SceneCaster2d").getVars();
     serial = {
       numLights: numLights,
       walls: [],
@@ -1709,12 +1706,19 @@
       cam: cam,
       zcam: zcam,
       currentCam: currentCam,
-      allVars: allVars
     };
+    
+    //Object contatining all relevent SceneObject data for saving
     function holder () {
       this.path = null;
-      this.query = null;
-      this.src = null;
+      this.type = null;
+      this.placement = null;
+      this.stand = null;
+      this.name = null;
+      this.description = null;
+      this.picture = null;
+      this.editable = null;
+      this.light = null;
       this.length = null;
       this.width = null;
       this.height = null;
@@ -1722,24 +1726,49 @@
       this.dir = null;
       this.left = null;
       this.up = null;
+      this.textureList = null;
+      this.query = null;
+      this.src = null;
+      this.childObjectList = null;
+      this.parentObject = null;
+      this.onWall = null; 
+      this.wallNorm = null;
+      this.angle = null;
+      this.startPoint = null;
+      this.endPoint = null;
+      this.sphereDetailV = null;
+      this.sphereDetailU = null;
     };
     for (var i = 0; i < numObjects; i++) {
       serial.objects[i] = new holder ();
-      serial.objects[i].path = objects[i].model.path;
-      serial.objects[i].query = objects[i].query;
-      if (objects[i].canvasImage) {
-        serial.objects[i].src = objects[i].canvasImage.src;
-      }
-      else if (objects[i].video) {
-        serial.objects[i].src = objects[i].video.src;
-      }
+      serial.objects[i].path = objects[i].path;
+      serial.objects[i].type = objects[i].type;
+      serial.objects[i].placement = objects[i].placement;
+      serial.objects[i].stand = objects[i].stand;
+      serial.objects[i].name = objects[i].name;
+      serial.objects[i].description = objects[i].description;
+      serial.objects[i].picture = objects[i].picture;
+      serial.objects[i].editable = objects[i].editable;
+      serial.objects[i].light = objects[i].light;
       serial.objects[i].length = objects[i].model.boundingVolume.length;
       serial.objects[i].width = objects[i].model.boundingVolume.width;
       serial.objects[i].height = objects[i].model.boundingVolume.height;
-      serial.objects[i].pos = objects[i].model.sceneGraph.pos;
-      serial.objects[i].dir = objects[i].model.sceneGraph.dir;
-      serial.objects[i].left = objects[i].model.sceneGraph.left;
-      serial.objects[i].up = objects[i].model.sceneGraph.up;
+      if (objects[i].path === "Cube" || objects[i].path === "Plane" || objects[i].path === "Sphere" ){
+        serial.objects[i].pos = objects[i].model.shape.pos;
+        serial.objects[i].dir = objects[i].model.shape.dir;
+        serial.objects[i].left = objects[i].model.shape.left;
+        serial.objects[i].up = objects[i].model.shape.up;
+        if (objects[i].path === "Sphere") {
+          serial.objects[i].sphereDetailV = objects[i].model.sphereDetailV;
+          serial.objects[i].sphereDetailU = objects[i].model.sphereDetailU;
+        }
+      }
+      else {
+        serial.objects[i].pos = objects[i].model.sceneGraph.pos;
+        serial.objects[i].dir = objects[i].model.sceneGraph.dir;
+        serial.objects[i].left = objects[i].model.sceneGraph.left;
+        serial.objects[i].up = objects[i].model.sceneGraph.up;
+      }
       serial.objects[i].textureList = objects[i].model.getTextures();
       for (var j = 0; j < serial.objects[i].textureList.length; j++) {
         if (serial.objects[i].textureList[j] instanceof HTMLImageElement) {
@@ -1750,6 +1779,13 @@
           canContext.drawImage(serial.objects[i].textureList[j], 0, 0, 128, 128);
           serial.objects[i].textureList[j] = canvastest.toDataURL();
         }
+      }
+      serial.objects[i].query = objects[i].query;
+      if (objects[i].canvasImage) {
+        serial.objects[i].src = objects[i].canvasImage.src;
+      }
+      else if (objects[i].video) {
+        serial.objects[i].src = objects[i].video.src;
       }
       if (objects[i].childObjectList.length) {
         serial.objects[i].childObjectList = [];
@@ -1846,6 +1882,9 @@
   
   function loadScene(name) {
     for (i = 0; i < numObjects; i++) {
+      if (objects[i].light) {
+        scn.removeLight(objects[i].light);
+      }
       scn.removeObjectFromScene(objects[i].model);
     }
     for (i = 0; i < numWalls; i++) {
@@ -1869,36 +1908,62 @@
     numWalls = serial.numWalls;
     numLights = serial.numLights;
     numObjects = serial.numObjects;
-    Processing.getInstanceById("SceneCaster2d").setVars(serial.allVars);
     objects = [];
     for (var i = 0; i < serial.numObjects; i++) {
       objects[i] = new SceneObject(); 
       if (serial.objects[i].path === "Sphere") {   
-        var tempShape = new c3dl.Sphere(serial.objects[i].length/2, serial.objects[i].model.sphereDetailU, serial.objects[i].model.sphereDetailV);
-        objects[i].initPrimitive(tempShape, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+        var primitive = new c3dl.Sphere(serial.objects[i].length/2, serial.objects[i].sphereDetailU, serial.objects[i].sphereDetailV);
+        objects[i].initPrimitive(primitive, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement,
+                                 serial.objects[i].stand, serial.objects[i].name, serial.objects[i].description, 
+                                 serial.objects[i].picture);
       }
       else if (serial.objects[i].path === "Cube") {   
-        var tempShape = new c3dl.Cube(serial.objects[i].length,serial.objects[i].width,serial.objects[i].height);
-        objects[i].initPrimitive(tempShape, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+        var primitive = new c3dl.Cube(serial.objects[i].length,serial.objects[i].width,serial.objects[i].height);
+        objects[i].initPrimitive(primitive, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement,
+                                 serial.objects[i].stand, serial.objects[i].name, serial.objects[i].description, 
+                                 serial.objects[i].picture);
       }
       else if (serial.objects[i].path === "Plane") {  
-        var tempShape = new c3dl.Plane(serial.objects[i].length,serial.objects[i].width);      
-        objects[i].initPrimitive(tempShape, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
+        var primitive = new c3dl.Plane(serial.objects[i].length,serial.objects[i].width);      
+        objects[i].initPrimitive(primitive, serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement,
+                                 serial.objects[i].stand, serial.objects[i].name, serial.objects[i].description, 
+                                 serial.objects[i].picture);
       }
       else {
-        objects[i].init(serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, serial.objects[i].stand);
-        objects[i].model.setSize(serial.objects[i].length, serial.objects[i].width,serial.objects[i].height);  
+        if (serial.objects[i].light) {
+          objects[i].init(serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, 
+                          serial.objects[i].stand, serial.objects[i].name, serial.objects[i].description, 
+                          serial.objects[i].picture, serial.objects[i].editable, true);
+        }
+        else {
+          objects[i].init(serial.objects[i].path, serial.objects[i].type, serial.objects[i].placement, 
+                          serial.objects[i].stand, serial.objects[i].name, serial.objects[i].description, 
+                          serial.objects[i].picture, serial.objects[i].editable, false);
+        }
+        objects[i].model.setSize(serial.objects[i].length, serial.objects[i].width,serial.objects[i].height);      
       }
       var newPrimitiveList = objects[i].model.getPrimitiveSets();
       for (var j = 0; j < serial.objects[i].textureList.length; j++) {
         newPrimitiveList[j].texture = serial.objects[i].textureList[j];
+      }  
+      if (objects[i].light) {
+        objects[i].light.setPosition(c3dl.makeVector(serial.objects[i].light.position[0],serial.objects[i].light.position[1],serial.objects[i].light.position[2]));	 	
+        objects[i].light.setDiffuse(c3dl.makeVector(serial.objects[i].light.diffuse[0],serial.objects[i].light.diffuse[1],serial.objects[i].light.diffuse[2]));
+        objects[i].light.setOn(true);
       }
-
       objects[i].model.setPosition(c3dl.makeVector(serial.objects[i].pos[0],serial.objects[i].pos[1],serial.objects[i].pos[2]));
       objects[i].model.setRenderObb(false);
-      objects[i].model.sceneGraph.dir = c3dl.makeVector(serial.objects[i].dir[0],serial.objects[i].dir[1],serial.objects[i].dir[2]);
-      objects[i].model.sceneGraph.up = c3dl.makeVector(serial.objects[i].up[0],serial.objects[i].up[1],serial.objects[i].up[2]);
-      objects[i].model.sceneGraph.left = c3dl.makeVector(serial.objects[i].left[0],serial.objects[i].left[1],serial.objects[i].left[2]);
+      
+      if (objects[i].path === "Cube" || objects[i].path === "Plane" || objects[i].path === "Sphere" ){
+        objects[i].model.shape.dir = c3dl.makeVector(serial.objects[i].dir[0],serial.objects[i].dir[1],serial.objects[i].dir[2]);
+        objects[i].model.shape.up = c3dl.makeVector(serial.objects[i].up[0],serial.objects[i].up[1],serial.objects[i].up[2]);
+        objects[i].model.shape.left = c3dl.makeVector(serial.objects[i].left[0],serial.objects[i].left[1],serial.objects[i].left[2]);
+      }
+      else {
+        objects[i].model.sceneGraph.dir = c3dl.makeVector(serial.objects[i].dir[0],serial.objects[i].dir[1],serial.objects[i].dir[2]);
+        objects[i].model.sceneGraph.up = c3dl.makeVector(serial.objects[i].up[0],serial.objects[i].up[1],serial.objects[i].up[2]);
+        objects[i].model.sceneGraph.left = c3dl.makeVector(serial.objects[i].left[0],serial.objects[i].left[1],serial.objects[i].left[2]);
+      }
       scn.addObjectToScene(objects[i].model);
       objectSelected = null;
       if (serial.objects[i].path === TWITTER_PATH) {
@@ -2065,6 +2130,7 @@
         document.getElementById("edit-button").setAttribute("style", "display:none;");
       }
       if (objectSelected.light) {
+        $("#lightSlider").slider("value", objectSelected.light.diffuse[0]);
         document.getElementById("light").setAttribute("style", "display:inline;");
       }
       else {
@@ -2238,10 +2304,10 @@
     this.objects = objects;
     this.objectSelected = objectSelected;
     this.newobject;
-    this.execute = function (shape, path, type, placement, stand) {
+    this.execute = function (primative, path, type, placement, stand, name, description, picture) {
       if (!this.newobject) {
         objects[numObjects] = new SceneObject();
-        objects[numObjects].initPrimitive(shape, path, type, placement, stand);
+        objects[numObjects].initPrimitive(primative, path, type, placement, stand, name, description, picture);
         scn.addObjectToScene(objects[numObjects].model);
         if (objectSelected) {
           objectSelected.model.setRenderObb(false);
@@ -2298,7 +2364,6 @@
     this.newobject;
     this.execute = function () {
       if (!this.newobject) {
-        var temp = [];
         objects[numObjects] = new SceneObject();
         objects[numObjects].clone(objectSelected);
         scn.addObjectToScene(objects[numObjects].model);
@@ -3078,7 +3143,6 @@
         var kludge = c3dl.multiplyVector(zcam[currentCam].getLeft(), -1);
         var viewMatrix = c3dl.makePoseMatrix(kludge, zcam[currentCam].getUp(), zcam[currentCam].getDir(), zcam[currentCam].getPosition());
         var rayTerminalPoint = c3dl.multiplyMatrixByVector(viewMatrix, [x, y, z, 0]);
-        //c3dl.multiplyVectorByVector(temp, rayTerminalPoint, rayTerminalPoint)
         var rayDir = c3dl.normalizeVector(rayTerminalPoint);
         // get angle
         var distance = c3dl.subtractVectors(origin, rayInitialPoint);
@@ -3118,11 +3182,11 @@
   }
   
   //create objects using a factory pattern
-  var createPrimitive = this.createPrimitive = function (shape, path, type, placement, stand) {
+  var createPrimitive = this.createPrimitive = function (primative, path, type, placement, stand, name, description, picture) {
     curcmd++;
     commands = commands.slice(0,curcmd);
     commands[curcmd] = new createPrimitiveCommand();
-    commands[curcmd].execute(shape, path, type, placement, stand);
+    commands[curcmd].execute(primative, path, type, placement, stand, name, description, picture);
   }
 
   //removes seleted object from scene
@@ -3825,8 +3889,8 @@
           bValid = bValid && checkRegexp( sDetailV, /^([0-9])+$/, "Detail latitudinally must be a number");
           bValid = bValid && checkNumberRange( sDetailV, "Detail latitudinally", 3, 360 );
           if (bValid) {
-            var tempShape = new c3dl.Sphere(sRaduis.val(), sDetailU.val(), sDetailV.val());       
-            createPrimitive(tempShape, 'Sphere', 'object', placement, stand);
+            var primative = new c3dl.Sphere(sRaduis.val()/2, sDetailU.val(), sDetailV.val());           
+            createPrimitive(primative, 'Sphere', 'object', placement, stand, 'Sphere', 'Description', 'images/none.jpg');
             $(this).dialog('close');
           }
         },
@@ -3861,8 +3925,8 @@
           bValid = bValid && checkRegexp( cubeHeight, /^([0-9])+$/, "Height must be a number");
           bValid = bValid && checkNumberRange( cubeHeight, "Height", 1, 25 );
           if (bValid) {
-            var tempShape = new c3dl.Cube(cubeLength.val(),cubeWidth.val(), cubeHeight.val());      
-            createPrimitive(tempShape, "Cube", 'object', placement, stand);
+            var primative = new c3dl.Cube(cubeLength.val(),cubeWidth.val(), cubeHeight.val());      
+            createPrimitive(primative, 'Cube', 'object', placement, stand, 'Cube', 'Description', 'images/none.jpg');
             $(this).dialog('close');
           }
         },
@@ -3895,8 +3959,8 @@
           bValid = bValid && checkRegexp( planeWidth, /^([0-9])+$/, "Width must be a number");
           bValid = bValid && checkNumberRange( planeWidth, "Width", 1, 25 );
           if (bValid) {
-            var tempShape = new c3dl.Plane(planeLength.val(),planeWidth.val());      
-            createPrimitive(tempShape, "Plane", 'object', placement, stand);
+            var primative = new c3dl.Plane(planeLength.val(),planeWidth.val());      
+            createPrimitive(primative, 'Plane', 'object', placement, stand, 'Plane', 'Description', 'images/none.jpg');
             $(this).dialog('close');
           }
         },
