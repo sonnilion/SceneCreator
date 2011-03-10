@@ -626,8 +626,6 @@ c3dl.rayAABBIntersect = function (orig, dir, maxMins) {
 
 c3dl.rayOBBIntersect = function (orig, dir, boxVerts, axis){
   maxMins = [];
-  
-  
   c3dl.mat1[0] = axis[0][0];
   c3dl.mat1[1] = axis[0][1];
   c3dl.mat1[2] = axis[0][2];
@@ -645,8 +643,8 @@ c3dl.rayOBBIntersect = function (orig, dir, boxVerts, axis){
   c3dl.mat1[14] = 0.0;
   c3dl.mat1[15] = 1.0;
   
-  c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(c3dl.mat1), orig, orig);
-  c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(c3dl.mat1), dir, dir);
+  orig = c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(c3dl.mat1), orig);
+  dir= c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(c3dl.mat1), dir);
   var lengthVerts= new C3DL_FLOAT_ARRAY(8), widthVerts=new C3DL_FLOAT_ARRAY(8), heightVerts=new C3DL_FLOAT_ARRAY(8);
   for (var i = 0; i < 8; i++) {
     c3dl.multiplyMatrixByVector(c3dl.inverseMatrix(c3dl.mat1), boxVerts[i], c3dl.vec1);

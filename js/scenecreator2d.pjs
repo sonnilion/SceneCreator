@@ -90,10 +90,14 @@ void draw() {
   //get object list from 3D scene and draw
   var objectList = getObjectList();
   strokeWeight(1); 
-  stroke(0); 
-  fill(255,0,0);
-    
+  stroke(0);     
   for (var i = 0; i < objectList.length; i++) {
+    if (objectList[i].light) {
+      fill(255,255,0);
+    }
+    else {
+      fill(255,0,0);
+    }
     currObject = objectList[i].model.getBoundingVolume().aabb.getCorners();
     beginShape();
       vertex(get2dCoordinates(currObject[0][0]), get2dCoordinates(currObject[0][1]));

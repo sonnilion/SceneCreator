@@ -2062,7 +2062,13 @@
         document.getElementById("edit-button").setAttribute("style", "display:inline;");
       }
       else {
-          document.getElementById("edit-button").setAttribute("style", "display:none;");
+        document.getElementById("edit-button").setAttribute("style", "display:none;");
+      }
+      if (objectSelected.light) {
+        document.getElementById("light").setAttribute("style", "display:inline;");
+      }
+      else {
+        document.getElementById("light").setAttribute("style", "display:none;");
       }
       if (objectSelected.video) {
         document.getElementById("videoControls").setAttribute("style", "display:inline;");
@@ -3741,6 +3747,19 @@
         objectSelected.video.currentTime = ui.value;
       }
     });
+    
+    //scene lighting slider
+    $('#lightSlider').slider({
+      value: 1, 
+      min: 0,
+      max: 1,
+      step: 0.01,
+      range: "min",
+      slide: function (event, ui) {
+        objectSelected.light.setDiffuse([ui.value, ui.value, ui.value, ui.value]);
+      }
+    });
+    
     //Save Window
     $("#dialog-saveAs").dialog({
       autoOpen: false,

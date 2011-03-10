@@ -70,7 +70,6 @@
           <a style="cursor: pointer" onclick="var img = document.createElement('img'); document.getElementById('mainImages').appendChild(img); img.src = getPNG();">Save Image</a><br/>
         </div>
         <div id="ObjectOptions">
-          <a style="cursor: pointer" onclick="viewObject();">View Object</a><br/>
           <a style="cursor: pointer" onclick="copySelected();">Clone</a><br/>
           <a style="cursor: pointer" onclick="deleteSelected();">Delete</a><br/>
           <a style="cursor: pointer" onclick="rotate();">Rotate</a><br/>
@@ -450,7 +449,15 @@
                 <input type="button" value="Mute" onclick="muteVideo();" /> 
                 <div id="volumeSlider"></div> 
               </span>
+              <span id="light">
+                <table>
+                  <tr>	
+                    <td width="200px">Light: <div id="lightSlider"></div></td>
+                  </tr>
+                </table>  
+              </span>
               <span id="edit">
+                <input type="button" value="View" onclick="viewObject();" /> 
                 <input type="button" value="Edit Texture" onclick="editObjectTextures();" /> 
                 <input id="edit-button" type="button" value="Edit" onclick="editObject();" /> 
               </span>
