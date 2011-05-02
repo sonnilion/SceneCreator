@@ -56,6 +56,23 @@
   c3dl.addMainCallBack(canvasViewer, "objectViewer");
   c3dl.addMainCallBack(canvasMain, "SceneCaster3d");
 
+  c3dl.PreLoader.callBack = function () {
+    $("#progressbar").progressbar("value", c3dl.PreLoader.progress);
+  }
+    
+  if (document.addEventListener) { 
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
+      document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
+      document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
+      document.getElementById("mainImages").setAttribute("style", "display:none;");
+      document.getElementById("main2d").setAttribute("style", "display:none;");
+      document.getElementById("main3d").setAttribute("style", "display:none;");
+      document.getElementById("viewerMain").setAttribute("style", "display:none;");
+      document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
+    }, false);
+  }
+  
   ////////////////////////////////////////////////////////////////////////////
   // Model Used
   ////////////////////////////////////////////////////////////////////////////  
@@ -1555,19 +1572,6 @@
     viewer = false;
   }
   
-  if (document.addEventListener) { 
-    document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
-      document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
-      document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
-      document.getElementById("mainImages").setAttribute("style", "display:none;");
-      document.getElementById("main2d").setAttribute("style", "display:none;");
-      document.getElementById("main3d").setAttribute("style", "display:none;");
-      document.getElementById("viewerMain").setAttribute("style", "display:none;");
-      document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
-    }, false);
-  }
-  
   var createClock = this.createClock = function () {
     createObject(CLOCK_PATH, "object", "wall", false,[0.1, 0.1, 0.1]); 
     objectSelected.canvas = document.createElement('CANVAS');  
@@ -2589,6 +2593,8 @@
     scn.setRenderer(renderer);
     drawRoofandFloor();
     if (scn.init(canvasName)) {
+      //remove progress bar 
+      document.getElementById("loading").setAttribute("style", "display:none;");
       lightEffect = new c3dl.Effect();
       lightEffect.init(c3dl.effects.LIGHTSOURCE);
       scn.setCulling("All");
@@ -4030,6 +4036,11 @@
 		$( "#2d-tool-tabs" ).tabs();
 		$( "#tool-tabs" ).tabs();
     
+    //progress bar
+    $( "#progressbar" ).progressbar({
+      value: 0
+    });
+    
     //checks a regular expression
     function checkRegexp(o, regexp, n) {
       if (!(regexp.test(o.val()))) {
@@ -4041,8 +4052,8 @@
         return true;
       }
     }
+    
     //checks the length
-
     function checkLength(o, n, min, max) {
       if (o.val().length > max || o.val().length < min) {
         o.addClass( "ui-state-error" );
