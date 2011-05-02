@@ -58,7 +58,6 @@ c3dl.Scene = function ()
   var updateHandler = null;
 
   // Performance variables
-  var timerID = 0;
   var lastTimeTaken = Date.now();
   var numFramesSinceSceneStart = 0;
 
@@ -80,6 +79,7 @@ c3dl.Scene = function ()
   var textureQueue = [];
   var pointPositions = null;
   //type of culling 
+  var frustumCulling = new c3dl.Frustum();
   var culling = "BoundingSphere"
   //Collision
   var collision = false;
@@ -88,6 +88,8 @@ c3dl.Scene = function ()
   //can detect collision between the entire model or the geometries making up the model
   //collisionType = "Collada" or "Geometry"
   var collisionType = "Collada"; 
+  //cache attributes and location
+  this.curContextCache = { attributes: {}, locations: {} };
   // -------------------------------------------------------
   /**
    Add a texture to this scene to be used used for assigning to a model,
@@ -874,7 +876,7 @@ c3dl.Scene = function ()
       // we removed the light from our list, but WebGL still has
       // a light state which needs to be cleared.  Otherwise the
       // light will still affect the scene.
-      renderer.clearLight(lightID);
+      renderer.clearLight(lightID, this);
     }
     return (lightID == -1 ? false : true);
   }
@@ -886,8 +888,8 @@ c3dl.Scene = function ()
    */
   this.updateLights = function ()
   {
-    renderer.updateAmbientLight(this.getAmbientLight());
-    renderer.updateLights(lightList);
+    renderer.updateAmbientLight(this.getAmbientLight(), this);
+    renderer.updateLights(lightList, this);
   }
 
   /**
@@ -947,41 +949,8 @@ c3dl.Scene = function ()
 
     return isFound;
   }
-
-  /**
-   Start scene sets a default ambient light to white with full 
-   intensity.  If this ambient lighting is not desired, call 
-   setAmbientLight(..) after this method, which will undo the
-   default ambient light values.
-   */
-  this.startScene = function ()
-  {
-    if (c3dl.debug.SHARK === true)
-    {
-      connectShark();
-      startShark();
-    }
-    numFramesSinceSceneStart = 0;
-    frameCounter = 0;
-
-    // Safety Checks
-    if (glCanvas3D == null) return false;
-    if (renderer == null) return false;
-    if (camera == null) return false;
-
-    // Start the timer
-    lastTimeTaken = Date.now();
-
-    // Benchmark hook:
-    if (typeof(benchmarkSetupDone) == "function") benchmarkSetupDone();
-
-    // Create a timer for this object
-    timerID = setInterval(this.render, 5);
-
-    this.setAmbientLight([ambientLight[0], ambientLight[1], ambientLight[2]]);
-  }
-
-  /**
+  
+/**
    @private
    Render Loop
    */
@@ -989,18 +958,20 @@ c3dl.Scene = function ()
   {
     // calculate FPS. 
     // we update the FPS after a second or more has elapsed.
-    if (Date.now() - FPS_LastTimeTaken >= 1000)
+    var sec = (new Date().getTime() - FPS_LastTimeTaken) / 1000;
+    FPS_Counter++;
+    var fps = FPS_Counter / sec;
+    if (sec > 0.5)
     {
       // frames / seconds
-      FPS = FPS_Counter / (Date.now() - FPS_LastTimeTaken) * 1000;
+      FPS = fps;
       FPS_Counter = 0;
-      FPS_LastTimeTaken = Date.now();
+      FPS_LastTimeTaken = new Date().getTime();
     }
 
     // If a user wants to stop rendering, this is where it happens
     if (exitRender)
     {
-      timerID = clearInterval(timerID);
       if (c3dl.debug.SHARK === true)
       {
         stopShark();
@@ -1057,7 +1028,41 @@ c3dl.Scene = function ()
     // the front and back buffers.
     //renderer.swapBuffers();
     numFramesSinceSceneStart++;
-    FPS_Counter++;
+  }
+
+  this.refresh = function() {
+    thisScn.render();
+    requestAnimFrame(thisScn.refresh);
+  }
+  
+  /**
+   Start scene sets a default ambient light to white with full 
+   intensity.  If this ambient lighting is not desired, call 
+   setAmbientLight(..) after this method, which will undo the
+   default ambient light values.
+   */
+  this.startScene = function ()
+  {
+    if (c3dl.debug.SHARK === true)
+    {
+      connectShark();
+      startShark();
+    }
+    numFramesSinceSceneStart = 0;
+    frameCounter = 0;
+
+    // Safety Checks
+    if (glCanvas3D == null) return false;
+    if (renderer == null) return false;
+    if (camera == null) return false;
+
+    // Start the timer
+    lastTimeTaken = Date.now();
+
+    // Benchmark hook:
+    if (typeof(benchmarkSetupDone) == "function") benchmarkSetupDone();
+    this.refresh();
+    this.setAmbientLight([ambientLight[0], ambientLight[1], ambientLight[2]]);
   }
 
   /**
@@ -1147,7 +1152,7 @@ c3dl.Scene = function ()
       renderer.setLighting(false);
 
       // turn rendering ambient to full
-      renderer.updateAmbientLight([1, 1, 1]);
+      renderer.updateAmbientLight([1, 1, 1], this);
 
       // render skyModel
       skyModel.render(glCanvas3D, this);
@@ -1156,7 +1161,7 @@ c3dl.Scene = function ()
       renderer.setLighting(lightState);
 
       // restore previous lighting state
-      renderer.updateAmbientLight(prevAmbient);
+      renderer.updateAmbientLight(prevAmbient, this);
 
       // turn depth buffer back on so other object properly occlude each other.
       glCanvas3D.enable(glCanvas3D.DEPTH_TEST);
@@ -1185,7 +1190,7 @@ c3dl.Scene = function ()
         var projMatrix = cam.projMatrix;		
         var viewMatrix = cam.viewMatrix;
         c3dl.multiplyMatrixByMatrix(projMatrix,viewMatrix, c3dl.mat1);
-        var frustumCulling = new Frustum(c3dl.mat1);
+        frustumCulling.init(c3dl.mat1);
         var boundingVolume = objList[i].getBoundingVolume();
         //Culling using spheres
         if (culling === "BoundingSphere") {
@@ -1272,7 +1277,7 @@ c3dl.Scene = function ()
       }
     }
 
-    renderer.renderPoints(pointPositions, pointColors, pointAttenuation, this.getPointRenderingMode(), pointSize);
+    renderer.renderPoints(pointPositions, pointColors, pointAttenuation, this.getPointRenderingMode(), pointSize, this);
 
     // LINES
     // collect all the lines from the scene, place them into this array
@@ -1286,7 +1291,7 @@ c3dl.Scene = function ()
         lines.push(objList[j]);
       }
     }
-    renderer.renderLines(lines);
+    renderer.renderLines(lines, this);
 
     // Render the particle systems last because they 
     // have blending

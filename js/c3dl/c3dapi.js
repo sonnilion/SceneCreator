@@ -157,6 +157,7 @@ c3dl_require('shaders/model/solid_color/solid_color_vs.js');
 c3dl_require('shaders/model/solid_color/solid_color_fs.js');
 c3dl_require('shaders/model/solid_color/solid_color_callback.js');
 
+c3dl_require('shaders/model/light_source/light_source_callback.js');
 c3dl_require('shaders/model/light_source/light_source_vs.js');
 
 //effects and instance effects
@@ -174,3 +175,16 @@ c3dl_require('init.js');
 c3dl_require('interaction/collision.js');
 c3dl_require('interaction/picking.js');
 c3dl_require('interaction/pickingresult.js');
+
+//Function to call the various versions of requestAnimationFrame
+//To be updated when this is properly standardized.
+window.requestAnimFrame = (function(callback){
+      return  window.requestAnimationFrame       || 
+              window.webkitRequestAnimationFrame || 
+              window.mozRequestAnimationFrame    || 
+              window.oRequestAnimationFrame      || 
+              window.msRequestAnimationFrame     || 
+              function(/* function */ callback, /* DOMElement */ element){
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();

@@ -1554,6 +1554,20 @@
     pause2d();
     viewer = false;
   }
+  
+  if (document.addEventListener) { 
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("VideoSrcDiv").setAttribute("style", "display:none;");
+      document.getElementById("FlickrDiv").setAttribute("style", "display:none;");
+      document.getElementById("TwitterDiv").setAttribute("style", "display:none;");
+      document.getElementById("mainImages").setAttribute("style", "display:none;");
+      document.getElementById("main2d").setAttribute("style", "display:none;");
+      document.getElementById("main3d").setAttribute("style", "display:none;");
+      document.getElementById("viewerMain").setAttribute("style", "display:none;");
+      document.getElementById("ImageSrcDiv").setAttribute("style", "display:none;");
+    }, false);
+  }
+  
   var createClock = this.createClock = function () {
     createObject(CLOCK_PATH, "object", "wall", false,[0.1, 0.1, 0.1]); 
     objectSelected.canvas = document.createElement('CANVAS');  
