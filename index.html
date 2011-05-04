@@ -70,7 +70,7 @@
         </div>
         <div id="SceneOptions" >
           <a style="cursor: pointer" onclick="show2d();">2D</a><br/>
-          <a style="cursor: pointer" onclick="showImages();">Veiw Saved Images</a><br/>
+          <a style="cursor: pointer" onclick="showImages();">View Saved Images</a><br/>
           <a style="cursor: pointer" onclick="var img = document.createElement('img'); document.getElementById('mainImages').appendChild(img); img.src = getPNG();">Save Image</a><br/>
         </div>
         <div id="ObjectOptions">
@@ -269,25 +269,25 @@
                 <td>Zoom</td>
               </tr>
               <tr align=center>
-                <td><input type="button" title="Increase camera height" value="+" onmousedown="buttonOn(6)" onmouseup="buttonOff(6)" /></td>
+                <td><input type="button" title="Increase camera height" value="+" onmousedown="buttonOn(0)" onmouseup="buttonOff(0)" /></td>
                 <td></td>
-                <td><input type="button" title="Move forward" value="&uarr;" onmousedown="buttonOn(10)" onmouseup="buttonOff(10)"/></td>
+                <td><input type="button" title="Move forward" value="&uarr;" onmousedown="buttonOn(4)" onmouseup="buttonOff(4)"/></td>
                 <td></td>
-                <td><input type="button" Title="Zoom in" value="+" onmousedown="buttonOn(8)" onmouseup="buttonOff(8)" /></td>
+                <td><input type="button" Title="Zoom in" value="+" onmousedown="buttonOn(2)" onmouseup="buttonOff(2)" /></td>
               </tr>
               <tr align=center>
-                <td><div id="updownslider"></div></td>
-                <td><input type="button" Title="Move left" value="&larr;" onmousedown="buttonOn(12)" onmouseup="buttonOff(12)" /></td>
+                <td><div id="camHeightSlider"></div></td>
+                <td><input type="button" Title="Move left" value="&larr;" onmousedown="buttonOn(6)" onmouseup="buttonOff(6)" /></td>
                 <td><input type="hidden" id="topview" value=""><canvas id="CameraWidget" data-processing-sources="js/camerawidget.pjs"></canvas></td>
-                <td><input type="button" Title="Move right" value="&rarr;" onmousedown="buttonOn(13)" onmouseup="buttonOff(13)" /></td>
-                <td><div id="zoomslider"></div></td>
+                <td><input type="button" Title="Move right" value="&rarr;" onmousedown="buttonOn(7)" onmouseup="buttonOff(7)" /></td>
+                <td><div id="zoomSlider"></div></td>
               </tr>
               <tr align=center>
-                <td><input type="button" title="Decrease camera height" value="-" onmousedown="buttonOn(7)" onmouseup="buttonOff(7)" /></td>
+                <td><input type="button" title="Decrease camera height" value="-" onmousedown="buttonOn(1)" onmouseup="buttonOff(1)" /></td>
                 <td></td>
-                <td><input type="button" title="Move backward" value="&darr;" onmousedown="buttonOn(11)" onmouseup="buttonOff(11)"/></td>
+                <td><input type="button" title="Move backward" value="&darr;" onmousedown="buttonOn(5)" onmouseup="buttonOff(5)"/></td>
                 <td></td>
-                <td><input type="button" title="Zoom out" value="-" onmousedown="buttonOn(9)" onmouseup="buttonOff(9)" /></td>
+                <td><input type="button" title="Zoom out" value="-" onmousedown="buttonOn(3)" onmouseup="buttonOff(3)" /></td>
               </tr>
               <tr>
                 <td colspan="5" align=center>
@@ -487,7 +487,7 @@
         </div>
         <div id="SceneOptions" >
           <a style="cursor: pointer" onclick="show3d();">3D</a><br/>
-          <a style="cursor: pointer" onclick="showImages();">Veiw Saved Images</a><br/>
+          <a style="cursor: pointer" onclick="showImages();">View Saved Images</a><br/>
         </div>
         <div id="2dOptions">
           <a style="cursor: pointer" onclick="Processing.getInstanceById('SceneCaster2d').newPage();">New Scene</a><br/>

@@ -76,6 +76,7 @@
   ////////////////////////////////////////////////////////////////////////////
   // Model Used
   ////////////////////////////////////////////////////////////////////////////  
+  
   //Adding Models
   c3dl.addModel("./models/sky/skysphere.dae");
   c3dl.addModel(WALL_PATH);
@@ -132,13 +133,6 @@
   const MoveX = "./models/movewidget/x.dae";
   const MoveY = "./models/movewidget/y.dae";
   const MoveZ = "./models/movewidget/z.dae";
-/*
-  const MoveXZ = "./models/movewidget/xz.dae";
-  const MoveXY = "./models/movewidget/xy.dae";
-  const MoveZY = "./models/movewidget/zy.dae";
-  c3dl.addModel(MoveXZ);
-  c3dl.addModel(MoveXY);
-  c3dl.addModel(MoveZY);*/
   const ScaleX = "./models/scalewidget/x.dae";
   const ScaleY = "./models/scalewidget/y.dae";
   const ScaleZ = "./models/scalewidget/z.dae";
@@ -156,11 +150,12 @@
   c3dl.addModel(RotateZ);
 
   ////////////////////////////////////////////////////////////////////////////
-  //SceneCreator Objects  
+  //SceneCreator Object  
   //////////////////////////////////////////////////////////////////////////// 
+  
   var SceneObject = function () {
     this.model = new c3dl.Collada();
-    //types: wall, floor, ceiling, object
+    //types: wall or object
     this.type = null;
     //hang on wall or ceiling. Sit on floor or object
     this.placement = null;
@@ -186,11 +181,20 @@
     this.flickrImgs = null;
     //file path to model
     this.path = null;
-    //file path to editable
+    //if the object has a modifiable query or src
     this.editable = false;
-    //file path to editable
+    //holds a positional light object if the object is a light source
     this.light = null;
     
+    //WALL PROPERTIES
+    //angle the wall is rotated by in the y axis
+    this.angle = null;
+    //start postion of the wall
+    this.startPoint = null;
+    //end postion of the wall
+    this.endPoint = null;
+    
+    //initalies the scene object using a dae
     this.init = function (path, type, placement, stand, name, description, picture, editable, light, initalScale) {
       this.model.init(path);
       this.path = path;
@@ -216,6 +220,8 @@
       }
       this.model.setStatic(true);
     }
+    
+    //initalies the scene object using a primative
     this.initPrimitive = function (primative, path, type, placement, stand, name, description, picture) {
       this.model = primative;
       this.path=  path;
@@ -227,11 +233,13 @@
       this.picture = picture;
       this.model.setStatic(true);
     }
+    
     this.getCopy = function () {
       var copy = new SceneObject();
       copy.clone(this);
       return copy;
     }
+    
     this.clone = function (other) {
       this.path=  other.path;
       this.model= other.model.getCopy();
@@ -243,20 +251,14 @@
       this.name = other.name;
       this.editable = other.editable;
       this.light = other.light.getCopy();
+      this.angle = other.angle;
+      this.startPoint = other.startPoint;
+      this.endPoint = other.endPoint;
     }
-    this.getName = function () {
-      return this.name;
-    };
-    this.getPicture = function () {
-      return this.picture;
-    };
-    this.getDescription = function () {
-      return this.description;
-    };
-    this.setLink = function (link) {
-      this.link = link;
-    };
+
+    //moves the scene object using the mouse X and Y position
     this.moveObject = function (mouseX, mouseY) {
+      //handles objects on walls
       if (this.placement === "wall") {
         this.oldpos = this.model.getPosition();
         var worldCoords = getIntersectionOnPlane(mouseX, mouseY, this.model.getPosition(), this.model.getDirection());
@@ -271,11 +273,13 @@
           this.model.setPosition(worldCoords);
         }
       }
+      //handles objects on ceiling
       else if (this.placement === "ceiling") {
         this.oldpos = this.model.getPosition();
         var worldCoords = getworldCoords(mouseX, mouseY, 15);
         this.model.setPosition([worldCoords[0], 15 - (this.model.getHeight() / 2), worldCoords[2]]);
       }
+      //handles objects on floor and other objects
       else {
         this.oldpos = this.model.getPosition();
         var worldCoords = getworldCoords(mouseX, mouseY, this.model.getPosition()[1] - this.model.getHeight() / 2);
@@ -283,11 +287,16 @@
         var z = this.oldpos[2] - worldCoords[2];
         this.moveTopObjects(x, z);
       }
+      //if there is a light source its position is updated as well.
       if (this.light) {
         this.light.setPosition(this.model.getPosition());
       }
-    };
+    }
+    
+    //handles collision between objects
     this.handleCollision = function (objectCollided) {
+      //if the object can be placed on other objects and the object that it collided with is an object and a stand,
+      //then the objects is placed on it.
       if (this.placement === "object" && objectCollided.type === "object" && objectCollided.stand) {
         if (objectCollided !== this.parentObject) {
           this.placeObjectOnObject(objectCollided);
@@ -296,6 +305,8 @@
           holding = false;
         }
       }
+      //if the object is a placed on walls and the object that it collided with is a wall,
+      //then the objects is placed on it.
       else if (this.placement === "wall" && objectCollided.type === "wall") {
         if (objectCollided !== this.parentObject) {
           this.model.rotateOnAxis([0,1,0], -this.angle);
@@ -305,6 +316,7 @@
           holding = false;
         }
       }
+      //if the object collided with a object it does not move.
       else {
         this.model.setPosition(this.oldpos);
         for (var i = 0, len = this.childObjectList.length; i < len; i++) {
@@ -317,10 +329,15 @@
       if (this.light) {
         this.light.setPosition(this.model.getPosition());
       }
-    };
+    }
+    
+    //places a object on a wall
     this.placeObjectOnWall = function (wall) {
+      //sets parent child relationship
       this.parentObject = wall;
       wall.childObjectList.push(this);
+      
+      //set postion on the wall then rotates the object 
       var wallPos = wall.model.getPosition();
       var camPos = zcam[currentCam].getPosition();
       this.wallNorm = wall.model.getDirection();
@@ -343,22 +360,25 @@
       }
       this.angle = wall.angle;
       this.oldpos = this.model.getPosition();
-    };
-    this.setAngle = function (ang) {
-      this.angle = ang;
-    };
+    }
+    
+    //sets properties of used for wall objects
     this.setWallStats = function (ang, startPoint, endPoint) {
       this.angle = ang;
       this.startPoint = startPoint;
       this.endPoint = endPoint;
-    };
+    }
+    
+    //update positions of objects sitting on an object
     this.moveTopObjects = function (x, z) {
       this.oldpos = this.model.getPosition();
       this.model.setPosition([this.oldpos[0] - x, this.oldpos[1], this.oldpos[2] - z]);
       for (var i = 0, len = this.childObjectList.length; i < len; i++) {
         this.childObjectList[i].moveTopObjects(x, z);
       }
-    };
+    }
+    
+    //places and object on another object
     this.placeObjectOnObject = function (obj) {
       if (obj.stand) {
         this.oldpos = this.model.getPosition();
@@ -367,7 +387,9 @@
         obj.childObjectList.push(this);
         this.parentObject = obj;
       }
-    };
+    }
+    
+    //removes a object form the list of objects that are placed on the object 
     this.removeChildFromChildObjectList = function (obj) {
       var foundFlag = false;
       for (var i = 0, len = this.childObjectList.length; i < len; i++) {
@@ -380,7 +402,9 @@
         }
       }
        this.childObjectList.pop();
-    };
+    }
+    
+    //update positions of objects sitting on the wall
     this.updateWallObjects = function (oldWallPos, wallObjList, oldLength) {    
       this.childObjectList = wallObjList;
       var newLength = this.model.getLength();
@@ -392,7 +416,7 @@
           this.childObjectList[i].parentObject = this;
           this.childObjectList[i].model.yaw(-this.childObjectList[i].angle);
           this.childObjectList[i].model.yaw(this.angle);
-          this.childObjectList[i].setAngle(this.angle);
+          this.childObjectList[i].angle = this.angle;
           this.childObjectList[i].wallnorm
           var modelPos = this.childObjectList[i].model.getPosition();
 
@@ -411,7 +435,7 @@
           this.childObjectList[i].parentObject = this;
           this.childObjectList[i].model.yaw(-this.childObjectList[i].angle);
           this.childObjectList[i].model.yaw(this.angle);
-          this.childObjectList[i].setAngle(this.angle);
+          this.childObjectList[i].angle = this.angle;
           var mPos = this.childObjectList[i].model.getPosition();
           var newPos = [this.model.getPosition()[0], mPos[1], (mPos[2] - z)];
           var norm = this.childObjectList[i].model.getDirection();
@@ -420,18 +444,24 @@
           this.childObjectList[i].model.setPosition(newPos);
         }
       }
-    };
+    }
   }
 
-  Link = function (url, name, loadIn) {
-    this.url = url;
-    this.name = name;
-    this.loadIn = loadIn;
-  }
-
+  ////////////////////////////////////////////////////////////////////////////
+  //Widgets  
+  //////////////////////////////////////////////////////////////////////////// 
+  
   var MoveWidget = function () {
-    //models
+    //Models creating the widget
     this.model = []
+    //if the widget is visible
+    this.visible = false;
+    //object the widget affect
+    this.obj = null;
+    //hold previous mouse X and Y position   
+    this.x = null;
+    this.y = null;
+    
     for (var i = 0; i < 3; i++) {
       this.model[i] = new c3dl.Collada();
     }
@@ -446,13 +476,15 @@
       this.model[i].setVisible(false);
     }
 
-    this.visible = false;
+    //sets each model to visible or not
     this.setVisible = function (visible) {
       for (var i = 0; i < 3; i++) {
         this.model[i].setVisible(visible);
       }
       this.visible = visible;
     }
+    
+    //sets the model the widget is affecting and moves the widget to its position
     this.setObject = function (obj) {
       var pos = obj.model.getPosition();
       for (var i = 0; i < 3; i++) {
@@ -463,13 +495,14 @@
       this.model[2].setWidth(obj.model.getBoundingVolume().aabb.getWidth());
       this.obj = objectSelected;
     }
-    this.getVisible = function () {
-      return this.visible;
-    }
+    
+    //updates the mouse X and Y
     this.selected = function () {
       this.x = mouseX;
       this.y = mouseY;
     }
+    
+    //moves the object using the difference in postion selected on the widget
     this.moveObject = function (obj, selectedAxis) {
       var pos = this.obj.model.getPosition();
       this.obj.oldpos = pos;
@@ -494,13 +527,22 @@
       for (var i = 0; i < 3; i++) {
         this.model[i].setPosition(this.obj.model.getPosition());
       }
-      this.selected();
+      this.x = mouseX;
+      this.y = mouseY;
     }
   }
 
   var ScaleWidget = function () {
-    //models
+    //Models creating the widget
     this.model = []
+    //if the widget is visible
+    this.visible = false;
+    //object the widget affect
+    this.obj = null;
+    //hold previous mouse X and Y position   
+    this.x = null;
+    this.y = null;
+    
     for (var i = 0; i < 3; i++) {
       this.model[i] = new c3dl.Collada();
     }
@@ -510,19 +552,20 @@
     this.model[1].setTexture("./images/y.jpg");
     this.model[2].init(ScaleZ);
     this.model[2].setTexture("./images/z.jpg");
-
     for (var i = 0; i < 3; i++) {
       scn.addObjectToScene(this.model[i]);
       this.model[i].setVisible(false);
     }
 
-    this.visible = false;
+    //sets each model to visible or not
     this.setVisible = function (visible) {
       for (var i = 0; i < 3; i++) {
         this.model[i].setVisible(visible);
       }
       this.visible = visible;
     }
+    
+    //sets the model the widget is affecting and moves the widget to its position
     this.setObject = function (obj) {
       var pos = obj.model.getPosition();
       for (var i = 0; i < 3; i++) {
@@ -542,13 +585,14 @@
       this.model[2].sceneGraph.up = obj.model.sceneGraph.up;
       this.obj = objectSelected;
     }
-    this.getVisible = function () {
-      return this.visible;
-    }
+    
+    //updates the mouse X and Y
     this.selected = function () {
       this.x = mouseX;
       this.y = mouseY;
     }
+    
+    //scales the object using the difference in postion selected on the widget
     this.scaleObject = function (obj, selectedAxis) {
       var length = obj.model.getLength(),
           width = obj.model.getWidth(),
@@ -594,18 +638,28 @@
       this.model[0].setLength(length);
       this.model[1].setHeight(height);
       this.model[2].setWidth(width);
-      this.selected();
+      this.x = mouseX;
+      this.y = mouseY;
     }
   }
 
   var RotateWidget = function () {
-    //models
-    this.model = [];
+  //Models creating the widget
+    this.model = []
+    //if the widget is visible
+    this.visible = false;
+    //object the widget affect
+    this.obj = null;
+    //hold previous mouse X and Y position   
+    this.x = null;
+    this.y = null;
+    //line showing line tangent created by the uses seletection
     this.l = new c3dl.Line();
     this.l.setColors([255,255,0],[255,255,0]);
     this.l.setWidth(4);
     scn.addObjectToScene(this.l);
     this.l.setVisible(false);
+    
     for (var i = 0; i < 3; i++) {
       this.model[i] = new c3dl.Collada();
     }
@@ -615,19 +669,20 @@
     this.model[1].setTexture("./images/y.jpg");
     this.model[2].init(RotateZ);
     this.model[2].setTexture("./images/z.jpg");
-
     for (var i = 0; i < 3; i++) {
       scn.addObjectToScene(this.model[i]);
       this.model[i].setVisible(false);
     }
-
-    this.visible = false;
+    
+    //sets each model to visible or not
     this.setVisible = function (visible) {
       for (var i = 0; i < 3; i++) {
         this.model[i].setVisible(visible);
       }
       this.visible = visible;
     }
+    
+    //sets the model the widget is affecting and moves the widget to its position
     this.setObject = function (obj) {
       var pos = obj.model.getPosition();
       for (var i = 0; i < 3; i++) {
@@ -641,16 +696,19 @@
       this.model[2].setSize(longest+1, 0.1, longest+1);
       this.obj = objectSelected;
     }
-    this.getVisible = function () {
-      return this.visible;
-    }
+
+    //updates the mouse X and Y
     this.selected = function () {
       this.x = mouseX;
       this.y = mouseY;
     }
+    
+    //displays the line tangent
     this.showLineTangent = function (visible) {
       this.l.setVisible(visible);
     }
+    
+    //rotates the object using the difference in postion selected on the line tangent
     this.rotateObject = function (obj, selectedAxis) {
       this.showLineTangent(false);
       var centerPos = obj.model.getPosition();
@@ -862,6 +920,7 @@
     }
   }
 
+  //Sets the move widget to the selected object and removes other widgets or turns off move widget
   var toggleMoveWidget = this.toggleMoveWidget = function () {
     if (objectSelected && !mWidget.obj) {
       mWidget.setVisible(true);
@@ -876,6 +935,8 @@
       mWidget.obj = null;
     }
   }
+  
+  //Sets the scale widget to the selected object and removes other widgets or turns off scale widget
   var toggleScaleWidget = this.toggleScaleWidget = function () {
     if (objectSelected && !sWidget.obj) {
       sWidget.setVisible(true);
@@ -890,6 +951,8 @@
       sWidget.obj = null;
     }
   }
+  
+  //Sets the rotate widget to the selected object and removes other widgets or turns off rotate widget
   var toggleRotateWidget = this.toggleRotateWidget = function () {
     if (objectSelected && !rWidget.obj) {
       rWidget.setVisible(true);
@@ -904,6 +967,8 @@
       rWidget.obj = null;
     }
   }
+  
+  //turns off all widgets
   var closeAllWidgets = function () {
     rWidget.setVisible(false);
     rWidget.obj = null;
@@ -913,6 +978,11 @@
     sWidget.obj = null;
   }
   
+  ////////////////////////////////////////////////////////////////////////////
+  //Twitter  
+  //////////////////////////////////////////////////////////////////////////// 
+  
+  //object holding tweet information
   var Tweet = function () {
     this.img = null;
     this.user = null;
@@ -920,6 +990,7 @@
     this.time = null;
   }
    
+  //ajax call to get tweets
   var getTweets = this.getTweets = function(query, numTweets) {  
     var url="http://search.twitter.com/search.json?rpp=5&callback=?&q=";
     var newTweets = [];
@@ -987,11 +1058,11 @@
       nextDialog,
       lightEffect;
       
-  //Command
+  //Command Pattern
   var commands = [],
       curcmd = -1;
 
-  // Create a cameras
+  //Cameras
   var cam = [];
   cam[0] = new c3dl.FreeCamera();
   cam[1] = new c3dl.FreeCamera();
@@ -1015,9 +1086,7 @@
       oldMouseY = 0,
       selEndWorldCoords = [0, 0];
 
-  var mouseButtonsDown = (
-
-  function mouseButtonsDown() {
+  var mouseButtonsDown = ( function mouseButtonsDown() {
     var BTN1 = false,
         BTN2 = false,
         BTN3 = false;
@@ -1027,10 +1096,9 @@
       "BTN3": BTN3
     };
   })();
-  // keyboard button states
-  var keysDown = (
-
-  function keysDown() {
+  
+  //Keyboard button states
+  var keysDown = ( function keysDown() {
     var key_up = false,
         key_down = false,
         key_left = false,
@@ -1086,10 +1154,10 @@
   const KEY_Del = 46;
 
   ////////////////////////////////////////////////////////////////////////////
-  // Functions 
+  //Mouse Keyboard Functions 
   ////////////////////////////////////////////////////////////////////////////
+  
   //When a key is pressed down
-
   function onKeyDown(event) {
     if (!dialogOpen) {
       switch (event.keyCode) {
@@ -1126,8 +1194,7 @@
     }
   }
 
-  //When a key is released down
-
+  //When a key is released 
   function onKeyUp(event) {
     if (!dialogOpen) {
       switch (event.keyCode) {
@@ -1207,24 +1274,6 @@
     case 7:
       buttons[7] = true;
       break;
-    case 8:
-      buttons[8] = true;
-      break;
-    case 9:
-      buttons[9] = true;
-      break;
-    case 10:
-      buttons[10] = true;
-      break;
-    case 11:
-      buttons[11] = true;
-      break;
-    case 12:
-      buttons[12] = true;
-      break;
-    case 13:
-      buttons[13] = true;
-      break;
     default:
       break;
     }
@@ -1257,45 +1306,26 @@
     case 7:
       buttons[7] = false;
       break;
-    case 8:
-      buttons[8] = false;
-      break;
-    case 9:
-      buttons[9] = false;
-      break;
-    case 10:
-      buttons[10] = false;
-      break;
-    case 11:
-      buttons[11] = false;
-      break;
-    case 12:
-      buttons[12] = false;
-      break;
-    case 13:
-      buttons[13] = false;
-      break;
     default:
       break;
     }
   }
 
-  //mouse events
-
+  //Mouse Events
+  //When a mouse button is released
   function mouseUp(event) {    
-    if (moveObject && commands[curcmd] === moveObjectCommand && !mWidget.getVisible()) {
+    if (moveObject && commands[curcmd] === moveObjectCommand && !mWidget.visible) {
       commands[curcmd].execute();
     }
-    else if (selectedAxis && commands[curcmd] === moveObjectCommand && mWidget.getVisible()) {
+    else if (selectedAxis && commands[curcmd] === moveObjectCommand && mWidget.visible) {
       commands[curcmd].execute();
     }
-    else if (selectedAxis && commands[curcmd] === scaleCommand && sWidget.getVisible()) {
+    else if (selectedAxis && commands[curcmd] === scaleCommand && sWidget.visible) {
       commands[curcmd].execute();
     }
-    else if (selectedAxis && rWidget.getVisible()) {
+    else if (selectedAxis && rWidget.visible) {
       commands[curcmd].execute();
     }
-
     moveObject = false;
     holding = false;
     selectedAxis = null;
@@ -1304,7 +1334,7 @@
       sWidget.model[j].setEffect(c3dl.effects.STANDARD);
       rWidget.model[j].setEffect(c3dl.effects.STANDARD);
     }
-    if (rWidget.getVisible()) {
+    if (rWidget.visible) {
       rWidget.pointOnSphere = null;
       objectSelected.angleY = null;
       objectSelected.angleZ = null;
@@ -1313,22 +1343,21 @@
     }
   }
 
+  //When a mouse button is pressed
   function mouseDown(event) {
     oldMouseX = mouseX;
     oldMouseY = mouseY;
     holding = true;
   }
 
-  //when the mouse is moved it returns mouse coords relative to window
-
+  //When the mouse is moved it returns mouse coords relative to window
   function mouseMove(event) {
     var viewportCoords = getClickedCoords(event);
     mouseX = viewportCoords[0];
     mouseY = viewportCoords[1];
   }
 
-  //when the mouse wheel is use this is called
-
+  //When the mouse wheel is use this is called
   function mouseWheel(event) {
     var delta = 0;
     // Chromium
@@ -1380,7 +1409,10 @@
     }
   }
 
-  //Shows the desired feild and pauses hidden
+  ////////////////////////////////////////////////////////////////////////////
+  //Display Functions 
+  ////////////////////////////////////////////////////////////////////////////
+  //Shows the desired view and hides the rest and pauses hidden canvases
   var show2d = this.show2d = function () {
     hideAll();
     document.getElementById("main2d").setAttribute("style", "display:inline;");
@@ -1412,17 +1444,6 @@
     hideAll();
     document.getElementById("VideoSrcDiv").setAttribute("style", "display:inline;");
   }
-  
-  var updateTexturesInScene = this.updateTexturesInScene = function () {
-
-    var primitiveList = objectViewing.getPrimitiveSets();
-    var newPrimitiveList = objectSelected.model.getPrimitiveSets();
-    for (var i = 0; i < primitiveList.length; i++) {
-      newPrimitiveList[i].texture = primitiveList[i].getTexture();
-    }
-    show3d();
-  }
-  
   
   var editObjectTextures = this.editObjectTextures = function () {
     if (objectSelected) {
@@ -1572,6 +1593,91 @@
     viewer = false;
   }
   
+  //open primitive dialogs boxes
+  var createSphere = this.createSphere = function () {
+    $("#dialog-create-sphere").dialog("open");
+  }
+  
+  var createCube = this.createCube = function () {
+    $("#dialog-create-cube").dialog("open");
+  }
+  
+  var createPlane = this.createPlane = function () {
+    $("#dialog-create-plane").dialog("open");
+  }
+  
+  //open object properties dialog box
+  var setObjectProperties = this.setObjectProperties = function (func) {
+    nextDialog = func;
+    $("#dialog-object-properties").dialog("open");
+  }
+  
+  //Displays selected object info
+  var DisplayObjectInfo = function () {
+    if (objectSelected) {
+      document.getElementById("objInfo").setAttribute("style", "display:inline;");
+      document.getElementById('objPic').src = objectSelected.picture;
+      document.getElementById('objName').innerHTML = objectSelected.name;
+      document.getElementById('objDes').innerHTML = objectSelected.description;
+      var pos = objectSelected.model.getPosition();
+      document.getElementById('objPos').innerHTML = "x=" +  pos[0].toFixed(2) + " " +"y=" + pos[1].toFixed(2) +  " " +"z=" + pos[2].toFixed(2) +  " ";
+      if (objectSelected.editable) {
+        document.getElementById("edit-button").setAttribute("style", "display:inline;");
+      }
+      else {
+        document.getElementById("edit-button").setAttribute("style", "display:none;");
+      }
+      if (objectSelected.light) {
+        $("#lightSlider").slider("value", objectSelected.light.diffuse[0]);
+        document.getElementById("light").setAttribute("style", "display:inline;");
+      }
+      else {
+        document.getElementById("light").setAttribute("style", "display:none;");
+      }
+      if (objectSelected.video) {
+        document.getElementById("videoControls").setAttribute("style", "display:inline;");
+        $("#volumeSlider").slider("value", objectSelected.video.volume*100);
+        $("#seekSlider").slider("value", objectSelected.video.currentTime);
+        if (objectSelected.video.duration >0) {
+          $("#seekSlider").slider("option","max", objectSelected.video.duration);
+        }
+      }
+      else {
+          document.getElementById("videoControls").setAttribute("style", "display:none;");
+      }
+    }
+    else {
+      document.getElementById('objPic').src = "";
+      document.getElementById('objName').innerHTML = "";
+      document.getElementById('objDes').innerHTML = "";
+      document.getElementById('objPos').innerHTML = "";    
+      document.getElementById("videoControls").setAttribute("style", "display:none;");
+      document.getElementById("objInfo").setAttribute("style", "display:none;");
+    }
+  }
+  
+  var editObject = this.editObject = function () {
+    if (objectSelected.name ==="Twitter") {
+      showTwitter();
+      objectSelected.editing = true;
+    }
+    else if(objectSelected.name ==="Flickr") {
+      showFlickr();
+      objectSelected.editing = true;
+    }
+    else if(objectSelected.name ==="CustomImage") {
+      showImageSrcDiv();
+      objectSelected.editing = true;
+    }
+    else if(objectSelected.name ==="CustomVideo") {
+      showVideoSrcDiv();
+      objectSelected.editing = true;
+    }
+  }  
+  
+  ////////////////////////////////////////////////////////////////////////////
+  //Special Objects
+  ////////////////////////////////////////////////////////////////////////////
   var createClock = this.createClock = function () {
     createObject(CLOCK_PATH, "object", "wall", false,[0.1, 0.1, 0.1]); 
     objectSelected.canvas = document.createElement('CANVAS');  
@@ -1586,6 +1692,7 @@
     objectSelected.pjs = new Processing(objectSelected.canvas, script);      
     objectSelected.model.setTexture(objectSelected.canvas);
   }
+  
   var createTwitter = this.createTwitter = function (query) {
     if (objectSelected && objectSelected.editing) {
       objectSelected.editing = null;
@@ -1671,12 +1778,16 @@
     objectSelected.video.setAttribute('loop',"loop");
     objectSelected.model.updateTextureByName("updatingTexture",objectSelected.video);  
   } 
+  
+  ////////////////////////////////////////////////////////////////////////////
+  //Generic Functions
+  //////////////////////////////////////////////////////////////////////////// 
   //pausing and unpausing the 2d and 3d to increase speed
-
   function pause3d() {
     scn.pauseScene();
     scnViewer.pauseScene();
   }
+  
   var unpause3d = this.unpause3d = function () {
     scn.unpauseScene();
     scnViewer.pauseScene();
@@ -1695,14 +1806,31 @@
     return x * x;
   }
 
-  //
-  var setUpDown = this.setUpDown = function (upDown) {
-    camUpDown = upDown;
+  var starupdateTimer = this.starupdateTimer = function () {
+    updateTimer = 1;
   }
-  var setLeftRight = this.setLeftRight = function (leftRight) {
-    camLeftRight = leftRight;
+  
+  var playVideo = this.playVideo = function () {
+    if (objectSelected.video.paused) {
+      objectSelected.video.play();
+    }
+    else {
+      objectSelected.video.pause();
+    }
   }
-
+  
+  var muteVideo = this.muteVideo = function () {
+    if (objectSelected.video.muted) {
+      objectSelected.video.muted=false;
+    }
+    else {
+      objectSelected.video.muted=true;
+    }
+  } 
+  
+  ////////////////////////////////////////////////////////////////////////////
+  //Saving and Loading
+  //////////////////////////////////////////////////////////////////////////// 
   var save = this.save = function () {
     if (sceneName === null) {
       $("#dialog-saveAs").dialog("open");
@@ -1714,6 +1842,8 @@
   var saveAs = this.saveAs = function () {
     $("#dialog-saveAs").dialog("open");
   }
+  
+  //Serializes scene data and saves to file
   var saveFile = function saveFile() {
     serial = {
       numLights: numLights,
@@ -1868,6 +1998,8 @@
     };
     jQuery.ajax(options);
   }
+  
+  //Display a list of files the user can load
   var load = this.load = function () {
     /*
     //fill dialog from LocalStorage
@@ -1894,10 +2026,10 @@
         $("#dialog-load").dialog("open");
       }
     };
-    $.ajax(options);
-   
+    $.ajax(options);  
   }
   
+   //de-serializes the object and loads the scene
   function loadScene(name) {
     for (i = 0; i < numObjects; i++) {
       if (objects[i].light) {
@@ -2114,102 +2246,6 @@
     zoom = c3dl.vectorLength(cam[currentCam].getPosition()) - c3dl.vectorLength(zcam[currentCam].getPosition());
   }
   
-  //open Create Primitive dialogs
-  var createSphere = this.createSphere = function () {
-    $("#dialog-create-sphere").dialog("open");
-  }
-  var createCube = this.createCube = function () {
-    $("#dialog-create-cube").dialog("open");
-  }
-  var createPlane = this.createPlane = function () {
-    $("#dialog-create-plane").dialog("open");
-  }
-  var setObjectProperties = this.setObjectProperties = function (func) {
-    nextDialog = func;
-    $("#dialog-object-properties").dialog("open");
-  }
-  
-  var starupdateTimer = this.starupdateTimer = function () {
-    updateTimer = 1;
-  }
-  
-  var DisplayObjectInfo = function () {
-    if (objectSelected) {
-      document.getElementById("objInfo").setAttribute("style", "display:inline;");
-      document.getElementById('objPic').src = objectSelected.getPicture();
-      document.getElementById('objName').innerHTML = objectSelected.getName();
-      document.getElementById('objDes').innerHTML = objectSelected.getDescription();
-      var pos = objectSelected.model.getPosition();
-      document.getElementById('objPos').innerHTML = "x=" +  pos[0].toFixed(2) + " " +"y=" + pos[1].toFixed(2) +  " " +"z=" + pos[2].toFixed(2) +  " ";
-      if (objectSelected.editable) {
-        document.getElementById("edit-button").setAttribute("style", "display:inline;");
-      }
-      else {
-        document.getElementById("edit-button").setAttribute("style", "display:none;");
-      }
-      if (objectSelected.light) {
-        $("#lightSlider").slider("value", objectSelected.light.diffuse[0]);
-        document.getElementById("light").setAttribute("style", "display:inline;");
-      }
-      else {
-        document.getElementById("light").setAttribute("style", "display:none;");
-      }
-      if (objectSelected.video) {
-        document.getElementById("videoControls").setAttribute("style", "display:inline;");
-        $("#volumeSlider").slider("value", objectSelected.video.volume*100);
-        $("#seekSlider").slider("value", objectSelected.video.currentTime);
-        if (objectSelected.video.duration >0) {
-          $("#seekSlider").slider("option","max", objectSelected.video.duration);
-        }
-      }
-      else {
-          document.getElementById("videoControls").setAttribute("style", "display:none;");
-      }
-    }
-    else {
-      document.getElementById('objPic').src = "";
-      document.getElementById('objName').innerHTML = "";
-      document.getElementById('objDes').innerHTML = "";
-      document.getElementById('objPos').innerHTML = "";    
-      document.getElementById("videoControls").setAttribute("style", "display:none;");
-      document.getElementById("objInfo").setAttribute("style", "display:none;");
-    }
-  }
-  
-  var playVideo = this.playVideo = function () {
-    if (objectSelected.video.paused) {
-      objectSelected.video.play();
-    }
-    else {
-      objectSelected.video.pause();
-    }
-  }
-  var muteVideo = this.muteVideo = function () {
-    if (objectSelected.video.muted) {
-      objectSelected.video.muted=false;
-    }
-    else {
-      objectSelected.video.muted=true;
-    }
-  }  
-  var editObject = this.editObject = function () {
-    if (objectSelected.getName() ==="Twitter") {
-      showTwitter();
-      objectSelected.editing = true;
-    }
-    else if(objectSelected.getName() ==="Flickr") {
-      showFlickr();
-      objectSelected.editing = true;
-    }
-    else if(objectSelected.getName() ==="CustomImage") {
-      showImageSrcDiv();
-      objectSelected.editing = true;
-    }
-    else if(objectSelected.getName() ==="CustomVideo") {
-      showVideoSrcDiv();
-      objectSelected.editing = true;
-    }
-  }  
   ////////////////////////////////////////////////////////////////////////////
   // Command Pattern
   ////////////////////////////////////////////////////////////////////////////  
@@ -2568,8 +2604,8 @@
   ////////////////////////////////////////////////////////////////////////////
   //3d Setup Main
   ////////////////////////////////////////////////////////////////////////////
+  
   // The program main
-
   function canvasMain(canvasName) {
     // Create new c3dl.Scene object
     scn = new c3dl.Scene();
@@ -2687,13 +2723,13 @@
       CANVAS_HEIGHT = canvas.height = Math.floor(Math.round(9 * canvas.width / 16));
     }
     if (objectSelected) { 
-      if (mWidget.getVisible()) {
+      if (mWidget.visible) {
         mWidget.setObject(objectSelected);
       }
-      if (rWidget.getVisible()) {
+      if (rWidget.visible) {
         rWidget.setObject(objectSelected);
       }
-      if (sWidget.getVisible()) {
+      if (sWidget.visible) {
         sWidget.setObject(objectSelected);
       }
     }
@@ -2758,8 +2794,8 @@
       }
     }
     //update slider position
-    $("#updownslider").slider("value", camHeight);
-    $("#zoomslider").slider("value", zoom);
+    $("#camHeightSlider").slider("value", camHeight);
+    $("#zoomSlider").slider("value", zoom);
     //check topview to disable rotation 
     if (currentCam == 0) {
       document.getElementById('topview').value = "true";
@@ -2770,69 +2806,45 @@
     //set scene to current camera
     scn.setCamera(zcam[currentCam]);
     var moveAmount = CAM_MOVE_SPEED * deltaTime / 100;
-    
-    //empty
-    if (buttons[0] && objectSelected) {
 
-    }
-    //empty
-    else if (buttons[1] && objectSelected) {
-
-    }
-    //empty
-    else if (buttons[2] && objectSelected) {
-
-    }
-    //empty
-    else if (buttons[3] && objectSelected) {
-
-    }
-    //empty
-    else if (buttons[4]) {
-
-    }
-    //empty
-    else if (buttons[5]) {
-
-    }
-    //ud Up 
-    else if (buttons[6]) {
+    //increases cam height slider
+    if (buttons[0]) {
       if (camHeight < 50) {
-        camHeight ++;
+        camHeight++;
       }
     }
-    //ud Down 
-    else if (buttons[7]) {
+    //decreases cam height slider
+    else if (buttons[1]) {
       if (camHeight > 0) {
-        camHeight --;
+        camHeight--;
       }
     }
     //zoom in 
-    else if (buttons[8]) {
+    else if (buttons[2]) {
       if (zoom < 50) {
         zoom++;
       }
     }
     //zoom out 
-    else if (buttons[9]) {
+    else if (buttons[3]) {
       if (zoom > 0) {
         zoom--;
       }
     }
     //move camera forward
-    else if (buttons[10]) {
+    else if (buttons[4]) {
       moveCamera(FORWARD, moveAmount);
     }
     //move camera backward
-    else if (buttons[11]) {
+    else if (buttons[5]) {
       moveCamera(FORWARD, -moveAmount);
     }
     //move camera left
-    else if (buttons[12]) {
+    else if (buttons[6]) {
       moveCamera(SIDEWAYS, moveAmount);
     }
     //move camera right
-    else if (buttons[13]) {
+    else if (buttons[7]) {
       moveCamera(SIDEWAYS, -moveAmount);
     }
     //use arrow key to move camera
@@ -2852,25 +2864,25 @@
       if (!objectSelected) {
         closeAllWidgets();
       }
-      if (moveObject && objectSelected && !mWidget.getVisible() && !rWidget.getVisible() && !sWidget.getVisible()) {
+      if (moveObject && objectSelected && !mWidget.visible && !rWidget.visible && !sWidget.visible) {
         objectSelected.moveObject(mouseX, mouseY);
       }
-      else if (selectedAxis && mWidget.getVisible()) {
+      else if (selectedAxis && mWidget.visible) {
         mWidget.moveObject(objectSelected, selectedAxis);
         if (objectSelected.light) {
           objectSelected.light.setPosition(objectSelected.model.getPosition());
         }
       }
-      else if (selectedAxis && sWidget.getVisible()) {
+      else if (selectedAxis && sWidget.visible) {
         sWidget.scaleObject(objectSelected, selectedAxis);
       }
-      else if (selectedAxis && rWidget.getVisible()) {
+      else if (selectedAxis && rWidget.visible) {
         rWidget.rotateObject(objectSelected, selectedAxis);
       }
       //collision   
       sceneObjectsCollided = [];
       var SceneCreatorCD = new c3dl.CollisionDetection();
-      if (objectSelected && !mWidget.getVisible()) {
+      if (objectSelected && !mWidget.visible) {
         for (var k = 0, len = objects.length; k < len; k++) {
           if (objectSelected.model !== objects[k].model) {
             if (SceneCreatorCD.checkObjectCollision(objectSelected.model, objects[k].model, null, "Geometry")) {
@@ -2986,16 +2998,16 @@
   ////////////////////////////////////////////////////////////////////////////
   // 3d Functions 
   ////////////////////////////////////////////////////////////////////////////
+  
   // This function is the callback that is passed to the scene.
   // When a mouse down event is detected this function is called.
   // The handler is given an object that knows what button was
   // pressed and has a list of objects picked.
-
   function pickingHandler(result) {
     var objectsPicked = result.getObjects();
 
     //check move widget selection
-    if (mWidget.getVisible()) {
+    if (mWidget.visible) {
       objectSelected.model.setRenderObb(true);
       for (var i = 0, len = objectsPicked.length; i < len; i++) {
         for (var j = 0; j < 3; j++) {
@@ -3013,7 +3025,7 @@
     }
     
     //check scale widget selection
-    else if (sWidget.getVisible()) {
+    else if (sWidget.visible) {
       objectSelected.model.setRenderObb(true);
       for (var i = 0, len = objectsPicked.length; i < len; i++) {
         for (var j = 0; j < 3; j++) {
@@ -3031,7 +3043,7 @@
     }
     
     //check rotate widget selection
-    else if (rWidget.getVisible()) {
+    else if (rWidget.visible) {
       objectSelected.model.setRenderObb(true);
       for (var i = 0, len = objectsPicked.length; i < len; i++) {
         for (var j = 0; j < 3; j++) {
@@ -3076,12 +3088,10 @@
     }
   }
 
-  //returns clicked coordinates X and Y
-
+  //Returns clicked coordinates X and Y
   function getClickedCoords(event) {
     if (viewer) {
       var canvas = scnViewer.getCanvas();
-
     }
     else {
       var canvas = scn.getCanvas();
@@ -3097,7 +3107,7 @@
     return [X, Y];
   }
 
-  //calculates world coordinates 
+  //Calculates X and Z world coordinates on a plane at inputted hieght
   var getworldCoords = this.getworldCoords = function (mmx, mmy, height) {
     if (mmx != null && mmy != null) {
       // NDC
@@ -3135,7 +3145,8 @@
       }
     }
   }
-  //calculates world coordinates 
+  
+  //Calculates world coordinates on a plane
   var getIntersectionOnPlane = this.getIntersectionOnPlane = function (mmx, mmy, origin, norm) {
     if (mmx != null && mmy != null) {
       // NDC
@@ -3174,8 +3185,8 @@
       }
     }
   }
-  //fuction to move the camera
-
+  
+  //Function to move the camera
   function moveCamera(direction, amount) {
     if (direction === SIDEWAYS) {
       var temp = zcam[currentCam].getLeft();
@@ -3192,7 +3203,7 @@
     }
   }
 
-  //create objects using a factory pattern
+  //Create objects using a factory pattern
   var createObject = this.createObject = function (path, type, placement, stand, name, description, picture, editable, light, initalScale) {
     curcmd++;
     commands = commands.slice(0,curcmd);
@@ -3201,7 +3212,7 @@
 
   }
   
-  //create objects using a factory pattern
+  //Create objects using a factory pattern
   var createPrimitive = this.createPrimitive = function (primative, path, type, placement, stand, name, description, picture) {
     curcmd++;
     commands = commands.slice(0,curcmd);
@@ -3209,7 +3220,7 @@
     commands[curcmd].execute(primative, path, type, placement, stand, name, description, picture);
   }
 
-  //removes seleted object from scene
+  //Removes seleted object from scene
   var deleteSelected = this.deleteSelected = function () {
     if (objectSelected) {
       curcmd++;
@@ -3219,21 +3230,21 @@
     }
   }
 
-  //undo function
+  //Undo function
   var undo = this.undo = function undo() {
     if (curcmd >= 0) {
       commands[curcmd--].unexecute();
     }
   }
 
-  //redo function
+  //Redo function
   var redo = this.redo = function redo() {
     if (commands[curcmd + 1]) {
       commands[++curcmd].execute();
     }
   }
 
-  //copys selected object stats and creates a new one
+  //Copys selected object stats and creates a new one
   var copySelected = this.copySelected = function () {
     if (objectSelected) {
       curcmd++;
@@ -3243,7 +3254,7 @@
     }
   }
 
-  //scale pop-up
+  //Scale pop-up
   var scale = this.scale = function () {
     if (objectSelected) {
       scaling = true;
@@ -3254,7 +3265,8 @@
       document.getElementById("height").value = getSize()[1].toFixed(2);
     }
   }
-  //rotation pop-up
+  
+  //Rotation pop-up
   var rotate = this.rotate = function () {
     if (objectSelected) {
       rotating = true;
@@ -3262,6 +3274,8 @@
       rotateEffect();
     }
   }
+  
+  //Gets size of selected object
   var getSize = this.getSize = function () {
     var size = [];
     size[0] = objectSelected.model.getLength();
@@ -3269,18 +3283,24 @@
     size[2] = objectSelected.model.getWidth();
     return size;
   }
+  
+  //Sets inputted size to selected object
   var setSize = this.setSize = function (length, width, height) {
     curcmd++;
     commands = commands.slice(0,curcmd);
     commands[curcmd] = new scaleCommand(length, width, height);
     commands[curcmd].execute();
   }
+  
+  //Rotates selected object
   var rotateOnAxis = this.rotateOnAxis = function (axis, rot) {
     curcmd++;
     commands = commands.slice(0,curcmd);
     commands[curcmd] = new rotateObjectOnAxisCommand(axis, rot);
     commands[curcmd].execute();
   }
+  
+  //Gets a PNG of the scene (only works when hosted)
   var getPNG = this.getPNG = function () {
     var ctx = scn.getGL();
     try{
@@ -3318,6 +3338,16 @@
     return cvs.toDataURL();
   }
 
+  //Updates the selected object in the scene with the new textures
+  var updateTexturesInScene = this.updateTexturesInScene = function () {
+    var primitiveList = objectViewing.getPrimitiveSets();
+    var newPrimitiveList = objectSelected.model.getPrimitiveSets();
+    for (var i = 0; i < primitiveList.length; i++) {
+      newPrimitiveList[i].texture = primitiveList[i].getTexture();
+    }
+    show3d();
+  }
+  
   ////////////////////////////////////////////////////////////////////////////
   // 2d Functions 
   ////////////////////////////////////////////////////////////////////////////
@@ -3346,6 +3376,7 @@
     //calc length
     var triA = (posStart[0] + 100) - (posEnd[0] + 100);
     var triB = (posStart[2] + 100) - (posEnd[2] + 100);
+    
     //set position
     var wallpos = [];
     var averageX = (Math.abs(posStart[0]) + Math.abs(posEnd[0])) / 2
@@ -3378,7 +3409,8 @@
     walls[numWalls].model.setPosition(wallpos);
     //calc walllength pythagorean theorem
     var walllength = Math.sqrt(sq(triA) + sq(triB));
-    //no rotation
+    
+    //wall is straight in the X or Z axis
     if (posStart[0] === posEnd[0] || posStart[2] === posEnd[2]) {
       walls[numWalls].model.scale([walllength / 2 + 1, 7.5, 1]);
       if (posStart[0] === posEnd[0]) {
@@ -3389,7 +3421,7 @@
         walls[numWalls].setWallStats(0, posStart, posEnd);
       }
     }
-    //calc angle to rotate cos law
+    //wall is angled
     else {
       walls[numWalls].model.scale([walllength / 2 + 1, 7.5, 1]);
       theta = 180 * Math.acos((sq(walllength) + sq(triA) - sq(triB)) / (2 * walllength * triA)) / Math.PI;
@@ -3400,6 +3432,7 @@
       walls[numWalls].model.yaw((theta * Math.PI) / 180);
       walls[numWalls].setWallStats((theta * Math.PI) / 180, posStart, posEnd);
     }
+    
     //add object to scene
     scn.addObjectToScene(walls[numWalls].model);
     numWalls++;
@@ -3407,7 +3440,7 @@
     return numWalls-1;
   }
 
-  //deletes seleted wall
+  //Deletes seleted wall
   var deleteWall = this.deleteWall = function (wallnum) {
     scn.removeObjectFromScene(walls[wallnum].model);
     walls  = [].concat(walls.slice(0,wallnum), walls.slice(wallnum+1));
@@ -3415,7 +3448,7 @@
     checkEnclosures();
   }
 
-  //moves seleted wall
+  //Moves seleted wall
   var moveWall = this.moveWall = function (wallnum, posStart, posEnd) {
     scn.removeObjectFromScene(walls[wallnum].model);
     var oldWallPos = c3dl.copyObj(walls[wallnum].model.getPosition());
@@ -3495,7 +3528,7 @@
     checkEnclosures();
   }
   
-  
+  //Creates wall roofs and floors from enclosures
   function drawRoofandFloor() {
     if (scn) {
       for (var i = 0; i < roofs.length; i++) {
@@ -3542,35 +3575,44 @@
     }
   }
   
- 
- 
-  function isClockWise(enclosure) {
-    var i,j,k;
-    var count = 0;
-    var z;
-    var poly = [];
-    for (i=0, j = 0; i < enclosure.length;i+=2, j++) {
-      poly[j] = [];
-      poly[j][0] = enclosure[i];
-      poly[j][1] = enclosure[i+1];
+  ////////////////////////////////////////////////////////////////////////////
+  //Enclosures
+  ////////////////////////////////////////////////////////////////////////////
+  
+  function ETree() {
+    this.root = null;
+    this.nodes = new Array;
+    objLocalTree = this;
 
+    this.createRoot = function (x, y, wallnum) {
+      this.root = new ENode(x, y, null, wallnum);
+      this.root.id = "root";
+      this.nodes["root"] = this.root;
+      return this.root;
+      return objNode;
     }
-    for (i=0;i<poly.length;i++) {
-      j = (i + 1) % poly.length;
-      k = (i + 2) % poly.length;
-      z = (poly[j][0] - poly[i][0]) * (poly[k][1] - poly[j][1]);
-      z -= (poly[j][1] - poly[i][1]) * (poly[k][0] - poly[j][0]);
-      if (z < 0) {
-        count--;
-      }
-      else if (z > 0) {
-        count++;
-      }
+    this.checkRoot = function (x, y) {
+      if (this.root.x === x && this.root.y === y) return true;
+      else return false;
     }
-    if (count > 0) {
-      return false;
+  }
+
+  function ENode(x, y, parent, wallnum) {
+    this.x = x;
+    this.y = y;
+    this.closed = false;
+    this.wallnum = wallnum;
+    this.level = 0;
+    this.childNodes = new Array;
+    this.parent = parent;
+    this.eLength = null;
+    this.addChild = function (x, y, wallnum) {
+      var objNode = new ENode(x, y, this, wallnum);
+      objNode.level = this.level + 1;
+      this.childNodes[this.childNodes.length] = objNode;
+      objLocalTree.nodes[objLocalTree.nodes.length] = objNode;
+      return objNode;
     }
-    return true;
   }
   
   var checkEnclosures = this.checkEnclosures = function () {
@@ -3622,42 +3664,6 @@
           checking(walls[j].startPoint[0], walls[j].startPoint[2], curnode, j);
         }
       }
-    }
-  }
-
-  function ETree() {
-    this.root = null;
-    this.nodes = new Array;
-    objLocalTree = this;
-
-    this.createRoot = function (x, y, wallnum) {
-      this.root = new ENode(x, y, null, wallnum);
-      this.root.id = "root";
-      this.nodes["root"] = this.root;
-      return this.root;
-      return objNode;
-    }
-    this.checkRoot = function (x, y) {
-      if (this.root.x === x && this.root.y === y) return true;
-      else return false;
-    }
-  }
-
-  function ENode(x, y, parent, wallnum) {
-    this.x = x;
-    this.y = y;
-    this.closed = false;
-    this.wallnum = wallnum;
-    this.level = 0;
-    this.childNodes = new Array;
-    this.parent = parent;
-    this.eLength = null;
-    this.addChild = function (x, y, wallnum) {
-      var objNode = new ENode(x, y, this, wallnum);
-      objNode.level = this.level + 1;
-      this.childNodes[this.childNodes.length] = objNode;
-      objLocalTree.nodes[objLocalTree.nodes.length] = objNode;
-      return objNode;
     }
   }
 
@@ -3744,6 +3750,35 @@
     return eLength;
   }
 
+  function isClockWise(enclosure) {
+    var i,j,k;
+    var count = 0;
+    var z;
+    var poly = [];
+    for (i=0, j = 0; i < enclosure.length;i+=2, j++) {
+      poly[j] = [];
+      poly[j][0] = enclosure[i];
+      poly[j][1] = enclosure[i+1];
+
+    }
+    for (i=0;i<poly.length;i++) {
+      j = (i + 1) % poly.length;
+      k = (i + 2) % poly.length;
+      z = (poly[j][0] - poly[i][0]) * (poly[k][1] - poly[j][1]);
+      z -= (poly[j][1] - poly[i][1]) * (poly[k][0] - poly[j][0]);
+      if (z < 0) {
+        count--;
+      }
+      else if (z > 0) {
+        count++;
+      }
+    }
+    if (count > 0) {
+      return false;
+    }
+    return true;
+  }
+  
   ////////////////////////////////////////////////////////////////////////////
   // Camera Widget Functions 
   ////////////////////////////////////////////////////////////////////////////
@@ -3777,8 +3812,18 @@
       addOption(document.drop_list.files, localStorage.key(i), localStorage.key(i));
     }
   }
+  
+  //Functions for camera widget pjs to move the camera
+  var setUpDown = this.setUpDown = function (upDown) {
+    camUpDown = upDown;
+  }
+  var setLeftRight = this.setLeftRight = function (leftRight) {
+    camLeftRight = leftRight;
+  }
 
-  //sliders
+  ////////////////////////////////////////////////////////////////////////////
+  // JQuery
+  ////////////////////////////////////////////////////////////////////////////
   $(function () {
     //jQuery vars
     var name = $( "#name" ),
@@ -3795,8 +3840,9 @@
         stand,
         placement;
   
-    // zoom slider
-    $('#zoomslider').slider({
+    //Sliders
+    //Camera zoom slider
+    $('#zoomSlider').slider({
       min: 0,
       max: 50,
       values: zoom,
@@ -3805,8 +3851,8 @@
         zoom = ui.value - 1;
       }
     });
-    // up and down slider
-    $('#updownslider').slider({
+    //Camera height slider
+    $('#camHeightSlider').slider({
       min: 5,
       max: 50,
       values: camHeight,
@@ -3815,7 +3861,7 @@
         camHeight = ui.value - 1;
       }
     });
-    //selected video volume slider
+    //Selected video volume slider
     $('#volumeSlider').slider({
       min: 0,
       max: 100,
@@ -3824,7 +3870,7 @@
       }
     });
 
-    //selected video position slider
+    //Selected video position slider
     $('#seekSlider').slider({
       min: 0,
       slide: function (event, ui) {
@@ -3832,7 +3878,7 @@
       }
     });
     
-    //scene lighting slider
+    //Scene lighting slider
     $('#lightSlider').slider({
       value: 1, 
       min: 0,
@@ -3844,6 +3890,7 @@
       }
     });
     
+    //Dialog
     //Save Window
     $("#dialog-saveAs").dialog({
       autoOpen: false,
@@ -4025,23 +4072,23 @@
 			}
     });
    
-    // Accordion
+    // Accordion Effect
     $("#accordion").accordion({
       fillSpace: true,
       header: "h3"
     });
     
-    //tabs
+    //Tabs
 		$( "#3d-tool-tabs" ).tabs();
 		$( "#2d-tool-tabs" ).tabs();
 		$( "#tool-tabs" ).tabs();
     
-    //progress bar
+    //Load progress bar
     $( "#progressbar" ).progressbar({
       value: 0
     });
     
-    //checks a regular expression
+    //Checks a regular expression
     function checkRegexp(o, regexp, n) {
       if (!(regexp.test(o.val()))) {
         o.addClass( "ui-state-error" );
@@ -4053,7 +4100,7 @@
       }
     }
     
-    //checks the length
+    //Checks the length
     function checkLength(o, n, min, max) {
       if (o.val().length > max || o.val().length < min) {
         o.addClass( "ui-state-error" );
@@ -4066,6 +4113,7 @@
       }
     }
     
+    //Checks the number range
     function checkNumberRange(o, n, min, max) {
       if (o.val() > max || o.val() < min) {
         o.addClass( "ui-state-error" );
@@ -4077,6 +4125,8 @@
         return true;
       }
     }
+    
+    //Show errors
     function updateTips( t ) {
       tips
         .text( t )
@@ -4084,7 +4134,7 @@
     }
   });
   
-  //run the currently selected effect
+  //Run the effect for scale
   var scaleEffect = this.scaleEffect = function () {
     if (document.getElementById("scaleDiv").style.display === "none") {
       document.getElementById("scaleDiv").setAttribute("style", "display:inline;");
@@ -4093,6 +4143,8 @@
       document.getElementById("scaleDiv").setAttribute("style", "display:none;");
     }
   };
+  
+  //Run the effect for rotate
   var rotateEffect = this.rotateEffect = function () {
     if (document.getElementById("rotateDiv").style.display === "none") {
       document.getElementById("rotateDiv").setAttribute("style", "display:inline;");
